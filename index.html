@@ -76,7 +76,12 @@ window.addEventListener("load", function(){
     console.log(newVariable);
     //console.log(2 * 3) an expression will always return a value.
     console.log(newVariable.eval()); //okay... this is working...i think this maybe the correct way to start setting things up... eval in this case should return a 
-});                                  //value since it is an expression
+                                 //value since it is an expression
+
+    eval("var x=7364;");
+    eval("console.log(x);"); 
+    console.log(x);
+    }); 
 
 function breakIntoComponents(inputString){ //this needs more work.
     //first, we must first remove all line breaks and whitespace. we also assume that user will wrote in good style. that means they include semi colon.
@@ -104,8 +109,10 @@ function breakIntoComponents(inputString){ //this needs more work.
     return outArray;
 }
 class frame { //a frame may contain variables, functions....or...maybe a callStack...
-    variables;
-    functions;
+    variables; //is an array
+    functions; //is an array ....//function is called...then
+    NextNodeFrames; //is an array of pointers to Frame "functionName".id = NextFrame
+    previousNodeFrame //a frame can only have one parent right...? this always leads back to the global...
     constructor(){
         this.variables = new Array();
         this.functions = new Array();
@@ -125,6 +132,9 @@ class functions {
 
     }
 }
+// class statement {
+//     constructor
+// }
 class variable {
     type; //int, float, double, String is type even needed in javascript?? 
     name; //what is your name?
