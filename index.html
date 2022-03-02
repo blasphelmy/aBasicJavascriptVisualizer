@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script   src="https://code.jquery.com/jquery-3.6.0.js"   integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="   crossorigin="anonymous"></script>
+    <script src="tools.js"></script>
+    <title>parse</title>
+</head>
+<body>
+<!-- var a = 2+2;
+console.log(a); -->
+<textarea id="inputTextArea" style="width: 300px; height: 400px;">
+var a = 10;
+function b(){
+    a = 5;  
+    c();
+    console.log(d);
+}
+function c(){
+    d = 6;
+    var a = 7;
+    e = 9;
+    function f(){
+    a = 2;
+    }
+    f();
+}
+b();
+</textarea>
+<!-- var VAR_0a = 0;
+function FUNCT_0a(){
+    var VAR_1a = 34;
+    function FUNCT_1a(){
+        var VAR_2a = 34;
+    }
+}
+function FUNCT_0b(){
+
+}
+var VAR_0b = 3;
+console.log(""); -->
+</body>
+<script>
+window.addEventListener("load", function(){
+    //step 1, we get javascript code from user as a raw string.
+    var inputString = document.querySelector("#inputTextArea").textContent;
+    //now we split the inputString into its induvidual components
+    statements = breakIntoComponents(inputString);
+    
+    console.log(statements);
+
+    ///////////////////////////////////////building a statement then excuting it... this sets a new variable String xyz = "helloworld..."
+    var newVariable = new variable("String", "xyz", null);
+    var newNodeEquals = new equal();
+    var newNodeValue = new value("helloworld...");
+    newNodeValue.previousNode = newNodeEquals;
+    newNodeEquals.previousNode = newVariable;
+    newNodeEquals.nextNode = newNodeValue;
+    newVariable.nextNode = newNodeEquals;
+    console.log(newVariable);
+    newVariable.eval(); //eval in this case will return undefined... there is no output when we are setting a variable to a value...right?
+    // console.log(var x = 2); this is invalid, which means the logic might work...
+    console.log(newVariable.value); //okay... this is working...i think this maybe the correct way to start setting things up...
+
+    ///building a multiplation statement and excuting it... this statement evalute the expression zyx(4) * value(3...)
+    newVariable = new variable("int", "zyx", 4);
+    var newNodeMultiply = new multiply();
+    newNodeValue = new value(3);
+
+    newNodeValue.previousNode = newNodeMultiply; //we need a function for this...
+    newNodeMultiply.previousNode = newVariable;
+    newNodeMultiply.nextNode = newNodeValue;
+    newVariable.nextNode = newNodeMultiply;
+    console.log(newVariable);
+    //console.log(2 * 3) an expression will always return a value.
+    console.log(newVariable.eval()); //okay... this is working...i think this maybe the correct way to start setting things up... eval in this case should return a 
+});                                  //value since it is an expression
+
+function breakIntoComponents(inputString){ //this needs more work.
+    //first, we must first remove all line breaks and whitespace. we also assume that user will wrote in good style. that means they include semi colon.
+    inputString = inputString.replace(/\n/g, '');
+    inputString = inputString.replace(/\s/g,'');
+    newArray = inputString.split(/([;}]+)/);
+    var outArray = new Array();
+    for(index = 0; index < newArray.length; index++){
+        if(newArray[index].includes("function")){
+            let temp = newArray[index].split(/(function)/);
+            outArray.push(temp[1]);
+            outArray.push(temp[2]);
+
+        }else if(newArray[index].includes("var")){
+            let temp = newArray[index].split(/(var)/);
+            outArray.push(temp[1]);
+            outArray.push(temp[2]);
+        }else{
+            outArray.push(newArray[index]);
+        }
+    }
+    //what if we can just do this...
+    // eval("console.log('holy fuck no way...');var x = 23; console.log(x);"); //
+   //while this could work, it defeats the point of the assignment. well...in any case..xwxx
+    return outArray;
+}
+class frame { //a frame may contain variables, functions....or...maybe a callStack...
+    variables;
+    functions;
+    constructor(){
+        this.variables = new Array();
+        this.functions = new Array();
+    }
+    addVariables(variable){
+        this.variables.push(variable);
+    }
+    addFunction(newFunction){//whenever you add a function you must create a new frame for everything in this function...i think
+
+    }
+}
+class functions {
+    name; //what is your name
+    nextNode; //ie var x = 2 or another function call -->
+    previousNode; //where did you come from?
+    constructor(){
+
+    }
+}
+class variable {
+    type; //int, float, double, String is type even needed in javascript?? 
+    name; //what is your name?
+    value; //what value do you store?
+    nextNode; //next command. 
+    previousNode; //points to previous statement...? 
+    constructor(type, name){ //the minimum you need to declare a variable
+        this.type = type;
+        this.name = name;
+        this.value = value;
+    }
+    eval(){
+        return this.nextNode.eval();
+    }
+}
+class value{
+    value; //what is your value? a string? integer? float? i guess we could use javascript's amazingly flexible handling of types here...
+    previousNode; //points to an arithmatic operation or to a variable...
+    constructor(value){
+        this.value = value;
+    }
+}
+class equal{
+    name;
+    previousNode; //points to an object of either value() or variable();
+    nextNode;//same here
+    constructor(){
+        this.name = "=";
+    }
+    eval(){
+        this.previousNode.value = this.nextNode.value;
+    }
+}
+class multiply{
+    name;
+    previousNode; //points to an object of either value() or variable();
+    nextNode;//same here
+    constructor(){
+        this.name = "mult";
+    }
+    eval(){
+        return this.previousNode.value * this.nextNode.value;
+    }
+}
+class add{
+    name;
+    constructor(){
+        this.name = "add"
+    }
+    eval(){
+        return this.previousNode.value + this.nextNode.value;
+    }
+}
+class subtract{
+    name;
+    constructor(){
+        this.name = "sub"
+    }
+    eval(){
+        return this.previousNode.value - this.nextNode.value;
+    }
+}
+class divide{
+    name;
+    constructor(){
+        this.name = "div"
+    }
+    eval(){
+        return this.previousNode.value * (1.0/this.nextNode.value);
+    }
+}
+// class lineBreaks{
+//     constructor()
+
+// }
+</script>
+</html>
