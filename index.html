@@ -43,44 +43,52 @@ var VAR_0b = 3;
 console.log(""); -->
 </body>
 <script>
-window.addEventListener("load", function(){
+    window.addEventListener("load", function(){
     //step 1, we get javascript code from user as a raw string.
     var inputString = document.querySelector("#inputTextArea").textContent;
     //now we split the inputString into its induvidual components
     statements = breakIntoComponents(inputString);
     
-    console.log(statements);
+    // console.log(statements);
 
     ///////////////////////////////////////building a statement then excuting it... this sets a new variable String xyz = "helloworld..."
-    var newVariable = new variable("String", "xyz", null);
-    var newNodeEquals = new equal();
-    var newNodeValue = new value("helloworld...");
-    newNodeValue.previousNode = newNodeEquals;
-    newNodeEquals.previousNode = newVariable;
-    newNodeEquals.nextNode = newNodeValue;
-    newVariable.nextNode = newNodeEquals;
-    console.log(newVariable);
-    newVariable.eval(); //eval in this case will return undefined... there is no output when we are setting a variable to a value...right?
-    // console.log(var x = 2); this is invalid, which means the logic might work...
-    console.log(newVariable.value); //okay... this is working...i think this maybe the correct way to start setting things up...
+    // var newVariable = new variable("String", "xyz", null);
+    // var newNodeEquals = new equal();
+    // var newNodeValue = new value(2);
+    // newNodeValue.previousNode = newNodeEquals;
+    // newNodeEquals.previousNode = newVariable;
+    // newNodeEquals.nextNode = newNodeValue;
+    // newVariable.nextNode = newNodeEquals;
+    // console.log(newVariable);
+    // newVariable.eval(); //eval in this case will return undefined... there is no output when we are setting a variable to a value...right?
+    // // console.log(var x = 2); this is invalid, which means the logic might work...
+    // console.log(newVariable.value); //okay... this is working...i think this maybe the correct way to start setting things up...
 
-    ///building a multiplation statement and excuting it... this statement evalute the expression zyx(4) * value(3...)
-    newVariable = new variable("int", "zyx", 4);
-    var newNodeMultiply = new multiply();
-    newNodeValue = new value(3);
+    // ///building a multiplation statement and excuting it... this statement evalute the expression zyx(4) * value(3...)
+    // // newVariable = new variable("int", "zyx", null);
+    // var newNodeMultiply = new multiply();
+    // newNodeValue = new value(3);
 
-    newNodeValue.previousNode = newNodeMultiply; //we need a function for this...
-    newNodeMultiply.previousNode = newVariable;
-    newNodeMultiply.nextNode = newNodeValue;
-    newVariable.nextNode = newNodeMultiply;
-    console.log(newVariable);
-    //console.log(2 * 3) an expression will always return a value.
-    console.log(newVariable.eval()); //okay... this is working...i think this maybe the correct way to start setting things up... eval in this case should return a 
-                                 //value since it is an expression
+    // newNodeValue.previousNode = newNodeMultiply; //we need a function for this...
+    // newNodeMultiply.previousNode = newVariable;
+    // newNodeMultiply.nextNode = newNodeValue;
+    // newVariable.nextNode = newNodeMultiply;
+    // console.log(newVariable);
+    // //console.log(2 * 3) an expression will always return a value.
+    // console.log(newVariable.eval()); //okay... this is working...i think this maybe the correct way to start setting things up... eval in this case should return a 
+    //                              //value since it is an expression
 
-    eval("var x=7364;");
-    eval("console.log(x);"); 
-    console.log(x);
+    //another test expression... 2*4*8, eval() = 14 //we ignore order of operations cause:  too difficult. if we need to do anything more than simple arithmatic, default
+                                                    //we use js eval();
+    var newStatementStack = new statementStack();
+    newStatementStack.addNode(new value(2));
+    newStatementStack.addNode(new multiply());
+    newStatementStack.addNode(new value(4));
+    newStatementStack.addNode(new multiply());
+    newStatementStack.addNode(new value(3));
+    // console.log(newStatementStack.statementHead.eval());
+
+    console.log(newStatementStack.getStackNodeIndexOf(1));
     }); 
 
 function breakIntoComponents(inputString){ //this needs more work.
@@ -105,14 +113,66 @@ function breakIntoComponents(inputString){ //this needs more work.
     }
     //what if we can just do this...
     // eval("console.log('holy fuck no way...');var x = 23; console.log(x);"); //
+    // eval("var x=7364;");
+    // eval("console.log(x);"); 
+    // console.log(x);
    //while this could work, it defeats the point of the assignment. well...in any case..xwxx
     return outArray;
+}
+class statementStack {
+    size;
+    statementHead; //always points back to the original head of this stack
+    statementTail;//always points to the tail of this stack
+    constructor(){ //of a variable declartion, //function declarations/calls, variable name, valid pointers to objects basically.
+        this.statementHead = null;
+        this.statementTail = null;
+        this.size = 0;
+    }
+    // newNodeValue.previousNode = newNodeMultiply; //we need a function for this...
+    // newNodeMultiply.previousNode = newVariable;
+    // newNodeMultiply.nextNode = newNodeValue;
+    // newVariable.nextNode = newNodeMultiply;  
+    eval(){
+        var index = 0;
+        //console
+        return statementHead.eval(index);
+    }
+    addNode(newNode){ //lets imagine the first 
+        if(this.statementHead === null){ //
+            this.statementHead = newNode;
+        }else if(this.statementTail === null){
+            this.statementTail = newNode;
+            this.statementTail.previousNode = this.statementHead;
+            this.statementHead.nextNode = this.statementTail;
+        }else{
+            // console.log("this newNode=", newNode);
+            this.statementTail.nextNode = newNode;
+            newNode.previousNode = this.statementTail;
+            this.statementTail = newNode;
+        }
+        this.size++;
+    }
+    getStackNodeIndexOf(index){
+        var newStatementStack = null;
+        var counter = 0;
+        var temp = this.statementHead;
+        // console.log(this);
+        while(temp.nextNode!= undefined){
+            temp = temp.nextNode;
+            if(counter === index){
+                return temp;
+            }
+            counter++;
+        }
+        return "errrr";
+    }
 }
 class frame { //a frame may contain variables, functions....or...maybe a callStack...
     variables; //is an array
     functions; //is an array ....//function is called...then
     NextNodeFrames; //is an array of pointers to Frame "functionName".id = NextFrame
     previousNodeFrame //a frame can only have one parent right...? this always leads back to the global...
+    callStack;
     constructor(){
         this.variables = new Array();
         this.functions = new Array();
@@ -132,11 +192,8 @@ class functions {
 
     }
 }
-// class statement {
-//     constructor
-// }
 class variable {
-    type; //int, float, double, String is type even needed in javascript?? 
+    //type; //int, float, double, String is type even needed in javascript?? for simplicity's sake, please lets just get rid of types and only use strings.
     name; //what is your name?
     value; //what value do you store?
     nextNode; //next command. 
@@ -144,7 +201,7 @@ class variable {
     constructor(type, name){ //the minimum you need to declare a variable
         this.type = type;
         this.name = name;
-        this.value = value;
+        this.value = null;
     }
     eval(){
         return this.nextNode.eval();
@@ -153,8 +210,20 @@ class variable {
 class value{
     value; //what is your value? a string? integer? float? i guess we could use javascript's amazingly flexible handling of types here...
     previousNode; //points to an arithmatic operation or to a variable...
+    nextNode; //next node. a number sitting next to each other never makes sense. so a number have to be lead by and folowed by some sort of arithmatic 
     constructor(value){
         this.value = value;
+    }
+    addNode(newNode){
+        newNode.previousNode = this;
+        this.nextNode = newNode;
+    }
+    eval(){
+        if(!this.nextNode){
+            return this.value;
+        }else{
+            return this.nextNode.eval();
+        }
     }
 }
 class equal{
@@ -176,8 +245,9 @@ class multiply{
         this.name = "mult";
     }
     eval(){
-        return this.previousNode.value * this.nextNode.value;
-    }
+        var product = new value(this.previousNode.value * this.nextNode.value) ;
+        console.log(product);
+    }    
 }
 class add{
     name;
@@ -206,9 +276,5 @@ class divide{
         return this.previousNode.value * (1.0/this.nextNode.value);
     }
 }
-// class lineBreaks{
-//     constructor()
-
-// }
 </script>
 </html>
