@@ -45,55 +45,70 @@ var VAR_0b = 3;
 console.log(""); -->
 </body>
 <script>
-    window.addEventListener("load", function(){
-    //step 1, we get javascript code from user as a raw string.
-    var inputString = document.querySelector("#inputTextArea").textContent;
-    //now we split the inputString into its induvidual components
-    statements = breakIntoComponents(inputString);
-    
-    // console.log(statements);
+window.addEventListener("load", function(){
+//step 1, we get javascript code from user as a raw string.
+var inputString = document.querySelector("#inputTextArea").textContent;
+//now we split the inputString into its induvidual components
+statements = breakIntoComponents(inputString);
 
-    ///////////////////////////////////////building a statement then excuting it... this sets a new variable String xyz = "helloworld..."
-    // var newVariable = new variable("String", "xyz", null);
-    // var newNodeEquals = new equal();
-    // var newNodeValue = new value(2);
-    // newNodeValue.previousNode = newNodeEquals;
-    // newNodeEquals.previousNode = newVariable;
-    // newNodeEquals.nextNode = newNodeValue;
-    // newVariable.nextNode = newNodeEquals;
-    // console.log(newVariable);
-    // newVariable.eval(); //eval in this case will return undefined... there is no output when we are setting a variable to a value...right?
-    // // console.log(var x = 2); this is invalid, which means the logic might work...
-    // console.log(newVariable.value); //okay... this is working...i think this maybe the correct way to start setting things up...
+// console.log(statements);
 
-    // ///building a multiplation statement and excuting it... this statement evalute the expression zyx(4) * value(3...)
-    // // newVariable = new variable("int", "zyx", null);
-    // var newNodeMultiply = new multiply();
-    // newNodeValue = new value(3);
+///////////////////////////////////////building a statement then excuting it... this sets a new variable String xyz = "helloworld..."
+// var newVariable = new variable("String", "xyz", null);
+// var newNodeEquals = new equal();
+// var newNodeValue = new value(2);
+// newNodeValue.previousNode = newNodeEquals;
+// newNodeEquals.previousNode = newVariable;
+// newNodeEquals.nextNode = newNodeValue;
+// newVariable.nextNode = newNodeEquals;
+// console.log(newVariable);
+// newVariable.eval(); //eval in this case will return undefined... there is no output when we are setting a variable to a value...right?
+// // console.log(var x = 2); this is invalid, which means the logic might work...
+// console.log(newVariable.value); //okay... this is working...i think this maybe the correct way to start setting things up...
 
-    // newNodeValue.previousNode = newNodeMultiply; //we need a function for this...
-    // newNodeMultiply.previousNode = newVariable;
-    // newNodeMultiply.nextNode = newNodeValue;
-    // newVariable.nextNode = newNodeMultiply;
-    // console.log(newVariable);
-    // //console.log(2 * 3) an expression will always return a value.
-    // console.log(newVariable.eval()); //okay... this is working...i think this maybe the correct way to start setting things up... eval in this case should return a 
-    //                              //value since it is an expression
+// ///building a multiplation statement and excuting it... this statement evalute the expression zyx(4) * value(3...)
+// // newVariable = new variable("int", "zyx", null);
+// var newNodeMultiply = new multiply();
+// newNodeValue = new value(3);
 
-    //another test expression... 2*4*8, eval() = 14 //we ignore order of operations cause:  too difficult. if we need to do anything more than simple arithmatic, default
-                                                    //we use js eval();
-    var newStatementStack = new statementStack();
-    newStatementStack.addNode(new value(2));
-    newStatementStack.addNode(new multiply());
-    newStatementStack.addNode(new value(4));
-    newStatementStack.addNode(new multiply());
-    newStatementStack.addNode(new value(3));
-    // console.log(newStatementStack.statementHead.eval());
+// newNodeValue.previousNode = newNodeMultiply; //we need a function for this...
+// newNodeMultiply.previousNode = newVariable;
+// newNodeMultiply.nextNode = newNodeValue;
+// newVariable.nextNode = newNodeMultiply;
+// console.log(newVariable);
+// //console.log(2 * 3) an expression will always return a value.
+// console.log(newVariable.eval()); //okay... this is working...i think this maybe the correct way to start setting things up... eval in this case should return a 
+//                              //value since it is an expression
 
-    console.log(newStatementStack.getStackNodeIndexOf(1));
-    }); 
+//another test expression... 2*4*8, eval() = 14 //we ignore order of operations cause:  too difficult. if we need to do anything more than simple arithmatic, default
+                                                //we use js eval();
+var newStatementStack = new statementStack(); //needs more work
+newStatementStack.addNode(new value(2));
+newStatementStack.addNode(new multiply());
+newStatementStack.addNode(new value(4));
+newStatementStack.addNode(new multiply());
+newStatementStack.addNode(new value(3));
+// console.log(newStatementStack.statementHead);
 
-function breakIntoComponents(inputString){ //this needs more work.
+// console.log(newStatementStack.getStackNodeIndexOf(1));
+
+var globalFrame = new frame("global"); //i guess the function name for global frame is global.
+globalFrame.addVariables(["variableA", 2]);
+globalFrame.addVariables(["variableB", "hello"]);
+globalFrame.addVariables(["variableB", 3.67]);
+globalFrame.addStatements(newStatementStack);
+globalFrame.addStatements(newStatementStack);
+globalFrame.addStatements(newStatementStack);
+
+var newFunction = new functions("functionSCOPE1");
+
+globalFrame.addFunction(newFunction);
+
+
+console.log(globalFrame);
+}); 
+
+function breakIntoComponents(inputString){ //this needs more work. //will be rewritten
     //first, we must first remove all line breaks and whitespace. we also assume that user will wrote in good style. that means they include semi colon.
     inputString = inputString.replace(/\n/g, '');
     inputString = inputString.replace(/\s/g,'');
@@ -121,6 +136,28 @@ function breakIntoComponents(inputString){ //this needs more work.
    //while this could work, it defeats the point of the assignment. well...in any case..xwxx
     return outArray;
 }
+class frame { //a frame may contain variables, functions....or...maybe a callStack...
+    id;
+    variables; //is an array
+    functions; //is an array ....//function is called...then
+    previousNodeFrame //a frame can only have one parent right...? this always leads back to the global...
+    callStack;
+    constructor(aFunctionName){
+        this.variables = new Array();
+        this.functions = new Array();
+        this.callStack = new Array();
+        this.id = aFunctionName;
+    }
+    addVariables(variable){ //this stores variable declared in a list [name, key];
+        this.variables.push(variable);
+    }
+    addFunction(newFunction){//whenever you add a function (through encountering a function declaration token within this frame's context) you must create a new frame for everything in this function...i think
+        this.functions.push([newFunction.name], new frame(newFunction.name));
+    }
+    addStatements(statementStack){//is an object of statementStack
+        this.callStack.push(statementStack);
+    }
+}
 class statementStack {
     size;
     statementHead; //always points back to the original head of this stack
@@ -135,9 +172,12 @@ class statementStack {
     // newNodeMultiply.nextNode = newNodeValue;
     // newVariable.nextNode = newNodeMultiply;  
     eval(){
-        var index = 0;
-        //console
-        return statementHead.eval(index);
+        //we should work from the end to the front...right?
+        var results = this.statementHead.eval();
+        // while(this.statementTail.eval() != results){
+        //     results = this.statementTail.eval();
+        // }
+        return results;
     }
     addNode(newNode){ //lets imagine the first 
         if(this.statementHead === null){ //
@@ -166,32 +206,15 @@ class statementStack {
             }
             counter++;
         }
-        return "errrr";
-    }
-}
-class frame { //a frame may contain variables, functions....or...maybe a callStack...
-    variables; //is an array
-    functions; //is an array ....//function is called...then
-    NextNodeFrames; //is an array of pointers to Frame "functionName".id = NextFrame
-    previousNodeFrame //a frame can only have one parent right...? this always leads back to the global...
-    callStack;
-    constructor(){
-        this.variables = new Array();
-        this.functions = new Array();
-    }
-    addVariables(variable){
-        this.variables.push(variable);
-    }
-    addFunction(newFunction){//whenever you add a function you must create a new frame for everything in this function...i think
-
+        return "error";
     }
 }
 class functions {
     name; //what is your name
     nextNode; //ie var x = 2 or another function call -->
     previousNode; //where did you come from?
-    constructor(){
-
+    constructor(name){
+        this.name = name;
     }
 }
 class variable {
@@ -248,7 +271,8 @@ class multiply{
     }
     eval(){
         var product = new value(this.previousNode.value * this.nextNode.value) ;
-        console.log(product);
+        this.value = product;
+
     }    
 }
 class add{
