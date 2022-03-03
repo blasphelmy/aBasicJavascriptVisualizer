@@ -54,41 +54,13 @@ statements = breakIntoComponents(inputString);
 // console.log(statements);
 
 ///////////////////////////////////////building a statement then excuting it... this sets a new variable String xyz = "helloworld..."
-// var newVariable = new variable("String", "xyz", null);
-// var newNodeEquals = new equal();
-// var newNodeValue = new value(2);
-// newNodeValue.previousNode = newNodeEquals;
-// newNodeEquals.previousNode = newVariable;
-// newNodeEquals.nextNode = newNodeValue;
-// newVariable.nextNode = newNodeEquals;
-// console.log(newVariable);
-// newVariable.eval(); //eval in this case will return undefined... there is no output when we are setting a variable to a value...right?
-// // console.log(var x = 2); this is invalid, which means the logic might work...
-// console.log(newVariable.value); //okay... this is working...i think this maybe the correct way to start setting things up...
-
-// ///building a multiplation statement and excuting it... this statement evalute the expression zyx(4) * value(3...)
-// // newVariable = new variable("int", "zyx", null);
-// var newNodeMultiply = new multiply();
-// newNodeValue = new value(3);
-
-// newNodeValue.previousNode = newNodeMultiply; //we need a function for this...
-// newNodeMultiply.previousNode = newVariable;
-// newNodeMultiply.nextNode = newNodeValue;
-// newVariable.nextNode = newNodeMultiply;
-// console.log(newVariable);
-// //console.log(2 * 3) an expression will always return a value.
-// console.log(newVariable.eval()); //okay... this is working...i think this maybe the correct way to start setting things up... eval in this case should return a 
-//                              //value since it is an expression
-
-//another test expression... 2*4*8, eval() = 14 //we ignore order of operations cause:  too difficult. if we need to do anything more than simple arithmatic, default
-                                                //we use js eval();
 var newStatementStack = new statementStack(); //needs more work
 newStatementStack.addNode(new value(2));
 newStatementStack.addNode(new multiply());
 newStatementStack.addNode(new value(4));
 newStatementStack.addNode(new multiply());
 newStatementStack.addNode(new value(3));
-// console.log(newStatementStack.statementHead);
+console.log(newStatementStack.pop(1));
 
 // console.log(newStatementStack.getStackNodeIndexOf(1));
 
@@ -100,13 +72,19 @@ globalFrame.addStatements(newStatementStack);
 globalFrame.addStatements(newStatementStack);
 globalFrame.addStatements(newStatementStack);
 
-var newFunction = new functions("functionSCOPE1");
+var newFunction = new functions("newFunctionScope1");
+var newFunction2 = new functions("newFunctionScope2");
 
 globalFrame.addFunction(newFunction);
-
+globalFrame.addFunction(newFunction2);
 
 console.log(globalFrame);
+
 }); 
+
+function evaluteStack(statementStack){
+    //we first figure out what kind of statement it is...variable declaration,
+}
 
 function breakIntoComponents(inputString){ //this needs more work. //will be rewritten
     //first, we must first remove all line breaks and whitespace. we also assume that user will wrote in good style. that means they include semi colon.
@@ -136,8 +114,9 @@ function breakIntoComponents(inputString){ //this needs more work. //will be rew
    //while this could work, it defeats the point of the assignment. well...in any case..xwxx
     return outArray;
 }
+//**important notes: on a function call you will always need to initialize a the corrosponding frame... how?
 class frame { //a frame may contain variables, functions....or...maybe a callStack...
-    id;
+    id; //name
     variables; //is an array
     functions; //is an array ....//function is called...then
     previousNodeFrame //a frame can only have one parent right...? this always leads back to the global...
@@ -152,14 +131,16 @@ class frame { //a frame may contain variables, functions....or...maybe a callSta
         this.variables.push(variable);
     }
     addFunction(newFunction){//whenever you add a function (through encountering a function declaration token within this frame's context) you must create a new frame for everything in this function...i think
-        this.functions.push([newFunction.name], new frame(newFunction.name));
+        var newFrame = new frame(newFunction.name);
+        newFrame.previousNodeFrame = this;
+        this.functions.push([newFunction.name], newFrame);
     }
     addStatements(statementStack){//is an object of statementStack
         this.callStack.push(statementStack);
     }
 }
 class statementStack {
-    size;
+    size; //size of this stack
     statementHead; //always points back to the original head of this stack
     statementTail;//always points to the tail of this stack
     constructor(){ //of a variable declartion, //function declarations/calls, variable name, valid pointers to objects basically.
@@ -171,14 +152,14 @@ class statementStack {
     // newNodeMultiply.previousNode = newVariable;
     // newNodeMultiply.nextNode = newNodeValue;
     // newVariable.nextNode = newNodeMultiply;  
-    eval(){
-        //we should work from the end to the front...right?
-        var results = this.statementHead.eval();
-        // while(this.statementTail.eval() != results){
-        //     results = this.statementTail.eval();
-        // }
-        return results;
-    }
+    // eval(){
+    //     //we should work from the end to the front...right?
+    //     var results = this.statementHead.eval();
+    //     // while(this.statementTail.eval() != results){
+    //     //     results = this.statementTail.eval();
+    //     // }
+    //     return results;
+    // } //christ lets just work outside this context of this to make it a little easier.//
     addNode(newNode){ //lets imagine the first 
         if(this.statementHead === null){ //
             this.statementHead = newNode;
@@ -193,6 +174,9 @@ class statementStack {
             this.statementTail = newNode;
         }
         this.size++;
+    }
+    pop(index){ //if user provides no index input it pops the tail and returns it...
+        console.log(index);
     }
     getStackNodeIndexOf(index){
         var newStatementStack = null;
@@ -228,9 +212,6 @@ class variable {
         this.name = name;
         this.value = null;
     }
-    eval(){
-        return this.nextNode.eval();
-    }
 }
 class value{
     value; //what is your value? a string? integer? float? i guess we could use javascript's amazingly flexible handling of types here...
@@ -242,13 +223,6 @@ class value{
     addNode(newNode){
         newNode.previousNode = this;
         this.nextNode = newNode;
-    }
-    eval(){
-        if(!this.nextNode){
-            return this.value;
-        }else{
-            return this.nextNode.eval();
-        }
     }
 }
 class equal{
@@ -268,12 +242,7 @@ class multiply{
     nextNode;//same here
     constructor(){
         this.name = "mult";
-    }
-    eval(){
-        var product = new value(this.previousNode.value * this.nextNode.value) ;
-        this.value = product;
-
-    }    
+    } 
 }
 class add{
     name;
