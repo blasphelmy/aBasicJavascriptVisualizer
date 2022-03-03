@@ -15,10 +15,14 @@
 console.log(a); -->
 <textarea id="inputTextArea" style="width: 300px; height: 400px;">
 var a = 10;
+var sfdf=10;
 function b(){
     a = 5;  
     c();
     console.log(d);
+}
+function z(){
+`var f = 3;
 }
 function c(){
     d = 6;
@@ -51,7 +55,7 @@ var inputString = document.querySelector("#inputTextArea").textContent;
 //now we split the inputString into its induvidual components
 statements = breakIntoComponents(inputString);
 
-// console.log(statements);
+console.log(statements);
 
 ///////////////////////////////////////building a statement then excuting it... this sets a new variable String xyz = "helloworld..."
 var newStatementStack = new statementStack(); //needs more work
@@ -65,9 +69,9 @@ console.log(newStatementStack.pop(1));
 // console.log(newStatementStack.getStackNodeIndexOf(1));
 
 var globalFrame = new frame("global"); //i guess the function name for global frame is global.
-globalFrame.addVariables(["variableA", 2]);
-globalFrame.addVariables(["variableB", "hello"]);
-globalFrame.addVariables(["variableB", 3.67]);
+globalFrame.addVariables(new variable("integer1", 45));
+globalFrame.addVariables(new variable("integer2", 34));
+globalFrame.addVariables(new variable("string1", "hello"));
 globalFrame.addStatements(newStatementStack);
 globalFrame.addStatements(newStatementStack);
 globalFrame.addStatements(newStatementStack);
@@ -86,54 +90,36 @@ function evaluteStack(statementStack){
     //we first figure out what kind of statement it is...variable declaration,
 }
 
-function breakIntoComponents(inputString){ //this needs more work. //will be rewritten
-    //first, we must first remove all line breaks and whitespace. we also assume that user will wrote in good style. that means they include semi colon.
+function breakIntoComponents(inputString){ //this needs more work
+    //first, we must first remove all line breaks and whitespace. we also assume that user written with semi colons...
     inputString = inputString.replace(/\n/g, '');
-    inputString = inputString.replace(/\s/g,'');
-    newArray = inputString.split(/([;}]+)/);
-    var outArray = new Array();
-    for(index = 0; index < newArray.length; index++){
-        if(newArray[index].includes("function")){
-            let temp = newArray[index].split(/(function)/);
-            outArray.push(temp[1]);
-            outArray.push(temp[2]);
-
-        }else if(newArray[index].includes("var")){
-            let temp = newArray[index].split(/(var)/);
-            outArray.push(temp[1]);
-            outArray.push(temp[2]);
-        }else{
-            outArray.push(newArray[index]);
-        }
-    }
-    //what if we can just do this...
-    // eval("console.log('holy fuck no way...');var x = 23; console.log(x);"); //
-    // eval("var x=7364;");
-    // eval("console.log(x);"); 
-    // console.log(x);
-   //while this could work, it defeats the point of the assignment. well...in any case..xwxx
-    return outArray;
+    inputString = inputString.trim();
+    inputString = inputString.split(/([;}]+)/);
+    
+    return inputString;
 }
 //**important notes: on a function call you will always need to initialize a the corrosponding frame... how?
 class frame { //a frame may contain variables, functions....or...maybe a callStack...
     id; //name
+    size;
     variables; //is an array
     functions; //is an array ....//function is called...then
     previousNodeFrame //a frame can only have one parent right...? this always leads back to the global...
     callStack;
     constructor(aFunctionName){
-        this.variables = new Array();
-        this.functions = new Array();
+        this.variables = new Map();
+        this.functions = new Map();
         this.callStack = new Array();
         this.id = aFunctionName;
     }
-    addVariables(variable){ //this stores variable declared in a list [name, key];
-        this.variables.push(variable);
+    addVariables(variable){ //accepts an object of variable type
+        // this.variables.push([variable.name,variable.value]);
+        this.variables.set(variable.name, variable.value);
     }
     addFunction(newFunction){//whenever you add a function (through encountering a function declaration token within this frame's context) you must create a new frame for everything in this function...i think
         var newFrame = new frame(newFunction.name);
         newFrame.previousNodeFrame = this;
-        this.functions.push([newFunction.name], newFrame);
+        this.functions.set(newFunction.name, newFrame);
     }
     addStatements(statementStack){//is an object of statementStack
         this.callStack.push(statementStack);
@@ -148,18 +134,6 @@ class statementStack {
         this.statementTail = null;
         this.size = 0;
     }
-    // newNodeValue.previousNode = newNodeMultiply; //we need a function for this...
-    // newNodeMultiply.previousNode = newVariable;
-    // newNodeMultiply.nextNode = newNodeValue;
-    // newVariable.nextNode = newNodeMultiply;  
-    // eval(){
-    //     //we should work from the end to the front...right?
-    //     var results = this.statementHead.eval();
-    //     // while(this.statementTail.eval() != results){
-    //     //     results = this.statementTail.eval();
-    //     // }
-    //     return results;
-    // } //christ lets just work outside this context of this to make it a little easier.//
     addNode(newNode){ //lets imagine the first 
         if(this.statementHead === null){ //
             this.statementHead = newNode;
@@ -207,10 +181,9 @@ class variable {
     value; //what value do you store?
     nextNode; //next command. 
     previousNode; //points to previous statement...? 
-    constructor(type, name){ //the minimum you need to declare a variable
-        this.type = type;
+    constructor(name, value){ //the minimum you need to declare a variable
         this.name = name;
-        this.value = null;
+        this.value = value;
     }
 }
 class value{
@@ -241,22 +214,19 @@ class multiply{
     previousNode; //points to an object of either value() or variable();
     nextNode;//same here
     constructor(){
-        this.name = "mult";
+        this.name = "*";
     } 
 }
 class add{
     name;
     constructor(){
-        this.name = "add"
-    }
-    eval(){
-        return this.previousNode.value + this.nextNode.value;
+        this.name = "+"
     }
 }
 class subtract{
     name;
     constructor(){
-        this.name = "sub"
+        this.name = "-"
     }
     eval(){
         return this.previousNode.value - this.nextNode.value;
@@ -265,10 +235,7 @@ class subtract{
 class divide{
     name;
     constructor(){
-        this.name = "div"
-    }
-    eval(){
-        return this.previousNode.value * (1.0/this.nextNode.value);
+        this.name = "/"
     }
 }
 </script>
