@@ -41,7 +41,7 @@ b();
               </textarea
         >
         <br />
-        <button id="btnRunCode">Run Code</button>
+        <button id="runBtn">Run Code</button>
       </div>
 
       <div id="outputSection"></div>
@@ -60,6 +60,80 @@ function FUNCT_0b(){
 var VAR_0b = 3;
 console.log(""); -->
   </body>
+
+  <script>
+    // Get input string from input section
+    let runBtn;
+    let inputString;
+    let statements;
+    let frames;
+
+    function appMain() {
+      getElements();
+      addListeners();
+      statements = breakIntoComponents(inputString);
+      console.log(statements);
+      // parse(statements);
+      // runInterpreter();
+      // display();
+    }
+
+    function getElements() {
+      runBtn = document.getElementById("btnRunCode");
+    }
+
+    function addListeners() {
+      runBtn.addEventListener("click", fetchInput, false);
+    }
+
+    function fetchInput() {
+      inputString = document.querySelector("#inputTextArea").textContent;
+    }
+
+    class Frame {
+      //a frame may contain variables, functions....or...maybe a callStack...
+      id;
+      parent;
+      children;
+
+      variables; //is an map [key, value] = [variablename, value]
+      functions; //is an map ....//[functionName, functionFrame]
+
+      callStack;
+
+      constructor(aFunctionName, index) {
+        this.variables = new Map();
+        this.functions = new Map();
+        this.callStack = new Array();
+        this.id = aFunctionName;
+        this.frameIndex = index;
+      }
+
+      addVariables(variable) {
+        //accepts an object of variable type
+        // this.variables.push([variable.name,variable.value]);
+        this.variables.set(variable.name, variable.value);
+      }
+      addFunction(newFunction) {
+        //whenever you add a function (through encountering a function declaration token within this frame's context) you must create a new frame for everything in this function...i think
+        var newFrame = new frame(newFunction.name + "_" + this.frameIndex); //we can also return the new frame created.
+        newFrame.previousNodeFrame = this;
+        this.functions.set(newFunction.name, newFrame);
+      }
+      addStatements(statementStack) {
+        //is an object of statementStack
+        this.callStack.push(statementStack);
+      }
+      returnChildFrame(id) {
+        return this.functions.get(id);
+      }
+      returnParentFrame() {
+        return this.previousNodeFrame;
+      }
+      eval() {}
+      class;
+    }
+  </script>
 
   <script>
     window.addEventListener("load", function () {
