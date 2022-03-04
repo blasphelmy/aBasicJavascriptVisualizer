@@ -29,7 +29,8 @@ function splitIntoTokens(array){
             for(var x = 0; x < temp.length; x++){
                 newArray.push(temp[x]);
             }
-        }else if(isVarDeclartion(array[index]) === "isNull" || isVarDeclartion(array[index]) === "isNullValue"){
+        }
+        if(array[index].match("var ")){
             var temp = array[index].split(/(var)/gm);
             console.log("temp",temp);
             for(var x = 0; x < temp.length; x++){
