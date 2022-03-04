@@ -12,17 +12,23 @@
 
     <p> Howdy Team</p>
 <!-- var a = 2+2;
-console.log(a); -->
-<textarea id="inputTextArea" style="width: 300px; height: 400px;">
+console.log(a); --> 
+<textarea id="inputTextArea" style="width: 300px; height: 400px;"> 
+function x(){
+    var a;
+    function x(){
+        var x;
+        function x(){
+            var b;
+        }
+        var b;
+    }
+}
 var a = 10;
-var sfdf=10;
-function b(){
+function   b(){
     a = 5;  
     c();
     console.log(d);
-}
-function z(){
-`var f = 3;
 }
 function c(){
     d = 6;
@@ -33,7 +39,9 @@ function c(){
     }
     f();
 }
+var a;
 b();
+    
 </textarea>
 <!-- var VAR_0a = 0;
 function FUNCT_0a(){
@@ -54,8 +62,11 @@ window.addEventListener("load", function(){
 var inputString = document.querySelector("#inputTextArea").textContent;
 //now we split the inputString into its induvidual components
 statements = breakIntoComponents(inputString);
+//findEOFLine(statements, 0);
+console.log(findEOFLine(statements, 0));
+parseArray(statements);
 
-console.log(statements);
+console.log(statements)
 
 ///////////////////////////////////////building a statement then excuting it... this sets a new variable String xyz = "helloworld..."
 var newStatementStack = new statementStack(); //needs more work
@@ -68,7 +79,7 @@ console.log(newStatementStack.pop(1));
 
 // console.log(newStatementStack.getStackNodeIndexOf(1));
 
-var globalFrame = new frame("global"); //i guess the function name for global frame is global.
+var globalFrame = new frame("global", 0); //i guess the function name for global frame is global.
 globalFrame.addVariables(new variable("integer1", 45));
 globalFrame.addVariables(new variable("integer2", 34));
 globalFrame.addVariables(new variable("string1", "hello"));
@@ -76,54 +87,102 @@ globalFrame.addStatements(newStatementStack);
 globalFrame.addStatements(newStatementStack);
 globalFrame.addStatements(newStatementStack);
 
-var newFunction = new functions("newFunctionScope1");
-var newFunction2 = new functions("newFunctionScope2");
+var newFunction = new functions("newFunction");
 
 globalFrame.addFunction(newFunction);
-globalFrame.addFunction(newFunction2);
+globalFrame.addFunction(newFunction);
 
 console.log(globalFrame);
 
 }); 
-
+function parseArray(array){
+    for(var index = 0; index < array.length; index++){
+       if(isFunction(array[index])){
+        var start = index;
+        console.log("is function at index: " + index + " and ends on line "+ findEOFLine(array, start));
+       }else if(isVarDeclartion(array[index]) != -1){
+        console.log("is variable declartion at index: " + index + " of type " + isVarDeclartion(array[index]));
+       }
+    }
+}
+function isFunction(string){
+    var isFunctionDeclartion = new RegExp(/((function) +[a-z,A-Z,0-9]*)/gim);
+    //make improvements to this regexp here : https://regex101.com/r/9IiFmz/1
+    return isFunctionDeclartion.test(string);
+}
+function isVarDeclartion(string){ //-1 for false, 0 var declared w/o assignment, 1 var declared /w assignment
+    const isVariableDeclartionWithAssignment = new RegExp(/(var[ ]*[a-z, A-Z, 0-9]*[=][ ]*[a-z, A-Z, 0-9,+,-,*,/,",']*[;])/gm);
+    //improve this regexp here https://regex101.com/r/FjoVKw/1
+    const isVarDeclarNoAssignment = new RegExp(/(var[ ]*[a-z, A-Z, 0-9]*[;])/gm);
+    //improve this regexp here https://regex101.com/r/T97bkY/1 //please add onto links. dont delete any previous if youre making changes.
+    if(isVarDeclarNoAssignment.test(string)){
+        return 0;
+    }else if(isVariableDeclartionWithAssignment.test(string)){
+        return 1;
+    }
+    else{
+        return -1;
+    }
+}
 function evaluteStack(statementStack){
     //we first figure out what kind of statement it is...variable declaration,
 }
-
-function breakIntoComponents(inputString){ //this needs more work
-    //first, we must first remove all line breaks and whitespace. we also assume that user written with semi colons...
-    inputString = inputString.replace(/\n/g, '');
-    inputString = inputString.trim();
-    inputString = inputString.split(/([;}]+)/);
-    
-    return inputString;
+function findEOFLine(array, start){ //raw string -> breakIntoComponents() first. start is the index of the array where a function declartion is detected.
+    var count = 0;
+    var endLine = -1;
+    for(var x = start; x < array.length; x++){
+        if(array[x].search("{") > -1){
+            count = count + 1;
+        }
+        if(array[x].search("}") > -1){
+            count = count - 1;
+        }
+        if(count === 0 && array[x].search("}") > -1){
+            endLine = x;
+            break;
+        }
+        // console.log(count);
+    }
+    return endLine;
 }
 //**important notes: on a function call you will always need to initialize a the corrosponding frame... how?
 class frame { //a frame may contain variables, functions....or...maybe a callStack...
+    frameIndex;
     id; //name
-    size;
-    variables; //is an array
-    functions; //is an array ....//function is called...then
+    size;//this tracks something...im not sure yet
+    variables; //is an map [key, value] = [variablename, value]
+    functions; //is an map ....//[functionName, functionFrame]
     previousNodeFrame //a frame can only have one parent right...? this always leads back to the global...
     callStack;
-    constructor(aFunctionName){
+    constructor(aFunctionName, index){
         this.variables = new Map();
-        this.functions = new Map();
+        this.functions = new Map(); 
         this.callStack = new Array();
         this.id = aFunctionName;
+        this.frameIndex = index;
     }
     addVariables(variable){ //accepts an object of variable type
         // this.variables.push([variable.name,variable.value]);
         this.variables.set(variable.name, variable.value);
     }
     addFunction(newFunction){//whenever you add a function (through encountering a function declaration token within this frame's context) you must create a new frame for everything in this function...i think
-        var newFrame = new frame(newFunction.name);
+        var newFrame = new frame(newFunction.name + "_" + this.frameIndex); //we can also return the new frame created.
         newFrame.previousNodeFrame = this;
         this.functions.set(newFunction.name, newFrame);
     }
     addStatements(statementStack){//is an object of statementStack
         this.callStack.push(statementStack);
     }
+    returnChildFrame(id){
+        return this.functions.get(id);
+    }
+    returnParentFrame(){
+        return this.previousNodeFrame;
+    }
+    eval(){
+
+    }
+    class
 }
 class statementStack {
     size; //size of this stack
@@ -169,14 +228,14 @@ class statementStack {
 }
 class functions {
     name; //what is your name
-    nextNode; //ie var x = 2 or another function call -->
+    nextNode; //ie var x = 2 or another function call -->this needs to be mapped to 
     previousNode; //where did you come from?
     constructor(name){
         this.name = name;
     }
 }
 class variable {
-    //type; //int, float, double, String is type even needed in javascript?? for simplicity's sake, please lets just get rid of types and only use strings.
+    type; //int, float, double, String is type even needed in javascript?? for simplicity's sake, please lets just get rid of types and only use strings.
     name; //what is your name?
     value; //what value do you store?
     nextNode; //next command. 
@@ -220,13 +279,13 @@ class multiply{
 class add{
     name;
     constructor(){
-        this.name = "+"
+        this.name = "+";
     }
 }
 class subtract{
     name;
     constructor(){
-        this.name = "-"
+        this.name = "-";
     }
     eval(){
         return this.previousNode.value - this.nextNode.value;
@@ -235,7 +294,7 @@ class subtract{
 class divide{
     name;
     constructor(){
-        this.name = "/"
+        this.name = "/";
     }
 }
 </script>
