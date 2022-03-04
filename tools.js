@@ -30,8 +30,8 @@ function splitIntoTokens(array){
                 newArray.push(temp[x]);
             }
         }
-        if(array[index].match("var ")){
-            var temp = array[index].split(/(var)/gm);
+        if(array[index].match(/(var[ ]*)/gm)){
+            var temp = array[index].split(/(var)[ ]/gm);
             console.log("temp",temp);
             for(var x = 0; x < temp.length; x++){
                 newArray.push(temp[x]);
