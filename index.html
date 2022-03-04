@@ -14,34 +14,22 @@
 <!-- var a = 2+2;
 console.log(a); --> 
 <textarea id="inputTextArea" style="width: 300px; height: 400px;"> 
-function x(){
-    var a;
-    function x(){
-        var x;
-        function x(){
-            var b;
-        }
-        var b;
+    var a = 10;
+    function   b(){
+      a = 5;  
+      c();
+      console.log(d);
     }
-}
-var a = 10;
-function   b(){
-    a = 5;  
-    c();
-    console.log(d);
-}
-function c(){
-    d = 6;
-    var a = 7;
-    e = 9;
-    function f(){
-    a = 2;
+    function c(){
+      d = 6;
+      var a = 7;
+      e = 9;
+      function f(){
+        a = 2;
+      }
+      f();
     }
-    f();
-}
-var a;
-b();
-    
+    b();
 </textarea>
 <!-- var VAR_0a = 0;
 function FUNCT_0a(){
@@ -63,8 +51,8 @@ var inputString = document.querySelector("#inputTextArea").textContent;
 //now we split the inputString into its induvidual components
 statements = breakIntoComponents(inputString);
 //findEOFLine(statements, 0);
-console.log(findEOFLine(statements, 0));
-parseArray(statements);
+//console.log(findEOFLine(statements, 0));
+//arseArray(statements);
 
 console.log(statements)
 
@@ -99,9 +87,9 @@ function parseArray(array){
     for(var index = 0; index < array.length; index++){
        if(isFunction(array[index])){
         var start = index;
-        console.log("is function at index: " + index + " and ends on line "+ findEOFLine(array, start));
-       }else if(isVarDeclartion(array[index]) != -1){
-        console.log("is variable declartion at index: " + index + " of type " + isVarDeclartion(array[index]));
+        //console.log("is function at index: " + index + " and ends on line "+ findEOFLine(array, start));
+       }else if(isVarDeclartion(array[index])){
+        console.log("is variable declartion at index: " + index + " null declaration " + isVarDeclartion(array[index]));
        }
     }
 }
@@ -115,13 +103,12 @@ function isVarDeclartion(string){ //-1 for false, 0 var declared w/o assignment,
     //improve this regexp here https://regex101.com/r/FjoVKw/1
     const isVarDeclarNoAssignment = new RegExp(/(var[ ]*[a-z, A-Z, 0-9]*[;])/gm);
     //improve this regexp here https://regex101.com/r/T97bkY/1 //please add onto links. dont delete any previous if youre making changes.
+    //console.log(isVarDeclarNoAssignment.test(string), string);
     if(isVarDeclarNoAssignment.test(string)){
-        return 0;
-    }else if(isVariableDeclartionWithAssignment.test(string)){
-        return 1;
+        return "isNullValue";
     }
-    else{
-        return -1;
+    if(isVariableDeclartionWithAssignment.test(string)==true){
+        return "hasValue";
     }
 }
 function evaluteStack(statementStack){
@@ -144,6 +131,9 @@ function findEOFLine(array, start){ //raw string -> breakIntoComponents() first.
         // console.log(count);
     }
     return endLine;
+}
+function returnFunction(array){
+    
 }
 //**important notes: on a function call you will always need to initialize a the corrosponding frame... how?
 class frame { //a frame may contain variables, functions....or...maybe a callStack...

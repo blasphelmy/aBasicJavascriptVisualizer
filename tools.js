@@ -15,7 +15,32 @@ function breakIntoComponents(inputString){ //this needs more work
     outputArray = trimStringInArray(outputArray);
     outputArray = removeEmptyIndices(outputArray);
     outputArray = combineSemiColonsWithPreviousLines(outputArray);
+    outputArray = splitIntoTokens(outputArray);
+    outputArray = removeEmptyIndices(outputArray);
     return outputArray;
+}
+function splitIntoTokens(array){
+    var newArray = new Array();
+
+    for(var index = 0; index< array.length; index++){
+        if(isFunction(array[index])){
+            var temp = array[index].split(/(function)/gm);
+            console.log("temp",temp);
+            for(var x = 0; x < temp.length; x++){
+                newArray.push(temp[x]);
+            }
+        }else if(isVarDeclartion(array[index]) === "isNull" || isVarDeclartion(array[index]) === "isNullValue"){
+            var temp = array[index].split(/(var)/gm);
+            console.log("temp",temp);
+            for(var x = 0; x < temp.length; x++){
+                newArray.push(temp[x]);
+            }
+        }
+        else{
+            newArray.push(array[index]);
+        }
+}
+    return newArray;
 }
 function combineSemiColonsWithPreviousLines(array){
     var newArray = new Array();
