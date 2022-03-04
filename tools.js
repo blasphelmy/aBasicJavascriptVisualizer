@@ -25,7 +25,6 @@ function breakIntoComponents(inputString) {
 function splitIntoTokens(array) {
   var newArray = new Array();
 
-<<<<<<< HEAD
     for(var index = 0; index< array.length; index++){
         if(array[index].match(/(function[ ]*)/gm)){
             var temp = array[index].split(/(function[ ]*)/gm);
@@ -42,7 +41,6 @@ function splitIntoTokens(array) {
         else{
             newArray.push(array[index]);
         }
-}
     return newArray;
 }
 function combineSemiColonsWithPreviousLines(array){
@@ -54,24 +52,6 @@ function combineSemiColonsWithPreviousLines(array){
         }else if(!array[index+1].match(";")){
             newArray.push(array[index]);
         }
-=======
-  for (var index = 0; index < array.length; index++) {
-    if (isFunction(array[index])) {
-      var temp = array[index].split(/(function)/gm);
-      console.log("temp", temp);
-      for (var x = 0; x < temp.length; x++) {
-        newArray.push(temp[x]);
-      }
-    }
-    if (array[index].match(/(var[ ]*)/gm)) {
-      var temp = array[index].split(/(var)[ ]/gm);
-      console.log("temp", temp);
-      for (var x = 0; x < temp.length; x++) {
-        newArray.push(temp[x]);
-      }
-    } else {
-      newArray.push(array[index]);
->>>>>>> 19c466bf717d14108efcab56a9476f66aa9d00e8
     }
   }
   return newArray;

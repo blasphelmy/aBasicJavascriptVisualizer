@@ -23,7 +23,6 @@
 var a = 10;
 var vark = 10;
 
-<<<<<<< HEAD
     <p> Howdy Team</p>
 <!-- var a = 2+2;
 console.log(a); --> 
@@ -47,33 +46,6 @@ function c(){
 b();
 </textarea>
 <!-- var VAR_0a = 0;
-=======
-function b(){
-a = 5;  
-c();
-console.log(d);
-}
-function c(){
-d = 6;
-var a = 7;
-e = 9;
-function f(){
-    a = 2;
-}
-f();
-}
-b();
-              </textarea
-        >
-        <br />
-        <button id="runBtn">Run Code</button>
-      </div>
-
-      <div id="outputSection"></div>
-    </div>
-
-    <!-- var VAR_0a = 0;
->>>>>>> 19c466bf717d14108efcab56a9476f66aa9d00e8
 function FUNCT_0a(){
     var VAR_1a = 34;
     function FUNCT_1a(){
@@ -85,7 +57,6 @@ function FUNCT_0b(){
 }
 var VAR_0b = 3;
 console.log(""); -->
-<<<<<<< HEAD
 </body>
 <script>
 window.addEventListener("load", function(){
@@ -96,57 +67,6 @@ statements = breakIntoComponents(inputString);
 //findEOFLine(statements, 0);
 //console.log(findEOFLine(statements, 0));
 parseArray(statements);
-=======
-  </body>
-
-  <script>
-    // Get input string from input section
-    let runBtn;
-    let inputString;
-    let statements;
-    let frames;
-
-    function appMain() {
-      getElements();
-      addListeners();
-      statements = breakIntoComponents(inputString);
-      console.log(statements);
-      // parse(statements);
-      // runInterpreter();
-      // display();
-    }
-
-    function getElements() {
-      runBtn = document.getElementById("btnRunCode");
-    }
-
-    function addListeners() {
-      runBtn.addEventListener("click", fetchInput, false);
-    }
-
-    function fetchInput() {
-      inputString = document.querySelector("#inputTextArea").textContent;
-    }
-
-    class Frame {
-      //a frame may contain variables, functions....or...maybe a callStack...
-      id;
-      parent;
-      children;
-
-      variables; //is an map [key, value] = [variablename, value]
-      functions; //is an map ....//[functionName, functionFrame]
-
-      callStack;
-
-      constructor(aFunctionName, index) {
-        this.variables = new Map();
-        this.functions = new Map();
-        this.callStack = new Array();
-        this.id = aFunctionName;
-        this.frameIndex = index;
-      }
->>>>>>> 19c466bf717d14108efcab56a9476f66aa9d00e8
 
       addVariables(variable) {
         //accepts an object of variable type
@@ -195,7 +115,6 @@ parseArray(statements);
       newStatementStack.addNode(new value(3));
       console.log(newStatementStack.pop(1));
 
-<<<<<<< HEAD
 // var globalFrame = new frame("global", 0); //i guess the function name for global frame is global.
 // globalFrame.addVariables(new variable("integer1", 45));
 // globalFrame.addVariables(new variable("integer2", 34));
@@ -243,44 +162,6 @@ function isVarDeclartion(string){ //-1 for false, 0 var declared w/o assignment,
     //console.log(isVarDeclarNoAssignment.test(string), string);
     if(isVarDeclarNoAssignment.test(string)){
         return "isNullValue";
-=======
-      // console.log(newStatementStack.getStackNodeIndexOf(1));
-
-      var globalFrame = new frame("global", 0); //i guess the function name for global frame is global.
-      globalFrame.addVariables(new variable("integer1", 45));
-      globalFrame.addVariables(new variable("integer2", 34));
-      globalFrame.addVariables(new variable("string1", "hello"));
-      globalFrame.addStatements(newStatementStack);
-      globalFrame.addStatements(newStatementStack);
-      globalFrame.addStatements(newStatementStack);
-
-      var newFunction = new functions("newFunction");
-
-      globalFrame.addFunction(newFunction);
-      globalFrame.addFunction(newFunction);
-
-      console.log(globalFrame);
-    });
-    function parseArray(array) {
-      for (var index = 0; index < array.length; index++) {
-        if (isFunction(array[index])) {
-          var start = index;
-          //console.log("is function at index: " + index + " and ends on line "+ findEOFLine(array, start));
-        } else if (isVarDeclartion(array[index])) {
-          console.log(
-            "is variable declartion at index: " +
-              index +
-              " null declaration " +
-              isVarDeclartion(array[index])
-          );
-        }
-      }
-    }
-    function isFunction(string) {
-      var isFunctionDeclartion = new RegExp(/((function) +[a-z,A-Z,0-9]*)/gim);
-      //make improvements to this regexp here : https://regex101.com/r/9IiFmz/1
-      return isFunctionDeclartion.test(string);
->>>>>>> 19c466bf717d14108efcab56a9476f66aa9d00e8
     }
     function isVarDeclartion(string) {
       //-1 for false, 0 var declared w/o assignment, 1 var declared /w assignment
@@ -410,20 +291,12 @@ function isVarDeclartion(string){ //-1 for false, 0 var declared w/o assignment,
         return "error";
       }
     }
-<<<<<<< HEAD
 }
 class functions {
     name; //what is your name
     nextNode; //ie var x = 2 or another function call -->this needs to be mapped to 
     previousNode; //where did you come from?
     constructor(name, array){
-=======
-    class functions {
-      name; //what is your name
-      nextNode; //ie var x = 2 or another function call -->this needs to be mapped to
-      previousNode; //where did you come from?
-      constructor(name) {
->>>>>>> 19c466bf717d14108efcab56a9476f66aa9d00e8
         this.name = name;
       }
     }
