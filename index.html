@@ -1,38 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script   src="https://code.jquery.com/jquery-3.6.0.js"   integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="   crossorigin="anonymous"></script>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script
+      src="https://code.jquery.com/jquery-3.6.0.js"
+      integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+      crossorigin="anonymous"
+    ></script>
     <script src="tools.js"></script>
+    <link rel="stylesheet" href="style.css" />
     <title>parse</title>
-</head>
-<body>
+  </head>
+  <body>
+    <div id="mainWrapper">
+      <div id="inputSection">
+        <p>Howdy Team</p>
+        <!-- var a = 2+2;
+              console.log(a); -->
+        <textarea id="inputTextArea" style="width: 300px; height: 400px">
+var a = 10;
+var vark = 10;
 
-    <p> Howdy Team</p>
-<!-- var a = 2+2;
-console.log(a); --> 
-<textarea id="inputTextArea" style="width: 300px; height: 400px;"> 
-    var a = 10;
-    var vark = 10;
-    function   b(){
-      a = 5;  
-      c();
-      console.log(d);
-    }
-    function c(){
-      d = 6;
-      var a = 7;
-      e = 9;
-      function f(){
-        a = 2;
-      }
-      f();
-    }
-    b();
-</textarea>
-<!-- var VAR_0a = 0;
+function b(){
+a = 5;  
+c();
+console.log(d);
+}
+function c(){
+d = 6;
+var a = 7;
+e = 9;
+function f(){
+    a = 2;
+}
+f();
+}
+b();
+              </textarea
+        >
+        <br />
+        <button id="btnRunCode">Run Code</button>
+      </div>
+
+      <div id="outputSection"></div>
+    </div>
+
+    <!-- var VAR_0a = 0;
 function FUNCT_0a(){
     var VAR_1a = 34;
     function FUNCT_1a(){
@@ -44,249 +59,265 @@ function FUNCT_0b(){
 }
 var VAR_0b = 3;
 console.log(""); -->
-</body>
-<script>
-window.addEventListener("load", function(){
-//step 1, we get javascript code from user as a raw string.
-var inputString = document.querySelector("#inputTextArea").textContent;
-//now we split the inputString into its induvidual components
-statements = breakIntoComponents(inputString);
-//findEOFLine(statements, 0);
-//console.log(findEOFLine(statements, 0));
-//arseArray(statements);
+  </body>
 
-console.log(statements)
+  <script>
+    window.addEventListener("load", function () {
+      //step 1, we get javascript code from user as a raw string.
+      var inputString = document.querySelector("#inputTextArea").textContent;
+      //now we split the inputString into its induvidual components
+      statements = breakIntoComponents(inputString);
+      //findEOFLine(statements, 0);
+      //console.log(findEOFLine(statements, 0));
+      //arseArray(statements);
 
-///////////////////////////////////////building a statement then excuting it... this sets a new variable String xyz = "helloworld..."
-var newStatementStack = new statementStack(); //needs more work
-newStatementStack.addNode(new value(2));
-newStatementStack.addNode(new multiply());
-newStatementStack.addNode(new value(4));
-newStatementStack.addNode(new multiply());
-newStatementStack.addNode(new value(3));
-console.log(newStatementStack.pop(1));
+      console.log(statements);
 
-// console.log(newStatementStack.getStackNodeIndexOf(1));
+      ///////////////////////////////////////building a statement then excuting it... this sets a new variable String xyz = "helloworld..."
+      var newStatementStack = new statementStack(); //needs more work
+      newStatementStack.addNode(new value(2));
+      newStatementStack.addNode(new multiply());
+      newStatementStack.addNode(new value(4));
+      newStatementStack.addNode(new multiply());
+      newStatementStack.addNode(new value(3));
+      console.log(newStatementStack.pop(1));
 
-var globalFrame = new frame("global", 0); //i guess the function name for global frame is global.
-globalFrame.addVariables(new variable("integer1", 45));
-globalFrame.addVariables(new variable("integer2", 34));
-globalFrame.addVariables(new variable("string1", "hello"));
-globalFrame.addStatements(newStatementStack);
-globalFrame.addStatements(newStatementStack);
-globalFrame.addStatements(newStatementStack);
+      // console.log(newStatementStack.getStackNodeIndexOf(1));
 
-var newFunction = new functions("newFunction");
+      var globalFrame = new frame("global", 0); //i guess the function name for global frame is global.
+      globalFrame.addVariables(new variable("integer1", 45));
+      globalFrame.addVariables(new variable("integer2", 34));
+      globalFrame.addVariables(new variable("string1", "hello"));
+      globalFrame.addStatements(newStatementStack);
+      globalFrame.addStatements(newStatementStack);
+      globalFrame.addStatements(newStatementStack);
 
-globalFrame.addFunction(newFunction);
-globalFrame.addFunction(newFunction);
+      var newFunction = new functions("newFunction");
 
-console.log(globalFrame);
+      globalFrame.addFunction(newFunction);
+      globalFrame.addFunction(newFunction);
 
-}); 
-function parseArray(array){
-    for(var index = 0; index < array.length; index++){
-       if(isFunction(array[index])){
-        var start = index;
-        //console.log("is function at index: " + index + " and ends on line "+ findEOFLine(array, start));
-       }else if(isVarDeclartion(array[index])){
-        console.log("is variable declartion at index: " + index + " null declaration " + isVarDeclartion(array[index]));
-       }
+      console.log(globalFrame);
+    });
+    function parseArray(array) {
+      for (var index = 0; index < array.length; index++) {
+        if (isFunction(array[index])) {
+          var start = index;
+          //console.log("is function at index: " + index + " and ends on line "+ findEOFLine(array, start));
+        } else if (isVarDeclartion(array[index])) {
+          console.log(
+            "is variable declartion at index: " +
+              index +
+              " null declaration " +
+              isVarDeclartion(array[index])
+          );
+        }
+      }
     }
-}
-function isFunction(string){
-    var isFunctionDeclartion = new RegExp(/((function) +[a-z,A-Z,0-9]*)/gim);
-    //make improvements to this regexp here : https://regex101.com/r/9IiFmz/1
-    return isFunctionDeclartion.test(string);
-}
-function isVarDeclartion(string){ //-1 for false, 0 var declared w/o assignment, 1 var declared /w assignment
-    const isVariableDeclartionWithAssignment = new RegExp(/(var[ ]*[a-z, A-Z, 0-9]*[=][ ]*[a-z, A-Z, 0-9,+,-,*,/,",']*[;])/gm);
-    //improve this regexp here https://regex101.com/r/FjoVKw/1
-    const isVarDeclarNoAssignment = new RegExp(/(var[ ]*[a-z, A-Z, 0-9]*[;])/gm);
-    //improve this regexp here https://regex101.com/r/T97bkY/1 //please add onto links. dont delete any previous if youre making changes.
-    //console.log(isVarDeclarNoAssignment.test(string), string);
-    if(isVarDeclarNoAssignment.test(string)){
+    function isFunction(string) {
+      var isFunctionDeclartion = new RegExp(/((function) +[a-z,A-Z,0-9]*)/gim);
+      //make improvements to this regexp here : https://regex101.com/r/9IiFmz/1
+      return isFunctionDeclartion.test(string);
+    }
+    function isVarDeclartion(string) {
+      //-1 for false, 0 var declared w/o assignment, 1 var declared /w assignment
+      const isVariableDeclartionWithAssignment = new RegExp(
+        /(var[ ]*[a-z, A-Z, 0-9]*[=][ ]*[a-z, A-Z, 0-9,+,-,*,/,",']*[;])/gm
+      );
+      //improve this regexp here https://regex101.com/r/FjoVKw/1
+      const isVarDeclarNoAssignment = new RegExp(
+        /(var[ ]*[a-z, A-Z, 0-9]*[;])/gm
+      );
+      //improve this regexp here https://regex101.com/r/T97bkY/1 //please add onto links. dont delete any previous if youre making changes.
+      //console.log(isVarDeclarNoAssignment.test(string), string);
+      if (isVarDeclarNoAssignment.test(string)) {
         return "isNullValue";
-    }
-    if(isVariableDeclartionWithAssignment.test(string)==true){
+      }
+      if (isVariableDeclartionWithAssignment.test(string) == true) {
         return "hasValue";
+      }
     }
-}
-function evaluteStack(statementStack){
-    //we first figure out what kind of statement it is...variable declaration,
-}
-function findEOFLine(array, start){ //raw string -> breakIntoComponents() first. start is the index of the array where a function declartion is detected.
-    var count = 0;
-    var endLine = -1;
-    for(var x = start; x < array.length; x++){
-        if(array[x].search("{") > -1){
-            count = count + 1;
+    function evaluteStack(statementStack) {
+      //we first figure out what kind of statement it is...variable declaration,
+    }
+    function findEOFLine(array, start) {
+      //raw string -> breakIntoComponents() first. start is the index of the array where a function declartion is detected.
+      var count = 0;
+      var endLine = -1;
+      for (var x = start; x < array.length; x++) {
+        if (array[x].search("{") > -1) {
+          count = count + 1;
         }
-        if(array[x].search("}") > -1){
-            count = count - 1;
+        if (array[x].search("}") > -1) {
+          count = count - 1;
         }
-        if(count === 0 && array[x].search("}") > -1){
-            endLine = x;
-            break;
+        if (count === 0 && array[x].search("}") > -1) {
+          endLine = x;
+          break;
         }
         // console.log(count);
+      }
+      return endLine;
     }
-    return endLine;
-}
-function returnFunction(array){
-    
-}
-//**important notes: on a function call you will always need to initialize a the corrosponding frame... how?
-class frame { //a frame may contain variables, functions....or...maybe a callStack...
-    frameIndex;
-    id; //name
-    size;//this tracks something...im not sure yet
-    variables; //is an map [key, value] = [variablename, value]
-    functions; //is an map ....//[functionName, functionFrame]
-    previousNodeFrame //a frame can only have one parent right...? this always leads back to the global...
-    callStack;
-    constructor(aFunctionName, index){
+    function returnFunction(array) {}
+    //**important notes: on a function call you will always need to initialize a the corrosponding frame... how?
+    class frame {
+      //a frame may contain variables, functions....or...maybe a callStack...
+      frameIndex;
+      id; //name
+      size; //this tracks something...im not sure yet
+      variables; //is an map [key, value] = [variablename, value]
+      functions; //is an map ....//[functionName, functionFrame]
+      previousNodeFrame; //a frame can only have one parent right...? this always leads back to the global...
+      callStack;
+      constructor(aFunctionName, index) {
         this.variables = new Map();
-        this.functions = new Map(); 
+        this.functions = new Map();
         this.callStack = new Array();
         this.id = aFunctionName;
         this.frameIndex = index;
-    }
-    addVariables(variable){ //accepts an object of variable type
+      }
+      addVariables(variable) {
+        //accepts an object of variable type
         // this.variables.push([variable.name,variable.value]);
         this.variables.set(variable.name, variable.value);
-    }
-    addFunction(newFunction){//whenever you add a function (through encountering a function declaration token within this frame's context) you must create a new frame for everything in this function...i think
+      }
+      addFunction(newFunction) {
+        //whenever you add a function (through encountering a function declaration token within this frame's context) you must create a new frame for everything in this function...i think
         var newFrame = new frame(newFunction.name + "_" + this.frameIndex); //we can also return the new frame created.
         newFrame.previousNodeFrame = this;
         this.functions.set(newFunction.name, newFrame);
-    }
-    addStatements(statementStack){//is an object of statementStack
+      }
+      addStatements(statementStack) {
+        //is an object of statementStack
         this.callStack.push(statementStack);
-    }
-    returnChildFrame(id){
+      }
+      returnChildFrame(id) {
         return this.functions.get(id);
-    }
-    returnParentFrame(){
+      }
+      returnParentFrame() {
         return this.previousNodeFrame;
+      }
+      eval() {}
+      class;
     }
-    eval(){
-
-    }
-    class
-}
-class statementStack {
-    size; //size of this stack
-    statementHead; //always points back to the original head of this stack
-    statementTail;//always points to the tail of this stack
-    constructor(){ //of a variable declartion, //function declarations/calls, variable name, valid pointers to objects basically.
+    class statementStack {
+      size; //size of this stack
+      statementHead; //always points back to the original head of this stack
+      statementTail; //always points to the tail of this stack
+      constructor() {
+        //of a variable declartion, //function declarations/calls, variable name, valid pointers to objects basically.
         this.statementHead = null;
         this.statementTail = null;
         this.size = 0;
-    }
-    addNode(newNode){ //lets imagine the first 
-        if(this.statementHead === null){ //
-            this.statementHead = newNode;
-        }else if(this.statementTail === null){
-            this.statementTail = newNode;
-            this.statementTail.previousNode = this.statementHead;
-            this.statementHead.nextNode = this.statementTail;
-        }else{
-            // console.log("this newNode=", newNode);
-            this.statementTail.nextNode = newNode;
-            newNode.previousNode = this.statementTail;
-            this.statementTail = newNode;
+      }
+      addNode(newNode) {
+        //lets imagine the first
+        if (this.statementHead === null) {
+          //
+          this.statementHead = newNode;
+        } else if (this.statementTail === null) {
+          this.statementTail = newNode;
+          this.statementTail.previousNode = this.statementHead;
+          this.statementHead.nextNode = this.statementTail;
+        } else {
+          // console.log("this newNode=", newNode);
+          this.statementTail.nextNode = newNode;
+          newNode.previousNode = this.statementTail;
+          this.statementTail = newNode;
         }
         this.size++;
-    }
-    pop(index){ //if user provides no index input it pops the tail and returns it...
+      }
+      pop(index) {
+        //if user provides no index input it pops the tail and returns it...
         console.log(index);
-    }
-    getStackNodeIndexOf(index){
+      }
+      getStackNodeIndexOf(index) {
         var newStatementStack = null;
         var counter = 0;
         var temp = this.statementHead;
         // console.log(this);
-        while(temp.nextNode!= undefined){
-            temp = temp.nextNode;
-            if(counter === index){
-                return temp;
-            }
-            counter++;
+        while (temp.nextNode != undefined) {
+          temp = temp.nextNode;
+          if (counter === index) {
+            return temp;
+          }
+          counter++;
         }
         return "error";
+      }
     }
-}
-class functions {
-    name; //what is your name
-    nextNode; //ie var x = 2 or another function call -->this needs to be mapped to 
-    previousNode; //where did you come from?
-    constructor(name){
+    class functions {
+      name; //what is your name
+      nextNode; //ie var x = 2 or another function call -->this needs to be mapped to
+      previousNode; //where did you come from?
+      constructor(name) {
         this.name = name;
+      }
     }
-}
-class variable {
-    type; //int, float, double, String is type even needed in javascript?? for simplicity's sake, please lets just get rid of types and only use strings.
-    name; //what is your name?
-    value; //what value do you store?
-    nextNode; //next command. 
-    previousNode; //points to previous statement...? 
-    constructor(name, value){ //the minimum you need to declare a variable
+    class variable {
+      type; //int, float, double, String is type even needed in javascript?? for simplicity's sake, please lets just get rid of types and only use strings.
+      name; //what is your name?
+      value; //what value do you store?
+      nextNode; //next command.
+      previousNode; //points to previous statement...?
+      constructor(name, value) {
+        //the minimum you need to declare a variable
         this.name = name;
         this.value = value;
+      }
     }
-}
-class value{
-    value; //what is your value? a string? integer? float? i guess we could use javascript's amazingly flexible handling of types here...
-    previousNode; //points to an arithmatic operation or to a variable...
-    nextNode; //next node. a number sitting next to each other never makes sense. so a number have to be lead by and folowed by some sort of arithmatic 
-    constructor(value){
+    class value {
+      value; //what is your value? a string? integer? float? i guess we could use javascript's amazingly flexible handling of types here...
+      previousNode; //points to an arithmatic operation or to a variable...
+      nextNode; //next node. a number sitting next to each other never makes sense. so a number have to be lead by and folowed by some sort of arithmatic
+      constructor(value) {
         this.value = value;
-    }
-    addNode(newNode){
+      }
+      addNode(newNode) {
         newNode.previousNode = this;
         this.nextNode = newNode;
+      }
     }
-}
-class equal{
-    name;
-    previousNode; //points to an object of either value() or variable();
-    nextNode;//same here
-    constructor(){
+    class equal {
+      name;
+      previousNode; //points to an object of either value() or variable();
+      nextNode; //same here
+      constructor() {
         this.name = "=";
-    }
-    eval(){
+      }
+      eval() {
         this.previousNode.value = this.nextNode.value;
+      }
     }
-}
-class multiply{
-    name;
-    previousNode; //points to an object of either value() or variable();
-    nextNode;//same here
-    constructor(){
+    class multiply {
+      name;
+      previousNode; //points to an object of either value() or variable();
+      nextNode; //same here
+      constructor() {
         this.name = "*";
-    } 
-}
-class add{
-    name;
-    constructor(){
+      }
+    }
+    class add {
+      name;
+      constructor() {
         this.name = "+";
+      }
     }
-}
-class subtract{
-    name;
-    constructor(){
+    class subtract {
+      name;
+      constructor() {
         this.name = "-";
-    }
-    eval(){
+      }
+      eval() {
         return this.previousNode.value - this.nextNode.value;
+      }
     }
-}
-class divide{
-    name;
-    constructor(){
+    class divide {
+      name;
+      constructor() {
         this.name = "/";
+      }
     }
-}
-</script>
+  </script>
 </html>
