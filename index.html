@@ -17,27 +17,26 @@
     <div id="mainWrapper">
       <div id="inputSection">
         <p>Howdy Team</p>
-        <!-- var a = 2+2;
-              console.log(a); -->
         <textarea id="inputTextArea" style="width: 300px; height: 400px">
-var a = 10;
-var vark = 10;
+var globalNum0 = 0;
+var globalNum1 = 0;
 
-function b(){
-a = 5;  
-c();
-console.log(d);
+function oneLvlFunc0 () {
+  var oneDeepNum0 = 1;
 }
-function c(){
-d = 6;
-var a = 7;
-e = 9;
-function f(){
-    a = 2;
+
+function oneLvlFunc1 () {
+  var oneDeepNum1 = 1;
+  function twoLvlFunc0 () {
+    var twoDeepNum0 = 2;
+  }
 }
-f();
-}
-b();
+
+oneLvlFunc0();
+oneLvlFunc1();
+
+
+
               </textarea
         >
         <br />
@@ -46,22 +45,13 @@ b();
 
       <div id="outputSection"></div>
     </div>
-
-    <!-- var VAR_0a = 0;
-function FUNCT_0a(){
-    var VAR_1a = 34;
-    function FUNCT_1a(){
-        var VAR_2a = 34;
-    }
-}
-function FUNCT_0b(){
-
-}
-var VAR_0b = 3;
-console.log(""); -->
   </body>
 
   <script>
+    window.addEventListener("load", () => {
+      appMain();
+    });
+
     // Get input string from input section
     let runBtn;
     let inputString;
@@ -71,16 +61,16 @@ console.log(""); -->
     function appMain() {
       getElements();
       addListeners();
+      fetchInput();
       statements = breakIntoComponents(inputString);
       console.log(statements);
-      createAllFrames(statements);
-      // parse(statements);
+      createFrames(statements);
       // runInterpreter();
       // display();
     }
 
     function getElements() {
-      runBtn = document.getElementById("btnRunCode");
+      runBtn = document.getElementById("runBtn");
     }
 
     function addListeners() {
@@ -94,9 +84,8 @@ console.log(""); -->
     class Frame {
       id;
       parent;
-      children;
       variables;
-      functions;
+      functionFrames;
       callStack;
 
       constructor(aFunctionName, index) {}
@@ -105,76 +94,57 @@ console.log(""); -->
       addFunction(newFunction) {}
     }
 
-    function createAllFrames(statements) {
-      if(statements.length == 0) return;
+    function createFrames(statements) {
+      let idCounter = 0;
+      createFrame(statements, idCounter);
+    }
+
+    function createFrame(statements, idCounter) {
+      if (statements.length == 0) return;
 
       let newFrame = new Frame();
 
+      if (idCounter == 0) parent = "Global";
+      else id = idCounter;
+
       for (let i = 0; i < statements.length; i++) {
-            if (isFunctionDeclartion(statements[i])) {
-                createAllFrames(statements.splice(i, statements.length - 1));
-            } else if (isVariableDeclaration(statements, i)) {
-            // add variable
+        if (isFunctionDeclartion(statements[i])) {
+          // let functionSubstring = statements.slice(i, statements.length);
+          // let functionFrame = createFrame(functionSubstring, idCounter++);
+          // functionFrames.push(functionFrame);
+        } else if (isVariableDeclaration(statements, i)) {
+          console.log("Variable added to frame");
         }
+      }
+
+      return newFrame;
     }
 
-    // function createFrames() {
-    //     for(let i = 0; i < statements.length; i++) {
+    function isFunctionDeclartion(string) {
+      var isFunctionDecl = new RegExp(/((function) +[a-z,A-Z,0-9]*)/gim);
+      //make improvements to this regexp here : https://regex101.com/r/9IiFmz/1
+      return isFunctionDecl.test(string);
+    }
 
-    //     }
-    // }
-
-    // function createFrame() {
-    //     let newFrame = new Frame();
-
-    //     for (let i = 0; i < statements.length; i++) {
-    //         if (isFunctionDeclartion(statements[i])) {
-    //             createFrame(statements.splice(i, statements.length - 1));
-    //         } else if (isVariableDeclaration(statements, i)) {
-    //         // add variable
-    //     }
-    //   }
-    // }
-
-    // function createFramesTemp(statements) {
-
-    //   for (let i = 0; i < statements.length; i++) {
-    //     if (isFunctionDeclartion(statements[i])) {
-    //       // Skip to end of fn
-    //       let fnStart = i;
-    //       let fnEnd = findEndOfFunction(statements, i);
-    //       i = end;
-    //       // Good place for recursion on CreateFrame
-    //     } else if (isVariableDeclaration(statements, i)) {
-    //       // add variable
-    //     }
-    //   }
-    // }
-
-    // function parseArray(array) {
-    //   var GlobalFrame = new frame("Global", 0);
-    //   for (var index = 0; index < array.length; index++) {
-    //     if (isFunction(array[index])) {
-    //       var start = index;
-    //       var end = findEOFLine(array, index);
-    //       index = end;
-    //       var functionStack = returnFunctionStack(array, start, end);
-    //       var newFunction = new functions(array[start + 1], functionStack);
-    //       GlobalFrame.addFunctionDefinition(newFunction, functionStack);
-    //     } else if (isVarDeclartion(array[index])) {
-    //       console.log(
-    //         "is variable declartion at index: " +
-    //           index +
-    //           " null declaration " +
-    //           isVarDeclartion(array[index])
-    //       );
-    //     }
-    //   }
-    //   console.log(GlobalFrame);
-    // }
+    function isVariableDeclaration(string) {
+      //-1 for false, 0 var declared w/o assignment, 1 var declared /w assignment
+      const declartionWithAssignment = new RegExp(
+        /(var[ ]*[a-z, A-Z, 0-9]*[=][ ]*[a-z, A-Z, 0-9,+,-,*,/,",']*[;])/gm
+      );
+      //improve this regexp here https://regex101.com/r/FjoVKw/1
+      const declarNoAssignment = new RegExp(/(var[ ]*[a-z, A-Z, 0-9]*[;])/gm);
+      //improve this regexp here https://regex101.com/r/T97bkY/1 //please add onto links. dont delete any previous if youre making changes.
+      //console.log(isVarDeclarNoAssignment.test(string), string);
+      if (declarNoAssignment.test(string)) {
+        return "isNullValue";
+      }
+      if (declartionWithAssignment.test(string) == true) {
+        return "hasValue";
+      }
+    }
   </script>
 
-  <script>
+  <!-- <script>
     window.addEventListener("load", function () {
       ///////////////////////////////////////building a statement then excuting it... this sets a new variable String xyz = "helloworld..."
       var newStatementStack = new statementStack(); //needs more work
@@ -352,7 +322,7 @@ console.log(""); -->
     }
     class functions {
       name; //what is your name
-      nextNode; //ie var x = 2 or another function call -->this needs to be mapped to
+      nextNode; //ie var x = 2 or another function call ->this needs to be mapped to
       previousNode; //where did you come from?
       constructor(name) {
         this.name = name;
@@ -422,5 +392,5 @@ console.log(""); -->
         this.name = "/";
       }
     }
-  </script>
+  </script> -->
 </html>

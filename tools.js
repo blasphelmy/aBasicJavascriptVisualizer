@@ -26,7 +26,7 @@ function splitIntoTokens(array) {
   var newArray = new Array();
 
   for (var index = 0; index < array.length; index++) {
-    if (isFunction(array[index])) {
+    if (isFunctionDeclartion(array[index])) {
       var temp = array[index].split(/(function)/gm);
       console.log("temp", temp);
       for (var x = 0; x < temp.length; x++) {
