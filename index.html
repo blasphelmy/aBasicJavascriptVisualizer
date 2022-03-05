@@ -23,18 +23,12 @@ console.log(a); -->
 function a(){
   var x = 10;
 }
-function b(){
-  var y = 9;
-  function xya(){
-
-  }
-}
+a();
 a();
 var a = 10;
 var b = 3 + 3;
 var c = a + b + 3;
 abc = a + b + c;
-b();
 </textarea
 >
         <br />
@@ -173,10 +167,12 @@ window.addEventListener("load", function () {
 function parseArray(start, end, array, newFrameObject) {
   var Frame = newFrameObject;
   for (var index = start; index < array.length || index < end; index++) {
+    
     if (isFunctionDeclarion(array[index])) {
       var start = index;
       var end = findEOFLine(array, index);
-      var newFunction = new functions(array[index+1], start+2, end);
+      var newFunction = new functions(Frame, array[index+1], start+2, end);
+      //console.log(newFunction);
       Frame.addFunctionDefinition(newFunction, newFunction);
       index = end;
     } else if (isVarDeclartion(array[index])) {
@@ -194,74 +190,25 @@ function parseArray(start, end, array, newFrameObject) {
       //var newVarible = new variable(keyValuePair[0], eval(keyValuePair[1])); //cheater!
       //Frame.addVariables(newVarible);
       index++;
+      index++;
     }else if(detectStatementVariableReassignment(array[index])){
       console.log("variable reassigbment on line ", index);
     }
     else if(detectFunctionCalls(array[index])){
       var newFrame = new frame("FRAME__" + array[index]+index, index);
-      newFrame.previousNodeFrame = Frame;
       console.log(array[index]);
       console.log(newFrame);
 
       var functionCalled = Frame.returnFunctionDefinitions(array[index]);
-      console.log("function called", functionCalled);
+      newFrame = functionCalled.Frame;
+      //console.log("function called", functionCalled);
+      //parseArray(functionCalled.start, functionCalled.end, array, newFrame);
     }
+  }
+  if(Frame.id != "Global"){
+    parseArray(Frame.returnIndex, array.length,)
   }
   console.log(Frame);
-}
-function detectFunctionCalls(string){
-  const detectFunctCalls = new RegExp(/(^[a-z,A-Z,0-9]*)+([ ]*)+([(])+([a-z,A-Z,0-9]*)+([)])+([;])/gm);
-  //make improvements here https://regex101.com/r/MqSsCA/1
-  if(detectFunctCalls.test(string)){
-    return true;
-  }
-  else{
-    return false;
-  }
-}
-function breakExpressionIntoComponents(expression){ //expression should be a string.
-  const basicArithmatics =  new RegExp(/([+/*-])/gm);
-  var newComponentsArray = expression.split(basicArithmatics);
-  return newComponentsArray;
-}
-function assignExpressionObjects(newComponentsArray){
-
-}
-  function isFunctionDeclarion(string) {
-    var isFunctionDeclartion = new RegExp(/((function) +[a-z,A-Z,0-9]*)/gim);
-    //make improvements to this regexp here : https://regex101.com/r/9IiFmz/1
-    return isFunctionDeclartion.test(string);
-  }
-  function isVarDeclartion(string){
-    var isVar = new RegExp(/var/gim);
-    //make improvements to this regexp here : https://regex101.com/r/9IiFmz/1
-    return isVar.test(string);
-  }
-  function detectStatementVariableReassignment(string){
-    const detectVarReassignStatement = new RegExp(/^[a-zA-Z,0-9]*[ ]*[=][ , a-zA-Z, 0-9, *, /, +, -, ;]*/gm);
-    //improve this regex here: https://regex101.com/r/Gp6J3c/1
-    return detectVarReassignStatement.test(string);
-  }
-  function typeOfVariabe(string) {
-    //-1 for false, 0 var declared w/o assignment, 1 var declared /w assignment
-    const isVariableDeclartionWithAssignment = new RegExp(
-      /(var[ ]*[a-z, A-Z, 0-9]*[=][ ]*[a-z, A-Z, 0-9,+,-,*,/,",']*[;])/gm
-    );
-    //improve this regexp here https://regex101.com/r/FjoVKw/1
-    const isVarDeclarNoAssignment = new RegExp(
-      /(var[ ]*[a-z, A-Z, 0-9]*[;])/gm
-    );
-    //improve this regexp here https://regex101.com/r/T97bkY/1 //please add onto links. dont delete any previous if youre making changes.
-    //console.log(isVarDeclarNoAssignment.test(string), string);
-    if (isVarDeclarNoAssignment.test(string)) {
-      return "isNullValue";
-    }
-    if (isVariableDeclartionWithAssignment.test(string) == true) {
-      return "hasValue";
-    }
-  }
-function evaluteStack(statementStack) {
-  //we first figure out what kind of statement it is...variable declaration,
 }
 function returnFunction(array) {}
 //**important notes: on a function call you will always need to initialize a the corrosponding frame... how?
@@ -271,14 +218,15 @@ class frame {
   size; //this tracks something...im not sure yet
   variables; //is an map [key, value] = [variablename, value]
   functions; //is an map ....//[functionName, functionFrame]
-  previousNodeFrame; //a frame can only have one parent right...? this always leads back to the global...
   callStack;
+  previousNodeFrame;
+  returnIndex;
   constructor(aFunctionName, index) {
     this.variables = new Map();
     this.functions = new Map();
     this.callStack = new Array();
     this.id = aFunctionName;
-    this.frameIndex = index;
+    this.returnIndex = index + 1;
   }
   addVariables(variable) {
     //accepts an object of variable type
@@ -357,7 +305,9 @@ class functions {
   name; //what is your name
   start; //index of array
   end; //end of array
-  constructor(name, start, end) {
+  Frame; //a frame can only have one parent right...? this always leads back to the global...
+  constructor(frame, name, start, end) {
+    this.Frame = frame;
     this.name = name;
     this.start = start;
     this.end = end;
