@@ -25,10 +25,13 @@ function a(){
 }
 function b(){
   var y = 9;
+  function xya(){
+
+  }
 }
-x();
+a();
 var a = 10;
-var h = 12;
+var h = 12+(2*3);
 var abc = 2+2;
 </textarea
 >
@@ -172,13 +175,14 @@ function parseArray(array) {
       var start = index;
       var end = findEOFLine(array, index);
       index = end;
-      var functionStack = returnFunctionStack(array, start, end);
+      var functionStack = returnFunctionStack(array, start+2, end);
       var newFunction = new functions(array[start+1], functionStack);
       GlobalFrame.addFunctionDefinition(newFunction, functionStack);
     } else if (isVarDeclartion(array[index])) {
       console.log("is variable declartion at index: " + index);
       var keyValuePair = array[index+1].split("=");
-      var newVarible = new variable(keyValuePair[0], eval(keyValuePair[1]));
+      keyValuePair[0] = keyValuePair[0].trim();
+      var newVarible = new variable(keyValuePair[0], eval(keyValuePair[1])); //cheater!
       GlobalFrame.addVariables(newVarible);
     }
   }

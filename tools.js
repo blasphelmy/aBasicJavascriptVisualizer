@@ -57,7 +57,7 @@ function combineSemiColonsWithPreviousLines(array) {
 }
 function trimStringInArray(array) {
   for (index = 0; index < array.length; index++) {
-    array[index].trim();
+    array[index] = array[index].trim();
   }
   return array;
 }
