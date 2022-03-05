@@ -73,6 +73,7 @@ console.log(""); -->
       addListeners();
       statements = breakIntoComponents(inputString);
       console.log(statements);
+      createFrames(statements);
       // parse(statements);
       // runInterpreter();
       // display();
@@ -100,27 +101,37 @@ console.log(""); -->
 
       constructor(aFunctionName, index) {}
 
-      addVariables(variable) {}
+      addVariable(variable) {}
       addFunction(newFunction) {}
-      addStatements(statementStack) {}
-      returnChildFrame(id) {}
-      returnParentFrame() {}
-      eval() {}
+    }
+
+    function createFrames(statements) {
+      for (let i = 0; i < statements.length; i++) {
+        if (isFunctionDeclartion(statements[i])) {
+          var fnStart = i;
+        }
+      }
+    }
+
+    function parseArray(array) {
+      for (var index = 0; index < array.length; index++) {
+        if (isFunction(array[index])) {
+          var start = index;
+          //console.log("is function at index: " + index + " and ends on line "+ findEOFLine(array, start));
+        } else if (isVarDeclartion(array[index])) {
+          console.log(
+            "is variable declartion at index: " +
+              index +
+              " null declaration " +
+              isVarDeclartion(array[index])
+          );
+        }
+      }
     }
   </script>
 
   <script>
     window.addEventListener("load", function () {
-      //step 1, we get javascript code from user as a raw string.
-      var inputString = document.querySelector("#inputTextArea").textContent;
-      //now we split the inputString into its induvidual components
-      statements = breakIntoComponents(inputString);
-      //findEOFLine(statements, 0);
-      //console.log(findEOFLine(statements, 0));
-      //arseArray(statements);
-
-      console.log(statements);
-
       ///////////////////////////////////////building a statement then excuting it... this sets a new variable String xyz = "helloworld..."
       var newStatementStack = new statementStack(); //needs more work
       newStatementStack.addNode(new value(2));
