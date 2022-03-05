@@ -20,22 +20,16 @@
 <!-- var a = 2+2;
 console.log(a); -->
 <textarea id="inputTextArea" style="width: 300px; height: 400px">
+function a(){
+  var x = 10;
+}
+function b(){
+  var y = 9;
+}
+x();
 var a = 10;
-function   b(){
-a = 5;  
-c();
-console.log(d);
-}
-function c(){
-d = 6;
-var a = 7;
-e = 9;
-function f(){
-a = 2;
-}
-f();
-}
-b();
+var h = 12;
+var abc = 2+2;
 </textarea
 >
         <br />
@@ -174,7 +168,7 @@ window.addEventListener("load", function () {
 function parseArray(array) {
   var GlobalFrame = new frame("Global", 0);
   for (var index = 0; index < array.length; index++) {
-    if (isFunction(array[index])) {
+    if (isFunctionDeclarion(array[index])) {
       var start = index;
       var end = findEOFLine(array, index);
       index = end;
@@ -182,12 +176,10 @@ function parseArray(array) {
       var newFunction = new functions(array[start+1], functionStack);
       GlobalFrame.addFunctionDefinition(newFunction, functionStack);
     } else if (isVarDeclartion(array[index])) {
-      console.log(
-        "is variable declartion at index: " +
-          index +
-          " null declaration " +
-          isVarDeclartion(array[index])
-      );
+      console.log("is variable declartion at index: " + index);
+      var keyValuePair = array[index+1].split("=");
+      var newVarible = new variable(keyValuePair[0], eval(keyValuePair[1]));
+      GlobalFrame.addVariables(newVarible);
     }
   }
   console.log(GlobalFrame);
@@ -199,12 +191,17 @@ function returnFunctionStack(array, start, end){
   }
   return newArray;
 }
-  function isFunction(string) {
+  function isFunctionDeclarion(string) {
     var isFunctionDeclartion = new RegExp(/((function) +[a-z,A-Z,0-9]*)/gim);
     //make improvements to this regexp here : https://regex101.com/r/9IiFmz/1
     return isFunctionDeclartion.test(string);
   }
-  function isVarDeclartion(string) {
+  function isVarDeclartion(string){
+    var isVar = new RegExp(/var/gim);
+    //make improvements to this regexp here : https://regex101.com/r/9IiFmz/1
+    return isVar.test(string);
+  }
+  function typeOfVariabe(string) {
     //-1 for false, 0 var declared w/o assignment, 1 var declared /w assignment
     const isVariableDeclartionWithAssignment = new RegExp(
       /(var[ ]*[a-z, A-Z, 0-9]*[=][ ]*[a-z, A-Z, 0-9,+,-,*,/,",']*[;])/gm
