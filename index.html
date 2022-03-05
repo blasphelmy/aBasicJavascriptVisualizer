@@ -21,14 +21,25 @@
 console.log(a); -->
 <textarea id="inputTextArea" style="width: 300px; height: 400px">
 function a(){
-  var x = 10;
+  var x = 10 + 3;
+}
+function xyz(){
+  var x = 10 + 3;
+  function asf(){
+
+    
+  }
+}
+function asf(){
+
+    
 }
 a();
 a();
 var a = 10;
 var b = 3 + 3;
-var c = a + b + 3;
-abc = a + b + c;
+var c = 3*4+3;
+abc = 8+0+0+8;
 </textarea
 >
         <br />
@@ -118,7 +129,7 @@ console.log(""); -->
       returnChildFrame(id) {
         return this.functions.get(id);
       }
-      returnParentFrame() {
+      get returnParentFrame() {
         return this.previousNodeFrame;
       }
       eval() {}
@@ -134,7 +145,7 @@ window.addEventListener("load", function () {
   statements = breakIntoComponents(inputString);
   //findEOFLine(statements, 0);
   //console.log(findEOFLine(statements, 0));
-  parseArray(0, statements.length ,statements, new frame("Global", 0));
+  parseArray(0,statements, new frame("Global", statements.length));
 
   console.log(statements);
 
@@ -164,19 +175,92 @@ window.addEventListener("load", function () {
 
   // console.log(globalFrame);
 });
-function parseArray(start, end, array, newFrameObject) {
-  var Frame = newFrameObject;
-  for (var index = start; index < array.length || index < end; index++) {
-    
-    if (isFunctionDeclarion(array[index])) {
+class frame {
+  //a frame may contain variables, functions....or...maybe a callStack...
+  id; //name
+  size; //this tracks something...im not sure yet
+  variables; //is an map [key, value] = [variablename, value]
+  functionDefinitions; //is an map ....//[functionName, functionFrame]
+  childrenFrames;
+  callStack;
+  previousNodeFrame;
+  returnToIndex;
+  constructor(aFunctionName, index) {
+    this.variables = new Map();
+    this.functionDefinitions = new Map();
+    this.childrenFrames = new Array();
+    this.id = aFunctionName;
+    this.returnToIndex = index + 1;
+  }
+  addVariables(variable) {
+    //accepts an object of variable type
+    // this.variables.push([variable.name,variable.value]);
+    this.variables.set(variable.name, variable.value);
+  }
+  addFunctionDefinition(newFunction) {
+    //whenever you add a function (through encountering a function declaration token within this frame's context)
+    this.functionDefinitions.set(newFunction.name, newFunction);
+  }
+  addChildFrame(childFrame){
+    this.childrenFrames.push(childFrame);
+  }
+  addStatements(statementStack) {
+    //is an object of statementStack
+    this.callStack.push(statementStack);
+  }
+  returnFunctionDefinitions(functionCall) {
+    var newCall = functionCall.split(";");
+    return this.functionDefinitions.get(newCall[0]);
+  }
+  returnParentFrame() {
+    return this.previousNodeFrame;
+  }
+  peak(){
+    return this;
+  }
+  get returnPreviousFrame(){
+    return this.previousNodeFrame;
+  }
+  get returnToIndex(){
+    return parseInt(this.returnToIndex);
+  }
+}
+class functions {
+  name; //what is your name
+  start; //index of array
+  end; //end of array...
+  constructor(name, start, end) {
+    this.name = name;
+    this.start = start;
+    this.end = end;
+  }
+  get start(){
+    return parseInt(this.start);
+  }
+  get end(){
+    return parseInt(end);
+  }
+}
+function parseArray(start, array, Frame) {
+  //var Frame = newFrameObject;
+  for (var index = start; index <=Frame.returnToIndex; index++) {
+   console.log("index ", index);
+   if(index === Frame.returnToIndex && Frame.id != "Global"){
+      var newFrame = Frame.previousNodeFrame;
+      var start = Frame.returnToIndex;
+      parseArray(start, array, newFrame)
+    }
+    //DETECT FUNCTION DECLATION TOKEN
+   if (isFunctionDeclarion(array[index])) {
       var start = index;
       var end = findEOFLine(array, index);
-      var newFunction = new functions(Frame, array[index+1], start+2, end);
+      var newFunction = new functions(array[index+ 1], start+2, end);
       //console.log(newFunction);
-      Frame.addFunctionDefinition(newFunction, newFunction);
+      Frame.addFunctionDefinition(newFunction);
       index = end;
+      //DETECT VARIABLE DECLATION TOKEN
     } else if (isVarDeclartion(array[index])) {
-      //console.log("is variable declartion at index: " + index);
+      console.log("is variable declartion at index: " + index);
       var keyValuePair = array[index+1].split("=");
       keyValuePair[0] = keyValuePair[0].trim();
       
@@ -187,74 +271,29 @@ function parseArray(start, end, array, newFrameObject) {
 
       // console.log(expression);
       
-      //var newVarible = new variable(keyValuePair[0], eval(keyValuePair[1])); //cheater!
-      //Frame.addVariables(newVarible);
+      var newVarible = new variable(keyValuePair[0], eval(keyValuePair[1])); //cheater!
+      Frame.addVariables(newVarible);
       index++;
-      index++;
+      //DETECT VARIABLE REASSIGNMENT
     }else if(detectStatementVariableReassignment(array[index])){
       console.log("variable reassigbment on line ", index);
     }
     else if(detectFunctionCalls(array[index])){
       var newFrame = new frame("FRAME__" + array[index]+index, index);
-      console.log(array[index]);
-      console.log(newFrame);
-
+     // console.log(array[index]);
       var functionCalled = Frame.returnFunctionDefinitions(array[index]);
-      newFrame = functionCalled.Frame;
+      newFrame.previousNodeFrame = Frame;
+      Frame.addChildFrame(newFrame);
+      //newFrame = functionCalled.Frame;
       //console.log("function called", functionCalled);
-      //parseArray(functionCalled.start, functionCalled.end, array, newFrame);
+      //console.log("call start ", functionCalled);
+      parseArray(functionCalled.getStart, array, newFrame);
     }
-  }
-  if(Frame.id != "Global"){
-    parseArray(Frame.returnIndex, array.length,)
   }
   console.log(Frame);
 }
 function returnFunction(array) {}
 //**important notes: on a function call you will always need to initialize a the corrosponding frame... how?
-class frame {
-  //a frame may contain variables, functions....or...maybe a callStack...
-  id; //name
-  size; //this tracks something...im not sure yet
-  variables; //is an map [key, value] = [variablename, value]
-  functions; //is an map ....//[functionName, functionFrame]
-  callStack;
-  previousNodeFrame;
-  returnIndex;
-  constructor(aFunctionName, index) {
-    this.variables = new Map();
-    this.functions = new Map();
-    this.callStack = new Array();
-    this.id = aFunctionName;
-    this.returnIndex = index + 1;
-  }
-  addVariables(variable) {
-    //accepts an object of variable type
-    // this.variables.push([variable.name,variable.value]);
-    this.variables.set(variable.name, variable.value);
-  }
-  addFunctionDefinition(newFunction, functionStack) {
-    //whenever you add a function (through encountering a function declaration token within this frame's context)
-    this.functions.set(newFunction.name, functionStack);
-  }
-  addStatements(statementStack) {
-    //is an object of statementStack
-    this.callStack.push(statementStack);
-  }
-  returnFunctionDefinitions(functionCall) {
-    var newCall = functionCall.split(";");
-    return this.functions.get(newCall[0]);
-  }
-  returnParentFrame() {
-    return this.previousNodeFrame;
-  }
-  peak(){
-    return this;
-  }
-  returnPreviousFrame(){
-    return this.previousNodeFrame;
-  }
-}
 class statementStack {
   size; //size of this stack
   statementHead; //always points back to the original head of this stack
@@ -299,18 +338,6 @@ class statementStack {
       counter++;
     }
     return "error";
-  }
-}
-class functions {
-  name; //what is your name
-  start; //index of array
-  end; //end of array
-  Frame; //a frame can only have one parent right...? this always leads back to the global...
-  constructor(frame, name, start, end) {
-    this.Frame = frame;
-    this.name = name;
-    this.start = start;
-    this.end = end;
   }
 }
 class variable {
