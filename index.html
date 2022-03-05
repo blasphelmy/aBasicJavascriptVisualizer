@@ -73,7 +73,7 @@ console.log(""); -->
       addListeners();
       statements = breakIntoComponents(inputString);
       console.log(statements);
-      createFrames(statements);
+      createAllFrames(statements);
       // parse(statements);
       // runInterpreter();
       // display();
@@ -103,6 +103,19 @@ console.log(""); -->
 
       addVariable(variable) {}
       addFunction(newFunction) {}
+    }
+
+    function createAllFrames(statements) {
+      if(statements.length == 0) return;
+
+      let newFrame = new Frame();
+
+      for (let i = 0; i < statements.length; i++) {
+            if (isFunctionDeclartion(statements[i])) {
+                createAllFrames(statements.splice(i, statements.length - 1));
+            } else if (isVariableDeclaration(statements, i)) {
+            // add variable
+        }
     }
 
     // function createFrames() {
