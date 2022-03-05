@@ -25,33 +25,20 @@ function breakIntoComponents(inputString) {
 function splitIntoTokens(array) {
   var newArray = new Array();
 
-    for(var index = 0; index< array.length; index++){
-        if(array[index].match(/(function[ ]*)/gm)){
-            var temp = array[index].split(/(function[ ]*)/gm);
-            for(var x = 0; x < temp.length; x++){
-                newArray.push(temp[x]);
-            }
-        }
-        else if(array[index].match(/(var[ ]*)/gm)){
-            var temp = array[index].split(/(var)[ ]/gm);
-            for(var x = 0; x < temp.length; x++){
-                newArray.push(temp[x]);
-            }
-        }
-        else{
-            newArray.push(array[index]);
-        }
-    return newArray;
-}
-function combineSemiColonsWithPreviousLines(array){
-    var newArray = new Array();
-    for(index = 0; index < array.length; index++){
-        if(array[index].match(";")){
-            var temp = array[index - 1] + array[index];
-            newArray.push(temp);
-        }else if(!array[index+1].match(";")){
-            newArray.push(array[index]);
-        }
+  for (var index = 0; index < array.length; index++) {
+    if (array[index].match(/(function[ ])/gm)) {
+      var temp = array[index].split(/(function[ ])/gm);
+      for (var x = 0; x < temp.length; x++) {
+        newArray.push(temp[x]);
+      }
+    }
+    else if (array[index].match(/(var[ ]*)/gm)) {
+      var temp = array[index].split(/(var)[ ]/gm);
+      for (var x = 0; x < temp.length; x++) {
+        newArray.push(temp[x]);
+      }
+    } else {
+      newArray.push(array[index]);
     }
   }
   return newArray;
