@@ -31,9 +31,10 @@ function b(){
 }
 a();
 var a = 10;
-var h = 12+(2*3);
-var abc = 2+2;
-abc = 378 * 3;
+var b = 3 + 3;
+var c = a + b + 3;
+abc = a + b + c;
+b();
 </textarea
 >
         <br />
@@ -85,10 +86,10 @@ console.log(""); -->
     function fetchInput() {
       inputString = document.querySelector("#inputTextArea").textContent;
     }
-
+    var frameCount = 0;
     class Frame {
       //a frame may contain variables, functions....or...maybe a callStack...
-      id;
+      id; 
       parent;
       children;
 
@@ -139,7 +140,7 @@ window.addEventListener("load", function () {
   statements = breakIntoComponents(inputString);
   //findEOFLine(statements, 0);
   //console.log(findEOFLine(statements, 0));
-  parseArray(statements);
+  parseArray(0, statements.length ,statements, new frame("Global", 0));
 
   console.log(statements);
 
@@ -169,35 +170,62 @@ window.addEventListener("load", function () {
 
   // console.log(globalFrame);
 });
-function parseArray(array) {
-  var GlobalFrame = new frame("Global", 0);
-  for (var index = 0; index < array.length; index++) {
+function parseArray(start, end, array, newFrameObject) {
+  var Frame = newFrameObject;
+  for (var index = start; index < array.length || index < end; index++) {
     if (isFunctionDeclarion(array[index])) {
       var start = index;
       var end = findEOFLine(array, index);
+      var newFunction = new functions(array[index+1], start+2, end);
+      Frame.addFunctionDefinition(newFunction, newFunction);
       index = end;
-      var functionStack = returnFunctionStack(array, start+2, end);
-      var newFunction = new functions(array[start+1], functionStack);
-      GlobalFrame.addFunctionDefinition(newFunction, functionStack);
     } else if (isVarDeclartion(array[index])) {
-      console.log("is variable declartion at index: " + index);
+      //console.log("is variable declartion at index: " + index);
       var keyValuePair = array[index+1].split("=");
       keyValuePair[0] = keyValuePair[0].trim();
-      var newVarible = new variable(keyValuePair[0], eval(keyValuePair[1])); //cheater!
-      GlobalFrame.addVariables(newVarible);
+      
+      var variableName = keyValuePair[0];
+      var expression = keyValuePair[1];
+
+      expression = breakExpressionIntoComponents(expression);
+
+      // console.log(expression);
+      
+      //var newVarible = new variable(keyValuePair[0], eval(keyValuePair[1])); //cheater!
+      //Frame.addVariables(newVarible);
       index++;
     }else if(detectStatementVariableReassignment(array[index])){
       console.log("variable reassigbment on line ", index);
     }
+    else if(detectFunctionCalls(array[index])){
+      var newFrame = new frame("FRAME__" + array[index]+index, index);
+      newFrame.previousNodeFrame = Frame;
+      console.log(array[index]);
+      console.log(newFrame);
+
+      var functionCalled = Frame.returnFunctionDefinitions(array[index]);
+      console.log("function called", functionCalled);
+    }
   }
-  console.log(GlobalFrame);
+  console.log(Frame);
 }
-function returnFunctionStack(array, start, end){
-  var newArray = new Array();
-  for(index = start; index <= end; index++){
-    newArray.push(array[index]);
+function detectFunctionCalls(string){
+  const detectFunctCalls = new RegExp(/(^[a-z,A-Z,0-9]*)+([ ]*)+([(])+([a-z,A-Z,0-9]*)+([)])+([;])/gm);
+  //make improvements here https://regex101.com/r/MqSsCA/1
+  if(detectFunctCalls.test(string)){
+    return true;
   }
-  return newArray;
+  else{
+    return false;
+  }
+}
+function breakExpressionIntoComponents(expression){ //expression should be a string.
+  const basicArithmatics =  new RegExp(/([+/*-])/gm);
+  var newComponentsArray = expression.split(basicArithmatics);
+  return newComponentsArray;
+}
+function assignExpressionObjects(newComponentsArray){
+
 }
   function isFunctionDeclarion(string) {
     var isFunctionDeclartion = new RegExp(/((function) +[a-z,A-Z,0-9]*)/gim);
@@ -235,30 +263,10 @@ function returnFunctionStack(array, start, end){
 function evaluteStack(statementStack) {
   //we first figure out what kind of statement it is...variable declaration,
 }
-function findEOFLine(array, start) {
-  //raw string -> breakIntoComponents() first. start is the index of the array where a function declartion is detected.
-  var count = 0;
-  var endLine = -1;
-  for (var x = start; x < array.length; x++) {
-    if (array[x].search("{") > -1) {
-      count = count + 1;
-    }
-    if (array[x].search("}") > -1) {
-      count = count - 1;
-    }
-    if (count === 0 && array[x].search("}") > -1) {
-      endLine = x;
-      break;
-    }
-    // console.log(count);
-  }
-  return endLine;
-}
 function returnFunction(array) {}
 //**important notes: on a function call you will always need to initialize a the corrosponding frame... how?
 class frame {
   //a frame may contain variables, functions....or...maybe a callStack...
-  frameIndex;
   id; //name
   size; //this tracks something...im not sure yet
   variables; //is an map [key, value] = [variablename, value]
@@ -285,14 +293,19 @@ class frame {
     //is an object of statementStack
     this.callStack.push(statementStack);
   }
-  returnChildFrame(id) {
-    return this.functions.get(id);
+  returnFunctionDefinitions(functionCall) {
+    var newCall = functionCall.split(";");
+    return this.functions.get(newCall[0]);
   }
   returnParentFrame() {
     return this.previousNodeFrame;
   }
-  eval() {}
-  class;
+  peak(){
+    return this;
+  }
+  returnPreviousFrame(){
+    return this.previousNodeFrame;
+  }
 }
 class statementStack {
   size; //size of this stack
@@ -342,10 +355,12 @@ class statementStack {
 }
 class functions {
   name; //what is your name
-  nextNode; //ie var x = 2 or another function call -->this needs to be mapped to
-  previousNode; //where did you come from?
-  constructor(name) {
+  start; //index of array
+  end; //end of array
+  constructor(name, start, end) {
     this.name = name;
+    this.start = start;
+    this.end = end;
   }
 }
 class variable {
