@@ -33,6 +33,7 @@ a();
 var a = 10;
 var h = 12+(2*3);
 var abc = 2+2;
+abc = 378 * 3;
 </textarea
 >
         <br />
@@ -184,6 +185,9 @@ function parseArray(array) {
       keyValuePair[0] = keyValuePair[0].trim();
       var newVarible = new variable(keyValuePair[0], eval(keyValuePair[1])); //cheater!
       GlobalFrame.addVariables(newVarible);
+      index++;
+    }else if(detectStatementVariableReassignment(array[index])){
+      console.log("variable reassigbment on line ", index);
     }
   }
   console.log(GlobalFrame);
@@ -204,6 +208,11 @@ function returnFunctionStack(array, start, end){
     var isVar = new RegExp(/var/gim);
     //make improvements to this regexp here : https://regex101.com/r/9IiFmz/1
     return isVar.test(string);
+  }
+  function detectStatementVariableReassignment(string){
+    const detectVarReassignStatement = new RegExp(/^[a-zA-Z,0-9]*[ ]*[=][ , a-zA-Z, 0-9, *, /, +, -, ;]*/gm);
+    //improve this regex here: https://regex101.com/r/Gp6J3c/1
+    return detectVarReassignStatement.test(string);
   }
   function typeOfVariabe(string) {
     //-1 for false, 0 var declared w/o assignment, 1 var declared /w assignment
