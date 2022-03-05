@@ -105,29 +105,60 @@ console.log(""); -->
       addFunction(newFunction) {}
     }
 
-    function createFrames(statements) {
-      for (let i = 0; i < statements.length; i++) {
-        if (isFunctionDeclartion(statements[i])) {
-          var fnStart = i;
-        }
-      }
-    }
+    // function createFrames() {
+    //     for(let i = 0; i < statements.length; i++) {
 
-    function parseArray(array) {
-      for (var index = 0; index < array.length; index++) {
-        if (isFunction(array[index])) {
-          var start = index;
-          //console.log("is function at index: " + index + " and ends on line "+ findEOFLine(array, start));
-        } else if (isVarDeclartion(array[index])) {
-          console.log(
-            "is variable declartion at index: " +
-              index +
-              " null declaration " +
-              isVarDeclartion(array[index])
-          );
-        }
-      }
-    }
+    //     }
+    // }
+
+    // function createFrame() {
+    //     let newFrame = new Frame();
+
+    //     for (let i = 0; i < statements.length; i++) {
+    //         if (isFunctionDeclartion(statements[i])) {
+    //             createFrame(statements.splice(i, statements.length - 1));
+    //         } else if (isVariableDeclaration(statements, i)) {
+    //         // add variable
+    //     }
+    //   }
+    // }
+
+    // function createFramesTemp(statements) {
+
+    //   for (let i = 0; i < statements.length; i++) {
+    //     if (isFunctionDeclartion(statements[i])) {
+    //       // Skip to end of fn
+    //       let fnStart = i;
+    //       let fnEnd = findEndOfFunction(statements, i);
+    //       i = end;
+    //       // Good place for recursion on CreateFrame
+    //     } else if (isVariableDeclaration(statements, i)) {
+    //       // add variable
+    //     }
+    //   }
+    // }
+
+    // function parseArray(array) {
+    //   var GlobalFrame = new frame("Global", 0);
+    //   for (var index = 0; index < array.length; index++) {
+    //     if (isFunction(array[index])) {
+    //       var start = index;
+    //       var end = findEOFLine(array, index);
+    //       index = end;
+    //       var functionStack = returnFunctionStack(array, start, end);
+    //       var newFunction = new functions(array[start + 1], functionStack);
+    //       GlobalFrame.addFunctionDefinition(newFunction, functionStack);
+    //     } else if (isVarDeclartion(array[index])) {
+    //       console.log(
+    //         "is variable declartion at index: " +
+    //           index +
+    //           " null declaration " +
+    //           isVarDeclartion(array[index])
+    //       );
+    //     }
+    //   }
+    //   console.log(GlobalFrame);
+    // }
   </script>
 
   <script>
