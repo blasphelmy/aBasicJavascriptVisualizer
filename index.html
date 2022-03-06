@@ -90,45 +90,16 @@ oneLvlFunc1();
       let startReadingFrom = 0;
       fillFrame(globalFrame, startReadingFrom);
       console.log(frames);
-
-      // for (let i = 0; i < words.length; i++) {
-      //   // Parse Variable (In local scope)
-      //   if (variableKeywords.includes(words[i])) {
-      //     let newVariable = new Variable(words[i++]);
-      //     newVariable.name = words[i++];
-      //     if (words[i] == "=") i++;
-      //     else console.log("Expected assignment");
-      //     newVariable.value = words[i];
-      //     variables.push(newVariable);
-      //   }
-
-      //   // Parse Function
-      //   if (words[i] == "function") {
-      //     i++;
-      //     let newFunction = new Function(words[i++]);
-      //     if (words[i] == "(") i++;
-      //     if (words[i] == ")") i++;
-      //     if (words[i] == "{") i++;
-      //     console.log(words[i]);
-      //     // Need to check contents of function
-      //   }
-      // }
-
-      // console.log(variables);
     }
 
     function fillFrame(frame, startReadingFrom) {
-      for (let i = startReadingFrom; i < words.length; i++) {
-        // Add global frame to frames
-        if (i == words.length - 1) {
-          frames.push(frame);
-          return;
-        }
+      // Where does global frame get pushed to frames?
 
+      for (let i = startReadingFrom; i < words.length; i++) {
         // Push frame at closing brace }
         if (words[i] == "}") {
           frames.push(frame);
-          i++;
+          return frame;
         }
 
         // Continue if semicolon ;
@@ -141,18 +112,19 @@ oneLvlFunc1();
           i++;
           let functionName = words[i];
           let childFrame = new Frame(functionName); // Id = function name
+          childFrame.parent = frame;
           i++;
           if (words[i] == "(") i++;
           // Check for parameters
           if (words[i] == ")") i++;
           if (words[i] == "{") {
             i++;
-            fillFrame(childFrame, i);
+            frame.children.push(fillFrame(childFrame, i));
+          }
 
-            // Skip to closing brace
-            while (words[i] != "}" || words[i] != words.length - 1) {
-              i++;
-            }
+          // Skip to closing brace
+          while (words[i] != "}" || words[i] < words.length) {
+            i++;
           }
         }
 
