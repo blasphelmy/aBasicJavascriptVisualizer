@@ -42,23 +42,31 @@ function parseInstructions(inputString) {
   // Remove any remaining empty lines ("") from array
   lines = lines.filter((ex) => ex != "");
 
-  // Split expressions into 'words' (individual instructions)
+  // Split lines into 'words' (individual instructions)
   let words = [];
   let delimiters = [" ", "=", ",", ";", "(", ")", "{", "}"];
 
-  lines.forEach((ex) => {
+  lines.forEach((line) => {
+    /* ERROR - This function fails to include certain single chars, 
+      occurring at the end of variable assignments such as ;
+      and at the beginning of function calls ( 
+        
+      The issue is likely to do with when i reaches a delimeter.  */
+
     let foot = 0;
-    for (let i = 0; i < ex.length; i++) {
-      if (delimiters.includes(ex[i])) {
+    for (let i = 0; i < line.length; i++) {
+      if (delimiters.includes(line[i])) {
         if (foot == i) {
-          words.push(ex[i]); // Single char words, like = ; and (
+          words.push(line[i]); // Single char words, like = ; and (
         } else {
-          words.push(ex.slice(foot, i));
+          words.push(line.slice(foot, i));
         }
         foot = i + 1;
       }
     }
   });
+
+  console.log(words);
 
   // Remove instructions of empty space
   words = words.filter((word) => word != " ");
