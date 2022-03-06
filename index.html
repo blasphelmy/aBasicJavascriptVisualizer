@@ -20,28 +20,24 @@
 <!-- var a = 2+2;
 console.log(a); -->
 <textarea id="inputTextArea" style="width: 300px; height: 400px">
-function a(){
-  var a2 = 10;
-var b2 = 3 + 3;
-var c2 = 3*4+3;
-}
-function xyz(){
-  var x = 10 + 3;
-  function asf(){
-
-    
-  }
-}
-function asf(){
-
-    
-}
-a();
-a();
 var a = 10;
-var b = 3 + 3;
-var c = 3*4+3;
-abc = 8+0+0+8;
+function b(){
+  var a = 5;  
+  console.log(d);
+}
+function c(){
+  d = 6;
+  var a = 7;
+  e = 9;
+  function f(){
+    var a = 2;
+  }
+  f();
+}
+c();
+c();
+c();
+b();
 </textarea
 >
 <br />
@@ -226,7 +222,6 @@ class frame {
   variables; //is an map [key, value] = [variablename, value]
   functionDefinitions; //is an map ....//[functionName, functionFrame]
   childrenFrames;
-  callStack;
   previousNodeFrame;
   returnToIndex;
   start;
