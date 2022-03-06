@@ -21,7 +21,9 @@
 console.log(a); -->
 <textarea id="inputTextArea" style="width: 300px; height: 400px">
 function a(){
-  var x = 10 + 3;
+  var a2 = 10;
+var b2 = 3 + 3;
+var c2 = 3*4+3;
 }
 function xyz(){
   var x = 10 + 3;
@@ -167,12 +169,11 @@ window.addEventListener("load", function () {
 function parseArray(start, array, Frame) {
   //var Frame = newFrameObject;
   console.log(Frame);
-  for (var index = start; index <=Frame.end; index++) {
+  for (var index = Frame.start; index <=Frame.end; index++) {
    console.log("index ", index);
-   if(index === Frame.returnToIndex && Frame.id != "Global"){
+   if(index === Frame.end && Frame.id != "Global"){
       var newFrame = Frame.previousNodeFrame;
-      var start = Frame.returnToIndex;
-      //parseArray(start, array, newFrame)
+      //parseArray(Frame.returnToIndex, array, newFrame)
     }
     //DETECT FUNCTION DECLATION TOKEN
    if (isFunctionDeclarion(array[index])) {
@@ -211,7 +212,7 @@ function parseArray(start, array, Frame) {
       //newFrame = functionCalled.Frame;
       //console.log("function called", functionCalled);
       //console.log("call start ", functionCalled);
-      parseArray(functionCalled.getStart, array, newFrame);
+     parseArray(functionCalled.getStart, array, newFrame);
     }
   }
   console.log(Frame);
