@@ -1,7 +1,24 @@
-function getInputString() {}
+function breakIntoExpressions(inputString) {
+  // Split into lines
+  let expressions = inputString.split(/\n/);
+
+  // Trim tabs/exterior white spaces
+  for (let i = 0; i < expressions.length; i++) {
+    expressions[i] = expressions[i].trim();
+  }
+
+  // Remove empty lines ("") from array
+  expressions = expressions.filter((ex) => ex != "");
+
+  return expressions;
+}
+
+class Variable {
+  type;
+  value;
+}
 
 function breakIntoComponents(inputString) {
-  //this needs more work
   //first, we must first remove all line breaks and whitespace. we also assume that user written with semi colons...
   inputString = inputString.replace(/\n/g, "");
   inputString = inputString.split(/(;)/g);

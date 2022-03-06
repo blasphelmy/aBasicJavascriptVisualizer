@@ -55,16 +55,14 @@ oneLvlFunc1();
     // Get input string from input section
     let runBtn;
     let inputString;
-    let statements;
+    let expresions;
     let frames;
 
     function appMain() {
       getElements();
       addListeners();
-      fetchInput();
-      statements = breakIntoComponents(inputString);
-      console.log(statements);
-      createFrames(statements);
+      analyzeInput();
+      //createFrames(statements);
       // runInterpreter();
       // display();
     }
@@ -74,7 +72,25 @@ oneLvlFunc1();
     }
 
     function addListeners() {
-      runBtn.addEventListener("click", fetchInput, false);
+      runBtn.addEventListener("click", analyzeInput, false);
+    }
+
+    function analyzeInput() {
+      fetchInput();
+      expresions = breakIntoExpressions(inputString);
+      console.log(expresions);
+
+      let variables = [];
+      let functions = [];
+
+      // expresions.forEach((ex) => {
+      //   // Check for keyword
+      //   let reader = "";
+      //   for (let i = 0; i < ex.length; i++) {
+      //     while (ex[i] != " " || ex[i] != "=" || ex[i] != "(" || ex[i] != "{")
+      //       console.log(ex[i]);
+      //   }
+      // });
     }
 
     function fetchInput() {
