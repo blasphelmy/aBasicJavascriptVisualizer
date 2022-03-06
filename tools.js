@@ -1,38 +1,3 @@
-function breakIntoWords(inputString) {
-  // Split into lines
-  let lines = inputString.split(/\n+/);
-
-  // Trim tabs/exterior spaces
-  for (let i = 0; i < lines.length; i++) {
-    lines[i] = lines[i].trim();
-  }
-
-  // Remove any remaining empty lines ("") from array
-  lines = lines.filter((ex) => ex != "");
-
-  // Split expressions into 'words'
-  let words = [];
-  let delimiters = [" ", "=", ",", ";", "(", ")", "{", "}"];
-
-  lines.forEach((ex) => {
-    let foot = 0;
-    for (let i = 0; i < ex.length; i++) {
-      if (delimiters.includes(ex[i])) {
-        if (foot == i) {
-          words.push(ex[i]); // Single char words, like = ; and (
-        } else {
-          words.push(ex.slice(foot, i));
-        }
-        foot = i + 1;
-      }
-    }
-  });
-
-  words = words.filter((word) => word != " ");
-
-  return words;
-}
-
 function breakIntoComponents(inputString) {
   //first, we must first remove all line breaks and whitespace. we also assume that user written with semi colons...
   inputString = inputString.replace(/\n/g, "");

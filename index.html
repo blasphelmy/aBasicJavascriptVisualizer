@@ -17,6 +17,7 @@
     <div id="mainWrapper">
       <div id="inputSection">
         <p>Howdy Team</p>
+
         <textarea id="inputTextArea" style="width: 300px; height: 400px">
 var globalNum0 = 0;
 var globalNum1 = 0;
@@ -34,9 +35,6 @@ function oneLvlFunc1 () {
 
 oneLvlFunc0();
 oneLvlFunc1();
-
-
-
               </textarea
         >
         <br />
@@ -52,78 +50,112 @@ oneLvlFunc1();
       appMain();
     });
 
-    // Get input string from input section
     let runBtn;
+    let inputSection;
     let inputString;
-    let words;
+    let instructions;
     let frames = [];
 
     function appMain() {
       getElements();
       addListeners();
-      getWords();
-      createFrames();
-      // runInterpreter();
-      // display();
+      run();
     }
 
     function getElements() {
+      inputSection = document.getElementById("inputTextArea");
       runBtn = document.getElementById("runBtn");
     }
 
     function addListeners() {
-      runBtn.addEventListener("click", getWords, false);
+      runBtn.addEventListener("click", run, false);
     }
 
-    function getWords() {
-      fetchInput();
-      words = breakIntoWords(inputString);
-      console.log(words);
+    function run() {
+      frames = [];
+      inputString = inputSection.textContent;
+      console.log(inputString);
+      instructions = parseInstructions(inputString);
+      createFrames();
     }
 
-    function fetchInput() {
-      inputString = document.querySelector("#inputTextArea").textContent;
+    function parseInstructions(inputString) {
+      // Split into lines
+      let lines = inputString.split(/\n+/);
+
+      // Trim tabs/exterior spaces
+      for (let i = 0; i < lines.length; i++) {
+        lines[i] = lines[i].trim();
+      }
+
+      // Remove any remaining empty lines ("") from array
+      lines = lines.filter((ex) => ex != "");
+
+      // Split expressions into 'words'
+      let words = [];
+      let delimiters = [" ", "=", ",", ";", "(", ")", "{", "}"];
+
+      lines.forEach((ex) => {
+        let foot = 0;
+        for (let i = 0; i < ex.length; i++) {
+          if (delimiters.includes(ex[i])) {
+            if (foot == i) {
+              words.push(ex[i]); // Single char words, like = ; and (
+            } else {
+              words.push(ex.slice(foot, i));
+            }
+            foot = i + 1;
+          }
+        }
+      });
+
+      words = words.filter((word) => word != " ");
+
+      return words;
     }
 
     function createFrames() {
       let globalFrame = new Frame("Global");
       let startReadingFrom = 0;
       fillFrame(globalFrame, startReadingFrom);
-      console.log(frames);
+      //console.log(frames);
     }
 
     function fillFrame(frame, startReadingFrom) {
       // Where does global frame get pushed to frames?
 
-      for (let i = startReadingFrom; i < words.length; i++) {
+      for (let i = startReadingFrom; i < instructions.length; i++) {
         // Push frame at closing brace }
-        if (words[i] == "}") {
+        if (instructions[i] == "}") {
           frames.push(frame);
           return frame;
         }
 
         // Continue if semicolon ;
-        if (words[i] == ";") {
+        if (instructions[i] == ";") {
           i++;
         }
 
         // Parse Function
-        if (words[i] == "function") {
+        if (instructions[i] == "function") {
           i++;
-          let functionName = words[i];
+          let functionName = instructions[i];
           let childFrame = new Frame(functionName); // Id = function name
           childFrame.parent = frame;
           i++;
-          if (words[i] == "(") i++;
+          if (instructions[i] == "(") i++;
           // Check for parameters
-          if (words[i] == ")") i++;
-          if (words[i] == "{") {
+          if (instructions[i] == ")") i++;
+          if (instructions[i] == "{") {
             i++;
             frame.children.push(fillFrame(childFrame, i));
           }
 
           // Skip to closing brace
-          while (words[i] != "}" || words[i] < words.length) {
+          while (
+            instructions[i] != "}" ||
+            instructions[i] < instructions.length
+          ) {
             i++;
           }
         }
@@ -131,18 +163,18 @@ oneLvlFunc1();
         let variableKeywords = ["var", "let", "const"];
 
         // Parse Variable (In local scope)
-        if (variableKeywords.includes(words[i])) {
-          let newVariable = new Variable(words[i]);
+        if (variableKeywords.includes(instructions[i])) {
+          let newVariable = new Variable(instructions[i]);
           i++;
-          newVariable.name = words[i];
+          newVariable.name = instructions[i];
           i++;
-          if (words[i] == "=") i++;
+          if (instructions[i] == "=") i++;
           else {
             console.log("Expected assignment");
             return;
           }
-          newVariable.value = words[i];
-          if (words[i] == ";") i++;
+          newVariable.value = instructions[i];
+          if (instructions[i] == ";") i++;
           frame.variables.push(newVariable);
         }
       }
@@ -158,18 +190,6 @@ oneLvlFunc1();
       }
     }
 
-    // class Function {
-    //   parameters;
-    //   name;
-    //   variables;
-    //   functions;
-
-    //   constructor(name) {
-    //     this.name = name;
-    //     this.variables = [];
-    //   }
-    // }
-
     class Frame {
       id;
       parent;
@@ -181,14 +201,6 @@ oneLvlFunc1();
         this.id = id;
         this.variables = [];
         this.children = [];
-      }
-
-      addVariable(v) {
-        variables.push(v);
-      }
-
-      addChild(child) {
-        children.push(child);
       }
     }
 
