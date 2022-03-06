@@ -1,21 +1,36 @@
-function breakIntoExpressions(inputString) {
+function breakIntoWords(inputString) {
   // Split into lines
-  let expressions = inputString.split(/\n/);
+  let lines = inputString.split(/\n+/);
 
-  // Trim tabs/exterior white spaces
-  for (let i = 0; i < expressions.length; i++) {
-    expressions[i] = expressions[i].trim();
+  // Trim tabs/exterior spaces
+  for (let i = 0; i < lines.length; i++) {
+    lines[i] = lines[i].trim();
   }
 
-  // Remove empty lines ("") from array
-  expressions = expressions.filter((ex) => ex != "");
+  // Remove any remaining empty lines ("") from array
+  lines = lines.filter((ex) => ex != "");
 
-  return expressions;
-}
+  // Split expressions into 'words'
+  let words = [];
+  let delimiters = [" ", "=", ",", ";", "(", ")", "{", "}"];
 
-class Variable {
-  type;
-  value;
+  lines.forEach((ex) => {
+    let foot = 0;
+    for (let i = 0; i < ex.length; i++) {
+      if (delimiters.includes(ex[i])) {
+        if (foot == i) {
+          words.push(ex[i]); // Single char words, like = ; and (
+        } else {
+          words.push(ex.slice(foot, i));
+        }
+        foot = i + 1;
+      }
+    }
+  });
+
+  words = words.filter((word) => word != " ");
+
+  return words;
 }
 
 function breakIntoComponents(inputString) {

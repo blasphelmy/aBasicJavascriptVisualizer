@@ -55,14 +55,14 @@ oneLvlFunc1();
     // Get input string from input section
     let runBtn;
     let inputString;
-    let expresions;
+    let words;
     let frames;
 
     function appMain() {
       getElements();
       addListeners();
-      analyzeInput();
-      //createFrames(statements);
+      getWords();
+      createFrames(words);
       // runInterpreter();
       // display();
     }
@@ -72,29 +72,69 @@ oneLvlFunc1();
     }
 
     function addListeners() {
-      runBtn.addEventListener("click", analyzeInput, false);
+      runBtn.addEventListener("click", getWords, false);
     }
 
-    function analyzeInput() {
+    function getWords() {
       fetchInput();
-      expresions = breakIntoExpressions(inputString);
-      console.log(expresions);
-
-      let variables = [];
-      let functions = [];
-
-      // expresions.forEach((ex) => {
-      //   // Check for keyword
-      //   let reader = "";
-      //   for (let i = 0; i < ex.length; i++) {
-      //     while (ex[i] != " " || ex[i] != "=" || ex[i] != "(" || ex[i] != "{")
-      //       console.log(ex[i]);
-      //   }
-      // });
+      words = breakIntoWords(inputString);
+      console.log(words);
     }
 
     function fetchInput() {
       inputString = document.querySelector("#inputTextArea").textContent;
+    }
+
+    function createFrames(words) {
+      let variables = [];
+      let variableKeywords = ["var", "let", "const"];
+
+      let functions = [];
+
+      for (let i = 0; i < words.length; i++) {
+        // Parse Variable (In local scope)
+        if (variableKeywords.includes(words[i])) {
+          let newVariable = new Variable(words[i++]);
+          newVariable.name = words[i++];
+          if (words[i] == "=") i++;
+          else console.log("Expected assignment");
+          newVariable.value = words[i];
+          variables.push(newVariable);
+        }
+
+        // Parse Function
+        if (words[i] == "function") {
+          i++;
+          let newFunction = new Function(words[i++]);
+          if (words[i] == "(") i++;
+          if (words[i] == ")") i++;
+          if (words[i] == "{") i++;
+          // Need to check contents of function
+        }
+      }
+
+      console.log(variables);
+    }
+
+    class Variable {
+      type;
+      name;
+      value;
+
+      constructor(type) {
+        this.type = type;
+      }
+    }
+
+    class Function {
+      parameters;
+      name;
+      variables;
+      functions;
+
+      constructor(name) {
+        this.name = name;
+      }
     }
 
     class Frame {
@@ -110,54 +150,7 @@ oneLvlFunc1();
       addFunction(newFunction) {}
     }
 
-    function createFrames(statements) {
-      let idCounter = 0;
-      createFrame(statements, idCounter);
-    }
-
-    function createFrame(statements, idCounter) {
-      if (statements.length == 0) return;
-
-      let newFrame = new Frame();
-
-      if (idCounter == 0) parent = "Global";
-      else id = idCounter;
-
-      for (let i = 0; i < statements.length; i++) {
-        if (isFunctionDeclartion(statements[i])) {
-          // let functionSubstring = statements.slice(i, statements.length);
-          // let functionFrame = createFrame(functionSubstring, idCounter++);
-          // functionFrames.push(functionFrame);
-        } else if (isVariableDeclaration(statements, i)) {
-          console.log("Variable added to frame");
-        }
-      }
-
-      return newFrame;
-    }
-
-    function isFunctionDeclartion(string) {
-      var isFunctionDecl = new RegExp(/((function) +[a-z,A-Z,0-9]*)/gim);
-      //make improvements to this regexp here : https://regex101.com/r/9IiFmz/1
-      return isFunctionDecl.test(string);
-    }
-
-    function isVariableDeclaration(string) {
-      //-1 for false, 0 var declared w/o assignment, 1 var declared /w assignment
-      const declartionWithAssignment = new RegExp(
-        /(var[ ]*[a-z, A-Z, 0-9]*[=][ ]*[a-z, A-Z, 0-9,+,-,*,/,",']*[;])/gm
-      );
-      //improve this regexp here https://regex101.com/r/FjoVKw/1
-      const declarNoAssignment = new RegExp(/(var[ ]*[a-z, A-Z, 0-9]*[;])/gm);
-      //improve this regexp here https://regex101.com/r/T97bkY/1 //please add onto links. dont delete any previous if youre making changes.
-      //console.log(isVarDeclarNoAssignment.test(string), string);
-      if (declarNoAssignment.test(string)) {
-        return "isNullValue";
-      }
-      if (declartionWithAssignment.test(string) == true) {
-        return "hasValue";
-      }
-    }
+    // End script
   </script>
 
   <!-- <script>
