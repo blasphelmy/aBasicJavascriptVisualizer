@@ -56,13 +56,13 @@ oneLvlFunc1();
     let runBtn;
     let inputString;
     let words;
-    let frames;
+    let frames = [];
 
     function appMain() {
       getElements();
       addListeners();
       getWords();
-      createFrames(words);
+      createFrames();
       // runInterpreter();
       // display();
     }
@@ -85,35 +85,95 @@ oneLvlFunc1();
       inputString = document.querySelector("#inputTextArea").textContent;
     }
 
-    function createFrames(words) {
-      let variables = [];
-      let variableKeywords = ["var", "let", "const"];
+    function createFrames() {
+      let globalFrame = new Frame("Global");
+      let startReadingFrom = 0;
+      fillFrame(globalFrame, startReadingFrom);
+      console.log(frames);
 
-      let functions = [];
+      // for (let i = 0; i < words.length; i++) {
+      //   // Parse Variable (In local scope)
+      //   if (variableKeywords.includes(words[i])) {
+      //     let newVariable = new Variable(words[i++]);
+      //     newVariable.name = words[i++];
+      //     if (words[i] == "=") i++;
+      //     else console.log("Expected assignment");
+      //     newVariable.value = words[i];
+      //     variables.push(newVariable);
+      //   }
 
-      for (let i = 0; i < words.length; i++) {
-        // Parse Variable (In local scope)
-        if (variableKeywords.includes(words[i])) {
-          let newVariable = new Variable(words[i++]);
-          newVariable.name = words[i++];
-          if (words[i] == "=") i++;
-          else console.log("Expected assignment");
-          newVariable.value = words[i];
-          variables.push(newVariable);
+      //   // Parse Function
+      //   if (words[i] == "function") {
+      //     i++;
+      //     let newFunction = new Function(words[i++]);
+      //     if (words[i] == "(") i++;
+      //     if (words[i] == ")") i++;
+      //     if (words[i] == "{") i++;
+      //     console.log(words[i]);
+      //     // Need to check contents of function
+      //   }
+      // }
+
+      // console.log(variables);
+    }
+
+    function fillFrame(frame, startReadingFrom) {
+      for (let i = startReadingFrom; i < words.length; i++) {
+        // Add global frame to frames
+        if (i == words.length - 1) {
+          frames.push(frame);
+          return;
+        }
+
+        // Push frame at closing brace }
+        if (words[i] == "}") {
+          frames.push(frame);
+          i++;
+        }
+
+        // Continue if semicolon ;
+        if (words[i] == ";") {
+          i++;
         }
 
         // Parse Function
         if (words[i] == "function") {
           i++;
-          let newFunction = new Function(words[i++]);
+          let functionName = words[i];
+          let childFrame = new Frame(functionName); // Id = function name
+          i++;
           if (words[i] == "(") i++;
+          // Check for parameters
           if (words[i] == ")") i++;
-          if (words[i] == "{") i++;
-          // Need to check contents of function
+          if (words[i] == "{") {
+            i++;
+            fillFrame(childFrame, i);
+
+            // Skip to closing brace
+            while (words[i] != "}" || words[i] != words.length - 1) {
+              i++;
+            }
+          }
+        }
+
+        let variableKeywords = ["var", "let", "const"];
+
+        // Parse Variable (In local scope)
+        if (variableKeywords.includes(words[i])) {
+          let newVariable = new Variable(words[i]);
+          i++;
+          newVariable.name = words[i];
+          i++;
+          if (words[i] == "=") i++;
+          else {
+            console.log("Expected assignment");
+            return;
+          }
+          newVariable.value = words[i];
+          if (words[i] == ";") i++;
+          frame.variables.push(newVariable);
         }
       }
-
-      console.log(variables);
     }
 
     class Variable {
@@ -126,28 +186,38 @@ oneLvlFunc1();
       }
     }
 
-    class Function {
-      parameters;
-      name;
-      variables;
-      functions;
+    // class Function {
+    //   parameters;
+    //   name;
+    //   variables;
+    //   functions;
 
-      constructor(name) {
-        this.name = name;
-      }
-    }
+    //   constructor(name) {
+    //     this.name = name;
+    //     this.variables = [];
+    //   }
+    // }
 
     class Frame {
       id;
       parent;
       variables;
-      functionFrames;
+      children;
       callStack;
 
-      constructor(aFunctionName, index) {}
+      constructor(id) {
+        this.id = id;
+        this.variables = [];
+        this.children = [];
+      }
 
-      addVariable(variable) {}
-      addFunction(newFunction) {}
+      addVariable(v) {
+        variables.push(v);
+      }
+
+      addChild(child) {
+        children.push(child);
+      }
     }
 
     // End script
