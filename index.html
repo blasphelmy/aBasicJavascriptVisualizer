@@ -25,6 +25,8 @@ function b(){
   var a = 5;  
   console.log(d);
 }
+var abc = 10;
+var a = 24;
 function c(){
   d = 6;
   var a = 7;
@@ -38,6 +40,7 @@ c();
 c();
 c();
 b();
+var xyz = 10;
 </textarea
 >
 <br />
@@ -78,19 +81,19 @@ function fetchInput() {
 }
 var frameCount = 0;
 class Frame {
-  //a frame may contain variables, functions....or...maybe a callStack...
+  //a frame may contain variables, functionDEF....or...maybe a callStack...
   id; 
   parent;
   children;
 
   variables; //is an map [key, value] = [variablename, value]
-  functions; //is an map ....//[functionName, functionFrame]
+  functionDEF; //is an map ....//[functionName, functionFrame]
 
   callStack;
 
   constructor(aFunctionName, index) {
     this.variables = new Map();
-    this.functions = new Map();
+    this.functionDEF = new Map();
     this.callStack = new Array();
     this.id = aFunctionName;
     this.frameIndex = index;
@@ -105,14 +108,14 @@ class Frame {
     //whenever you add a function (through encountering a function declaration token within this frame's context) you must create a new frame for everything in this function...i think
     var newFrame = new frame(newFunction.name + "_" + this.frameIndex); //we can also return the new frame created.
     newFrame.previousNodeFrame = this;
-    this.functions.set(newFunction.name, newFrame);
+    this.functionDEF.set(newFunction.name, newFrame);
   }
   addStatements(statementStack) {
     //is an object of statementStack
     this.callStack.push(statementStack);
   }
   returnChildFrame(id) {
-    return this.functions.get(id);
+    return this.functionDEF.get(id);
   }
   get returnParentFrame() {
     return this.previousNodeFrame;
@@ -130,7 +133,7 @@ window.addEventListener("load", function () {
   statements = breakIntoComponents(inputString);
   //findEOFLine(statements, 0);
   //console.log(findEOFLine(statements, 0));
-  var newFunction = new functions("Global", 0, statements.length);
+  var newFunction = new functionDEF("Global", 0, statements.length);
   console.log(newFunction);
   parseArray(0,statements, new frame(newFunction, statements.length));
 
@@ -155,7 +158,7 @@ window.addEventListener("load", function () {
   // globalFrame.addStatements(newStatementStack);
   // globalFrame.addStatements(newStatementStack);
 
-  // var newFunction = new functions("newFunction");
+  // var newFunction = new functionDEF("newFunction");
 
   // globalFrame.addFunction(newFunction);
   // globalFrame.addFunction(newFunction);
@@ -167,15 +170,15 @@ function parseArray(start, array, Frame) {
   console.log(Frame);
   for (var index = Frame.start; index <=Frame.end; index++) {
    console.log("index ", index);
-   if(index === Frame.end && Frame.id != "Global"){
-      var newFrame = Frame.previousNodeFrame;
-      //parseArray(Frame.returnToIndex, array, newFrame)
-    }
+  //  if(index === Frame.end && Frame.id != "Global"){
+  //     var newFrame = Frame.previousNodeFrame;
+  //     //parseArray(Frame.returnToIndex, array, newFrame)
+  //   }
     //DETECT FUNCTION DECLATION TOKEN
    if (isFunctionDeclarion(array[index])) {
       var start = index;
       var end = findEOFLine(array, index);
-      var newFunction = new functions(array[index+ 1], start+2, end);
+      var newFunction = new functionDEF(array[index+ 1], start+2, end);
       //console.log(newFunction);
       Frame.addFunctionDefinition(newFunction);
       index = end;
@@ -216,7 +219,7 @@ function parseArray(start, array, Frame) {
 function returnFunction(array) {}
 //**important notes: on a function call you will always need to initialize a the corrosponding frame... how?
 class frame {
-  //a frame may contain variables, functions....or...maybe a callStack...
+  //a frame may contain variables, functionDEF....or...maybe a callStack...
   id; //name
   fIndex; //this tracks something...im not sure yet
   variables; //is an map [key, value] = [variablename, value]
@@ -269,7 +272,7 @@ class frame {
     return parseInt(this.returnToIndex);
   }
 }
-class functions {
+class functionDEF {
   name; //what is your name
   start; //index of array
   end; //end of array...
