@@ -24,7 +24,14 @@
     <title>parse</title>
   </head>
   <body>
-<textarea textarea id="code" name="code" style="position:relative; width: 100%; height: 400px">
+<style>
+  .codeEditiors{
+    width: 49.5%;
+    display: inline-block;
+  }
+</style>
+<div class="codeEditiors">
+<textarea id="code" name="code">
   var a = 10;
   function b(){
     a = 5;  
@@ -42,34 +49,67 @@
   }
   b();
 </textarea>
-<textarea id = "displayTree">
-
+</div>
+<div class="codeEditiors">
+<textarea id="code_array" name="code" style="position:relative; width: 50%;">
 </textarea>
+</div>
+<div class="frameContainer">
+  <p id="frameName">Scope Name: Gobal</p>
+    <div id="variablesMap" class="frameContainer">
+      <p>variables : </p>
+      <p>a = 10</p>
+      <p> name = "David"</p>
+    </div>
+    <div id="functionDefinitions" class="frameContainer">
+      <p>Function Definitions : </p>
+      <p>a() start: 1 end: 5</p>
+    </div>
+    <div id="childrenFrames" class="frameContainer">
+      <p>Children Frames : </p>
+    </div>
+</div>
+
 <button id="runBtn" onclick="initParse()">Run Code</button>
 </div>
 
-<div id="outputSection"></div>
 </body>
 
   <script>
 var editor = null;
+var outPutEditor = null;
 window.addEventListener("load", function(e){
   editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+        firstLineNumber: 0,
         lineNumbers: true,
         theme: "material-palenight",
         matchBrackets: true,
         continueComments: "Enter",
         extraKeys: {"Ctrl-Q": "toggleComment"},
       });
+      editor.setSize(null, 400);
+      outPutEditor = CodeMirror.fromTextArea(document.getElementById("code_array"), {
+        firstLineNumber: 0,
+        lineNumbers: true,
+        theme: "material-palenight",
+        matchBrackets: true,
+        continueComments: "Enter",
+        extraKeys: {"Ctrl-Q": "toggleComment"},
+      });
+      outPutEditor.setSize(null, 400);
 });
 function initParse() {
-  console.clear();
+  //console.clear();
   //step 1, we get javascript code from user as a raw string.
   var inputString = editor.getValue() + ";";
   //now we split the inputString into its induvidual components
   statements = breakIntoComponents(inputString);
-  //findEOFLine(statements, 0);
-  //console.log(findEOFLine(statements, 0));
+
+  var newString = "";
+  for(var index = 0; index < statements.length; index++){
+    newString = newString + statements[index] + "\n";
+  }
+  outPutEditor.getDoc().setValue(newString);
   var newFunction = new functionDEF("Global", 0, statements.length);
 
   console.log(statements);
@@ -117,23 +157,6 @@ function parseArray(start, array, Frame) {
   if(Frame.id === "Global"){
     return Frame;
   }
-}
-function variableDeclarationHandler(index, array, Frame){
-      //console.log("is variable declartion at index: " + index);
-      var keyValuePair = array[index+1].split("=");
-      keyValuePair[0] = keyValuePair[0].trim();
-      
-      var variableName = keyValuePair[0];
-      var expression = keyValuePair[1];
-
-      expression = breakExpressionIntoComponents(expression);
-
-      // console.log(expression);
-      
-      var newVarible = new variable(keyValuePair[0], eval(keyValuePair[1])); //cheater!
-      Frame.addVariables(newVarible);
-      index++;
-      return index;
 }
 function assignExpressionObjects(newComponentsArray){
 
