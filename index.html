@@ -113,7 +113,7 @@ function parseArray(start, array, Frame) {
       var originFrame = returnFrameContainingFunctionDEF(Frame, array[index]);
       var newFunctionDef = originFrame.returnFunctionDefinitions(array[index]);
       var newFrame = new frame(newFunctionDef, index);
-      newFrame.previousNodeFrame = Frame;
+      newFrame.previousNodeFrame = originFrame;
       originFrame.addChildFrame(newFrame);
      parseArray(newFunctionDef.getStart, array, newFrame);
     }
