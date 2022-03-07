@@ -21,20 +21,20 @@
 <!-- var a = 2+2;
 console.log(a); -->
 <textarea id="inputTextArea" style="width: 300px; height: 400px">
-  var globalNum1 = 0;
-  var globalNum0 = "hello";
-  function oneLvlFunc0() {
-    var oneDeepNum0 = 1;
-  }
-  
-  function oneLvlFunc1() {
-    function a(){
-      globalNum0 = 84;
-    }
-    a();
-  }
+var globalNum1 = 0;
+function oneLvlFunc0() {var oneDeepNum0 = 1;}
 
-  oneLvlFunc1();
+function oneLvlFunc1() {
+  var globalNum0 = 11;
+function a(){
+globalNum0 = 84 + 10;}
+function b(){
+var globalNum0 = 84;
+}
+a();
+}
+
+oneLvlFunc1();
 </textarea
 >
 <br />
@@ -93,15 +93,12 @@ function parseArray(start, array, Frame) {
       console.log("variable reassigbment on line ", index);
       console.log(array[index]);
       var tempArray = array[index].split("=");
-
       var variableName = tempArray[0].trim();
       var expression = tempArray[1].split(";");
       expression = expression[0];
-      var newFrame = Frame;
-      console.log(newFrame.id);
-      while(!newFrame.variables.has(variableName) && typeof(newFrame.returnParentFrame()) !== "undefined"){
-        newFrame = newFrame.previousNodeFrame;
-      }
+
+      var newFrame = returnFrameContainingVariable(Frame, variableName);
+
       newFrame.variables.set(variableName, eval(expression));
       console.log(newFrame.id);
     }
@@ -114,6 +111,12 @@ function parseArray(start, array, Frame) {
     }
   }
   console.log(Frame);
+}
+function returnFrameContainingVariable(newFrame, variableName){
+  while (!newFrame.variables.has(variableName) && typeof (newFrame.returnParentFrame()) !== "undefined") {
+    newFrame = newFrame.previousNodeFrame;
+  }
+  return newFrame;
 }
 function returnFunction(array) {}
 //**important notes: on a function call you will always need to initialize a the corrosponding frame... how?
