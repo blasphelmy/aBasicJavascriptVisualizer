@@ -3,6 +3,7 @@ window.addEventListener("load", () => {
 });
 
 let runBtn;
+let codeEditor;
 let inputSection;
 let inputString;
 let instructions;
@@ -18,6 +19,10 @@ function appMain() {
 
 function initElements() {
   // Get elements
+  codeEditor = CodeMirror(document.getElementById("codeEditor"), {
+    mode: "javascript",
+    theme: "abcdef",
+  });
   inputSection = document.getElementById("inputTextArea");
   runBtn = document.getElementById("runBtn");
 
@@ -26,9 +31,9 @@ function initElements() {
 }
 
 function run() {
-  inputString = inputSection.textContent;
-  instructions = parseInstructions(inputString);
-  createFrames();
+  // inputString = inputSection.textContent;
+  // instructions = parseInstructions(inputString);
+  // createFrames();
 }
 
 function parseInstructions(inputString) {

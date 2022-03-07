@@ -6,6 +6,7 @@
 body {
   height: 100%;
   width: 100%;
+  background-color: gray;
 }
 
 #mainWrapper {
@@ -19,6 +20,10 @@ body {
   flex-direction: column;
   align-items: center;
   padding: 20px;
+}
+
+#codeEditor {
+  width: 100%;
 }
 
 #runBtn {

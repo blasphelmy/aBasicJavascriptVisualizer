@@ -4,6 +4,12 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Code Mirror -->
+    <script src="codeMirror/lib/codemirror.js"></script>
+    <link rel="stylesheet" href="codeMirror/lib/codemirror.css" />
+    <link rel="stylesheet" href="codeMirror/theme/abcdef.css" />
+    <script src="codeMirror/mode/javascript/javascript.js"></script>
+
     <link rel="stylesheet" href="style.css" />
     <script src="js/app.js"></script>
     <title>Scope Visualizer</title>
@@ -12,7 +18,8 @@
     <div id="mainWrapper">
       <div id="inputSection">
         <p>Howdy Team</p>
-        <textarea id="inputTextArea" style="width: 300px; height: 400px">
+        <div id="codeEditor"></div>
+        <!-- <textarea id="inputTextArea" style="width: 300px; height: 400px">
 var globalNum0 = 0;
 var globalNum1 = 0;
 
@@ -30,7 +37,7 @@ function oneLvlFunc1 () {
 oneLvlFunc0();
 oneLvlFunc1();
               </textarea
-        >
+        > -->
         <br />
         <button id="runBtn">Run Code</button>
       </div>
