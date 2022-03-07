@@ -110,11 +110,11 @@ function parseArray(start, array, Frame) {
       //console.log(newFrame.id);
     }
     else if(detectFunctionCalls(array[index])){
-      var newFrame = returnFrameContainingFunctionDEF(Frame, array[index]);
-      var newFunctionDef = newFrame.returnFunctionDefinitions(array[index]);
+      var originFrame = returnFrameContainingFunctionDEF(Frame, array[index]);
+      var newFunctionDef = originFrame.returnFunctionDefinitions(array[index]);
       var newFrame = new frame(newFunctionDef, index);
       newFrame.previousNodeFrame = Frame;
-      Frame.addChildFrame(newFrame);
+      originFrame.addChildFrame(newFrame);
      parseArray(newFunctionDef.getStart, array, newFrame);
     }
   }
