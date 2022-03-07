@@ -107,11 +107,15 @@ function parseArray(start, array, Frame) {
     }
     else if(detectFunctionCalls(array[index])){
       var originFrame = returnFrameContainingFunctionDEF(Frame, array[index]);
+      if(originFrame.returnFunctionDefinitions(array[index])){
       var newFunctionDef = originFrame.returnFunctionDefinitions(array[index]);
       var newFrame = new frame(newFunctionDef, index);
       newFrame.previousNodeFrame = originFrame;
       originFrame.addChildFrame(newFrame);
-     parseArray(newFunctionDef.getStart, array, newFrame);
+      parseArray(newFunctionDef.getStart, array, newFrame);
+      }else{
+        return "on line " + index + " error: function definition doesn't exist!";
+      }
     }
   }
 
