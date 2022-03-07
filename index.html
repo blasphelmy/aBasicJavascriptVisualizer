@@ -31,23 +31,25 @@
   margin-left: 30px;
   padding: 10px;
   background-color: rgba(214, 120, 223, 0.042);
-  border-left-color: rgba(214, 120, 223, 0.042);
+  border-left-color: rgba(215, 120, 223, 0.116);
   border-left-width: 2px;
   border-left-style: solid;
-  border-radius: 3px;
+  border-radius: 7px;
   color: rgb(255, 253, 223);
+  -webkit-box-shadow: 0px 0px 15px 4px rgba(0, 0, 0, 0.15); 
+box-shadow: 0px 0px 15px 4px rgba(0, 0, 0, 0.15);
 }
 .variableColors{
   background-color: rgba(17, 253, 9, 0.096);
-  border-left-color: rgba(17, 253, 9, 0.096);
+  border-left-color: rgba(17, 253, 9, 0.144);
 }
 .functDEF {
   background-color: rgba(79, 255, 255, 0.082);
-  border-left-color: rgba(79, 255, 255, 0.082);
+  border-left-color: rgba(79, 255, 255, 0.137);
 }
 .activeFrames{
-  background-color: rgba(253, 107, 9, 0.062);
-  border-left-color: rgba(253, 107, 9, 0.096);
+  background-color: rgba(253, 58, 9, 0.062);
+  border-left-color: rgba(253, 58, 9, 0.116);
 }
 </style>
 <h1>A Simple Javascript Parser</h1>
@@ -77,9 +79,9 @@
   </textarea>
 </div>
 </div>
-<div id="mainFrameContainer">
-</div>
 <button id="runBtn" onclick="initParse()">Run Code</button>
+</div>
+<div id="mainFrameContainer">
 </div>
 
 </body>
