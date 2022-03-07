@@ -12,7 +12,7 @@
 
     <script src="lib/codemirror.js"></script>
     <link rel="stylesheet" href="lib/codemirror.css">
-    <link rel="stylesheet" href="theme/monokai.css">
+    <link rel="stylesheet" href="theme/material-palenight.css">
     <script src="javascript/javascript.js"></script>
 
     <script src="tools.js"></script>
@@ -40,6 +40,9 @@
   }
   b();
 </textarea>
+<textarea id = "displayTree">
+
+</textarea>
 <button id="runBtn" onclick="initParse()">Run Code</button>
 </div>
 
@@ -51,7 +54,7 @@ var editor = null;
 window.addEventListener("load", function(e){
   editor = CodeMirror.fromTextArea(document.getElementById("code"), {
         lineNumbers: true,
-        theme: "monokai",
+        theme: "material-palenight",
         matchBrackets: true,
         continueComments: "Enter",
         extraKeys: {"Ctrl-Q": "toggleComment"},
@@ -60,8 +63,7 @@ window.addEventListener("load", function(e){
 function initParse() {
   console.clear();
   //step 1, we get javascript code from user as a raw string.
-  var inputString = editor.getValue();
-  inputString = inputString + ";";
+  var inputString = editor.getValue() + ";";
   //now we split the inputString into its induvidual components
   statements = breakIntoComponents(inputString);
   //findEOFLine(statements, 0);
