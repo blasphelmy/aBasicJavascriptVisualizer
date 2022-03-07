@@ -21,24 +21,30 @@
 <!-- var a = 2+2;
 console.log(a); -->
 <textarea id="inputTextArea" style="width: 300px; height: 400px">
-var globalNum1 = 0;
-function oneLvlFunc0() {var oneDeepNum0 = 1;}
-
-function oneLvlFunc1() {
-  var globalNum0 = 11;
-function a(){
-globalNum0 = 84 + 10;}
-function b(){
-var globalNum0 = 84;
-}
-a();
-}
-
-oneLvlFunc1();
+  var a = 10;
+  function b(){
+    function c(){
+      var xyz = 10;
+    }
+    
+    a = 5; 
+    c();
+    console.log(d);
+  }
+  function c(){
+    d = 6;
+    var a = 7;
+    e = 9;
+    function f(){
+      a = 2;
+    }
+    f();
+  }
+  b();
 </textarea
 >
 <br />
-<button id="runBtn">Run Code</button>
+<button id="runBtn" onclick="initParse()">Run Code</button>
 </div>
 
 <div id="outputSection"></div>
@@ -46,9 +52,10 @@ oneLvlFunc1();
 </body>
 
   <script>
-window.addEventListener("load", function () {
+function initParse() {
+  console.clear();
   //step 1, we get javascript code from user as a raw string.
-  var inputString = document.querySelector("#inputTextArea").textContent;
+  var inputString = document.querySelector("#inputTextArea").value;
   //now we split the inputString into its induvidual components
   statements = breakIntoComponents(inputString);
   //findEOFLine(statements, 0);
@@ -57,8 +64,10 @@ window.addEventListener("load", function () {
 
   console.log(statements);
 
-  parseArray(0,statements, new frame(newFunction, statements.length));
-});
+  var FinalFrame = parseArray(0,statements, new frame(newFunction, statements.length));
+  console.log(FinalFrame);
+}
+
 function parseArray(start, array, Frame) {
   //var Frame = newFrameObject;
   // console.log("current frame: ", Frame.returnParentFrame());
@@ -74,7 +83,7 @@ function parseArray(start, array, Frame) {
       index = end;
       //DETECT VARIABLE DECLATION TOKEN
     } else if (isVarDeclartion(array[index])) {
-      console.log("is variable declartion at index: " + index);
+      //console.log("is variable declartion at index: " + index);
       var keyValuePair = array[index+1].split("=");
       keyValuePair[0] = keyValuePair[0].trim();
       
@@ -90,31 +99,39 @@ function parseArray(start, array, Frame) {
       index++;
       //DETECT VARIABLE REASSIGNMENT
     }else if(detectStatementVariableReassignment(array[index])){
-      console.log("variable reassigbment on line ", index);
-      console.log(array[index]);
+      // console.log("variable reassigbment on line ", index);
+      // console.log(array[index]);
       var tempArray = array[index].split("=");
       var variableName = tempArray[0].trim();
       var expression = tempArray[1].split(";");
       expression = expression[0];
-
       var newFrame = returnFrameContainingVariable(Frame, variableName);
-
       newFrame.variables.set(variableName, eval(expression));
-      console.log(newFrame.id);
+      //console.log(newFrame.id);
     }
     else if(detectFunctionCalls(array[index])){
-      var functionCalled = Frame.returnFunctionDefinitions(array[index]);
-      var newFrame = new frame(functionCalled, index);
+      var newFrame = returnFrameContainingFunctionDEF(Frame, array[index]);
+      var newFunctionDef = newFrame.returnFunctionDefinitions(array[index]);
+      var newFrame = new frame(newFunctionDef, index);
       newFrame.previousNodeFrame = Frame;
       Frame.addChildFrame(newFrame);
-     parseArray(functionCalled.getStart, array, newFrame);
+     parseArray(newFunctionDef.getStart, array, newFrame);
     }
   }
-  console.log(Frame);
+
+  if(Frame.id === "Global"){
+    return Frame;
+  }
 }
 function returnFrameContainingVariable(newFrame, variableName){
   while (!newFrame.variables.has(variableName) && typeof (newFrame.returnParentFrame()) !== "undefined") {
-    newFrame = newFrame.previousNodeFrame;
+    newFrame = newFrame.returnParentFrame();
+  }
+  return newFrame;
+}
+function returnFrameContainingFunctionDEF(newFrame, functionName){
+  while (!newFrame.returnFunctionDefinitions(functionName) && typeof (newFrame.returnParentFrame()) !== "undefined") {
+    newFrame = newFrame.returnParentFrame();
   }
   return newFrame;
 }
