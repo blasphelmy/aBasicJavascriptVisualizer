@@ -122,3 +122,46 @@ function outPutCallStacktoCodeEditor(CallStack){
   }
   outPutEditor.getDoc().setValue(newString);
 }
+function createNewFrameElements(elementFrame, Frame){
+  var newScopeFrame = document.createElement("div");
+  newScopeFrame.id = Frame.id + Frame.fIndex;
+  newScopeFrame.classList.add("frameContainer", "scopeColors");
+  newScopeFrame.innerHTML = "<p>Scope ID : " + Frame.id + "</p>";
+
+  var newVariableFrames = document.createElement("div");
+  newVariableFrames.id = Frame.id + Frame.fIndex + "variables";
+  newVariableFrames.classList.add("frameContainer", "variableColors");
+  // newVariableFrames.innerHTML = "<p>Active Variables : </p>";
+
+  var newFunctionDefContainer = document.createElement("div");
+  newFunctionDefContainer.id = Frame.id + Frame.fIndex + "FunctionDef";
+  newFunctionDefContainer.classList.add("frameContainer", "functDEF");
+  // newFunctionDefContainer.innerHTML = "<p>Function Definitions : </p>";
+
+  var newFramesContainer = document.createElement("div");
+  newFramesContainer.id = Frame.id + Frame.fIndex + "ChildrenFrames";
+  newFramesContainer.classList.add("frameContainer",  "activeFrames");
+  newFramesContainer.innerHTML = "<p>Active Frames : </p>";
+
+  newScopeFrame.appendChild(newFunctionDefContainer);
+  newScopeFrame.appendChild(newVariableFrames);
+  newScopeFrame.appendChild(newFramesContainer);
+  elementFrame.appendChild(newScopeFrame);
+}
+function appendVariablesToVisulizer(Frame){
+  var frameVariables = Frame.variables;
+  var element = document.getElementById(Frame.id + Frame.fIndex + "variables");
+  element.innerHTML = "";
+
+  var newElementChild = document.createElement("p");
+  newElementChild.innerHTML = "Active Variables :";
+
+  element.appendChild(newElementChild);
+
+  console.log(element);  
+  for (const [key, value] of frameVariables.entries()) {
+    var newElementChild = document.createElement("p");
+    newElementChild.innerHTML = "{ name: " + key + " value: " + value + " }";
+    element.appendChild(newElementChild);
+  }
+}

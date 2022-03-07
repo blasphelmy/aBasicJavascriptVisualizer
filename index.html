@@ -31,13 +31,14 @@
   margin-left: 30px;
   padding: 10px;
   background-color: rgba(214, 120, 223, 0.042);
-  border-left-color: rgba(215, 120, 223, 0.116);
+  border-left-color: rgba(215, 120, 223, 0.24);
   border-left-width: 2px;
   border-left-style: solid;
-  border-radius: 7px;
+  border-radius: 10px;
   color: rgb(255, 253, 223);
   -webkit-box-shadow: 0px 0px 15px 4px rgba(0, 0, 0, 0.15); 
 box-shadow: 0px 0px 15px 4px rgba(0, 0, 0, 0.15);
+  font-size: 15px;
 }
 .variableColors{
   background-color: rgba(17, 253, 9, 0.096);
@@ -49,16 +50,29 @@ box-shadow: 0px 0px 15px 4px rgba(0, 0, 0, 0.15);
 }
 .activeFrames{
   background-color: rgba(253, 58, 9, 0.062);
-  border-left-color: rgba(253, 58, 9, 0.116);
+  border-left-color: rgba(253, 66, 9, 0.226);
 }
 </style>
 <h1>A Simple Javascript Parser</h1>
 <div id="codeEditorWrapper">
 <div class="codeEditiors">
   <textarea id="code" name="code">
-var varca = 10;function b(){a = 5;  functionC();console.log(d);}
-function functionC()
-{d = 6;var a = 7;e = 9;function f(){a = 2;}f();}b();    
+var a = 10;
+function b(){
+  a = 5;  
+  c();
+  console.log(d);
+}
+function c(){
+  d = 6;
+  var a = 7;
+  e = 9;
+  function f(){
+    a = 2;
+  }
+  f();
+}
+b(); 
   </textarea>
 </div>
 <div class="codeEditiors">
@@ -91,37 +105,14 @@ function initParse() {
   console.log(FinalFrame);
 }
 function interpretCallStack(start, array, Frame) {
-  var element = null;
+  var elementFrame = null;
   if(Frame.id === "Global"){
-    element = document.querySelector("#mainFrameContainer");
+    elementFrame = document.querySelector("#mainFrameContainer");
   }else{
-    element = document.getElementById(Frame.previousNodeFrame.id + Frame.previousNodeFrame.fIndex + "ChildrenFrames");
+    elementFrame = document.getElementById(Frame.previousNodeFrame.id + Frame.previousNodeFrame.fIndex + "ChildrenFrames");
   }
 
-  var newScopeFrame = document.createElement("div");
-  newScopeFrame.id = Frame.id + Frame.fIndex;
-  newScopeFrame.classList.add("frameContainer", "scopeColors");
-  newScopeFrame.innerHTML = "<p>Scope ID : " + Frame.id + "</p>";
-
-  var newVariableFrames = document.createElement("div");
-  newVariableFrames.id = Frame.id + Frame.fIndex + "variables";
-  newVariableFrames.classList.add("frameContainer", "variableColors");
-  newVariableFrames.innerHTML = "<p>Active Variables : </p>";
-
-  var newFunctionDefContainer = document.createElement("div");
-  newFunctionDefContainer.id = Frame.id + Frame.fIndex + "FunctionDef";
-  newFunctionDefContainer.classList.add("frameContainer", "functDEF");
-  newFunctionDefContainer.innerHTML = "<p>Function Definitions : </p>";
-
-  var newFramesContainer = document.createElement("div");
-  newFramesContainer.id = Frame.id + Frame.fIndex + "ChildrenFrames";
-  newFramesContainer.classList.add("frameContainer",  "activeFrames");
-  newFramesContainer.innerHTML = "<p>Active Frames : </p>";
-
-  newScopeFrame.appendChild(newVariableFrames);
-  newScopeFrame.appendChild(newFunctionDefContainer);
-  newScopeFrame.appendChild(newFramesContainer);
-  element.appendChild(newScopeFrame);
+  createNewFrameElements(elementFrame, Frame);
 
   for (var index = Frame.start; index <= Frame.end; index++) {
     
@@ -131,14 +122,6 @@ function interpretCallStack(start, array, Frame) {
      index = functionDeclaredHandler(index, array, Frame);
       //DETECT VARIABLE DECLATION TOKEN
     } else if (isVarDeclartion(array[index])) {
-
-      try{
-        var temp = array[index+1].split("=");
-        console.log("eval = ", eval(temp[1]));
-     }catch{
-       return "error on index :" + index;
-     }
-
       index = variableDeclarationHandler(index, array, Frame);
       //DETECT VARIABLE REASSIGNMENT
     }else if(detectStatementVariableReassignment(array[index])){
@@ -150,6 +133,7 @@ function interpretCallStack(start, array, Frame) {
       expression = expression[0];
       var newFrame = returnFrameContainingVariable(Frame, variableName);
       newFrame.variables.set(variableName, eval(expression));
+      appendVariablesToVisulizer(newFrame);
       //console.log(newFrame.id);
     }
     else if(detectFunctionCalls(array[index])){
