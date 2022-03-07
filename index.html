@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <!-- Code Mirror -->
     <script src="codeMirror/lib/codemirror.js"></script>
     <link rel="stylesheet" href="codeMirror/lib/codemirror.css" />
@@ -13,8 +14,10 @@
     <script src="codeMirror/hint/javascript-hint.js"></script>
     <script src="codeMirror/hint/show-hint.js"></script>
 
+    <!-- Self contianed App References -->
     <link rel="stylesheet" href="style.css" />
     <script src="js/app.js"></script>
+
     <title>Scope Visualizer</title>
   </head>
   <body>
@@ -23,25 +26,6 @@
         <p>Howdy Team</p>
         <br />
         <div id="codeEditor"></div>
-        <textarea id="codeExample" style="width: 300px; height: 400px">
-var globalNum0 = 0;
-var globalNum1 = 0;
-
-function oneLvlFunc0 () {
-  var oneDeepNum0 = 1;
-}
-
-function oneLvlFunc1 () {
-  var oneDeepNum1 = 1;
-  function twoLvlFunc0 () {
-    var twoDeepNum0 = 2;
-  }
-}
-
-oneLvlFunc0();
-oneLvlFunc1();
-              </textarea
-        >
         <br />
         <button id="runBtn">Run Code</button>
       </div>
