@@ -4,36 +4,46 @@ window.addEventListener("load", () => {
 
 let runBtn;
 let codeEditor;
+let exampleInput;
 let inputSection;
 let inputString;
 let instructions;
+let globalFrame;
 let totalFrames = [];
 
 function appMain() {
   initElements();
   run();
 
-  //console.log(instructions);
-  //console.log(totalFrames);
+  console.log(instructions);
+  console.log(totalFrames);
 }
 
 function initElements() {
-  // Get elements
+  // Set elements
+  runBtn = document.getElementById("runBtn");
   codeEditor = CodeMirror(document.getElementById("codeEditor"), {
     mode: "javascript",
     theme: "abcdef",
+    tabSize: "4",
+    lineNumbers: true,
+    extraKeys: { "Ctrl-Space": "autocomplete" },
+    lineWrapping: true,
+    lineWiseCutCopy: true,
+    autofocus: true,
   });
-  inputSection = document.getElementById("inputTextArea");
-  runBtn = document.getElementById("runBtn");
+  exampleInput =
+    "var globalNum0 = 0;\nvar globalNum1 = 0;\n\nfunction oneLvlFunc0 () {\n\tvar oneDeepNum0 = 1;\n}\n\nfunction oneLvlFunc1 () {\n\tvar oneDeepNum1 = 1;\n\tfunction twoLvlFunc0 () {\n\t\tvar twoDeepNum0 = 2;\n\t}\n}\n\noneLvlFunc0();\noneLvlFunc1();";
+  codeEditor.doc.setValue(exampleInput);
 
   // Add listeners
   runBtn.addEventListener("click", run, false);
 }
 
 function run() {
-  // inputString = inputSection.textContent;
-  // instructions = parseInstructions(inputString);
-  // createFrames();
+  inputString = codeEditor.getValue();
+  instructions = parseInstructions(inputString);
+  createFrames();
 }
 
 function parseInstructions(inputString) {
@@ -73,14 +83,15 @@ function parseInstructions(inputString) {
 
   // Remove instructions of empty space. May be redundant at this point
   words = words.filter((word) => word != " ");
+  words = words.filter((word) => word != "");
 
   return words;
 }
 
 function createFrames() {
-  let globalFrame = new Frame("Global");
+  globalFrame = new Frame("Global");
   let startReadingFrom = 0;
-  console.log(fillFrame(globalFrame, startReadingFrom));
+  globalFrame = fillFrame(globalFrame, startReadingFrom);
 }
 
 function fillFrame(frame, startReadingFrom) {

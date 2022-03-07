@@ -8,7 +8,10 @@
     <script src="codeMirror/lib/codemirror.js"></script>
     <link rel="stylesheet" href="codeMirror/lib/codemirror.css" />
     <link rel="stylesheet" href="codeMirror/theme/abcdef.css" />
+    <link rel="stylesheet" href="codeMirror/hint/show-hint.css" />
     <script src="codeMirror/mode/javascript/javascript.js"></script>
+    <script src="codeMirror/hint/javascript-hint.js"></script>
+    <script src="codeMirror/hint/show-hint.js"></script>
 
     <link rel="stylesheet" href="style.css" />
     <script src="js/app.js"></script>
@@ -18,8 +21,9 @@
     <div id="mainWrapper">
       <div id="inputSection">
         <p>Howdy Team</p>
+        <br />
         <div id="codeEditor"></div>
-        <!-- <textarea id="inputTextArea" style="width: 300px; height: 400px">
+        <textarea id="codeExample" style="width: 300px; height: 400px">
 var globalNum0 = 0;
 var globalNum1 = 0;
 
@@ -37,7 +41,7 @@ function oneLvlFunc1 () {
 oneLvlFunc0();
 oneLvlFunc1();
               </textarea
-        > -->
+        >
         <br />
         <button id="runBtn">Run Code</button>
       </div>
