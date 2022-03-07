@@ -10,6 +10,7 @@
       crossorigin="anonymous"
     ></script>
     <script src="tools.js"></script>
+    <script src="regexDefinitions.js"></script>
     <link rel="stylesheet" href="style.css" />
     <title>parse</title>
   </head>
@@ -20,27 +21,20 @@
 <!-- var a = 2+2;
 console.log(a); -->
 <textarea id="inputTextArea" style="width: 300px; height: 400px">
-var a = 10;
-function b(){
-  var a = 5;  
-  console.log(d);
-}
-var abc = 10;
-var a = 24;
-function c(){
-  d = 6;
-  var a = 7;
-  e = 9;
-  function f(){
-    var a = 2;
+  var globalNum1 = 0;
+  var globalNum0 = "hello";
+  function oneLvlFunc0() {
+    var oneDeepNum0 = 1;
   }
-  f();
-}
-c();
-c();
-c();
-b();
-var xyz = 10;
+  
+  function oneLvlFunc1() {
+    function a(){
+      globalNum0 = 84;
+    }
+    a();
+  }
+
+  oneLvlFunc1();
 </textarea
 >
 <br />
@@ -51,80 +45,6 @@ var xyz = 10;
 </div>
 </body>
 
-<script>
-// Get input string from input section
-let runBtn;
-let inputString;
-let statements;
-let frames;
-
-function appMain() {
-  getElements();
-  addListeners();
-  statements = breakIntoComponents(inputString);
-  console.log(statements);
-  // parse(statements);
-  // runInterpreter();
-  // display();
-}
-
-function getElements() {
-  runBtn = document.getElementById("btnRunCode");
-}
-
-function addListeners() {
-  runBtn.addEventListener("click", fetchInput, false);
-}
-
-function fetchInput() {
-  inputString = document.querySelector("#inputTextArea").textContent;
-}
-var frameCount = 0;
-class Frame {
-  //a frame may contain variables, functionDEF....or...maybe a callStack...
-  id; 
-  parent;
-  children;
-
-  variables; //is an map [key, value] = [variablename, value]
-  functionDEF; //is an map ....//[functionName, functionFrame]
-
-  callStack;
-
-  constructor(aFunctionName, index) {
-    this.variables = new Map();
-    this.functionDEF = new Map();
-    this.callStack = new Array();
-    this.id = aFunctionName;
-    this.frameIndex = index;
-  }
-
-  addVariables(variable) {
-    //accepts an object of variable type
-    // this.variables.push([variable.name,variable.value]);
-    this.variables.set(variable.name, variable.value);
-  }
-  addFunction(newFunction) {
-    //whenever you add a function (through encountering a function declaration token within this frame's context) you must create a new frame for everything in this function...i think
-    var newFrame = new frame(newFunction.name + "_" + this.frameIndex); //we can also return the new frame created.
-    newFrame.previousNodeFrame = this;
-    this.functionDEF.set(newFunction.name, newFrame);
-  }
-  addStatements(statementStack) {
-    //is an object of statementStack
-    this.callStack.push(statementStack);
-  }
-  returnChildFrame(id) {
-    return this.functionDEF.get(id);
-  }
-  get returnParentFrame() {
-    return this.previousNodeFrame;
-  }
-  eval() {}
-  class;
-}
-</script>
-
   <script>
 window.addEventListener("load", function () {
   //step 1, we get javascript code from user as a raw string.
@@ -134,46 +54,16 @@ window.addEventListener("load", function () {
   //findEOFLine(statements, 0);
   //console.log(findEOFLine(statements, 0));
   var newFunction = new functionDEF("Global", 0, statements.length);
-  console.log(newFunction);
-  parseArray(0,statements, new frame(newFunction, statements.length));
 
   console.log(statements);
 
-  // ///////////////////////////////////////building a statement then excuting it... this sets a new variable String xyz = "helloworld..."
-  // var newStatementStack = new statementStack(); //needs more work
-  // newStatementStack.addNode(new value(2));
-  // newStatementStack.addNode(new multiply());
-  // newStatementStack.addNode(new value(4));
-  // newStatementStack.addNode(new multiply());
-  // newStatementStack.addNode(new value(3));
-  // console.log(newStatementStack.pop(1));
-
-  // // console.log(newStatementStack.getStackNodeIndexOf(1));
-
-  // var globalFrame = new frame("global", 0); //i guess the function name for global frame is global.
-  // globalFrame.addVariables(new variable("integer1", 45));
-  // globalFrame.addVariables(new variable("integer2", 34));
-  // globalFrame.addVariables(new variable("string1", "hello"));
-  // globalFrame.addStatements(newStatementStack);
-  // globalFrame.addStatements(newStatementStack);
-  // globalFrame.addStatements(newStatementStack);
-
-  // var newFunction = new functionDEF("newFunction");
-
-  // globalFrame.addFunction(newFunction);
-  // globalFrame.addFunction(newFunction);
-
-  // console.log(globalFrame);
+  parseArray(0,statements, new frame(newFunction, statements.length));
 });
 function parseArray(start, array, Frame) {
   //var Frame = newFrameObject;
-  console.log(Frame);
-  for (var index = Frame.start; index <=Frame.end; index++) {
+  // console.log("current frame: ", Frame.returnParentFrame());
+  for (var index = Frame.start; index <= Frame.end; index++) {
    console.log("index ", index);
-  //  if(index === Frame.end && Frame.id != "Global"){
-  //     var newFrame = Frame.previousNodeFrame;
-  //     //parseArray(Frame.returnToIndex, array, newFrame)
-  //   }
     //DETECT FUNCTION DECLATION TOKEN
    if (isFunctionDeclarion(array[index])) {
       var start = index;
@@ -201,16 +91,25 @@ function parseArray(start, array, Frame) {
       //DETECT VARIABLE REASSIGNMENT
     }else if(detectStatementVariableReassignment(array[index])){
       console.log("variable reassigbment on line ", index);
+      console.log(array[index]);
+      var tempArray = array[index].split("=");
+
+      var variableName = tempArray[0].trim();
+      var expression = tempArray[1].split(";");
+      expression = expression[0];
+      var newFrame = Frame;
+      console.log(newFrame.id);
+      while(!newFrame.variables.has(variableName) && typeof(newFrame.returnParentFrame()) !== "undefined"){
+        newFrame = newFrame.previousNodeFrame;
+      }
+      newFrame.variables.set(variableName, eval(expression));
+      console.log(newFrame.id);
     }
     else if(detectFunctionCalls(array[index])){
-     // console.log(array[index]);
       var functionCalled = Frame.returnFunctionDefinitions(array[index]);
       var newFrame = new frame(functionCalled, index);
       newFrame.previousNodeFrame = Frame;
       Frame.addChildFrame(newFrame);
-      //newFrame = functionCalled.Frame;
-      //console.log("function called", functionCalled);
-      //console.log("call start ", functionCalled);
      parseArray(functionCalled.getStart, array, newFrame);
     }
   }
@@ -223,7 +122,7 @@ class frame {
   id; //name
   fIndex; //this tracks something...im not sure yet
   variables; //is an map [key, value] = [variablename, value]
-  functionDefinitions; //is an map ....//[functionName, functionFrame]
+  functionDefinitions; //is an map ....//[functionName, functionDefinition {start, end}]
   childrenFrames;
   previousNodeFrame;
   returnToIndex;
