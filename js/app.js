@@ -12,8 +12,8 @@ function appMain() {
   initElements();
   run();
 
-  console.log(instructions);
-  console.log(frames);
+  //console.log(instructions);
+  //console.log(totalFrames);
 }
 
 function initElements() {
@@ -76,7 +76,7 @@ function parseInstructions(inputString) {
 function createFrames() {
   let globalFrame = new Frame("Global");
   let startReadingFrom = 0;
-  fillFrame(globalFrame, startReadingFrom);
+  console.log(fillFrame(globalFrame, startReadingFrom));
 }
 
 function fillFrame(frame, startReadingFrom) {
@@ -85,7 +85,7 @@ function fillFrame(frame, startReadingFrom) {
   for (let i = startReadingFrom; i < instructions.length; i++) {
     // Push frame at closing brace }
     if (instructions[i] == "}") {
-      frames.push(frame);
+      totalFrames.push(frame);
       return frame;
     }
 
