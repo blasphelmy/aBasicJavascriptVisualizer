@@ -35,12 +35,12 @@ function parseInstructions(inputString) {
   // Split into lines
   let lines = inputString.split(/\n+/);
 
-  // Trim tabs/exterior spaces
+  // Trim exterior spaces/tabs
   for (let i = 0; i < lines.length; i++) {
     lines[i] = lines[i].trim();
   }
 
-  // Remove any remaining empty lines ("") from array
+  // Remove empty lines ("")
   lines = lines.filter((ex) => ex != "");
 
   // Split lines into 'words' (individual instructions)
@@ -48,26 +48,25 @@ function parseInstructions(inputString) {
   let delimiters = [" ", "=", ",", ";", "(", ")", "{", "}"];
 
   lines.forEach((line) => {
-    /* ERROR - This function fails to include certain single chars, 
-      occurring at the end of variable assignments such as ;
-      and at the beginning of function calls ( 
-        
-      The issue is likely to do with when i reaches a delimeter.  */
-
     let foot = 0;
-    for (let i = 0; i < line.length; i++) {
-      if (delimiters.includes(line[i])) {
-        if (foot == i) {
-          words.push(line[i]); // Single char words, like = ; and (
-        } else {
-          words.push(line.slice(foot, i));
-        }
-        foot = i + 1;
+    for (let i = 0; i <= line.length; i++) {
+      if (
+        delimiters.includes(line[i]) ||
+        (i == line.length && delimiters.includes(line[foot]))
+      ) {
+        let word = line.slice(foot, i);
+        if (word != " ") words.push(word.trim());
+        foot = i;
       }
+
+      // Note: 'i' will go past last index
+      // Second if() condition will recognize this situation
+      // .slice() will capture the last char if it is a delimiter.
+      // Example: slice(16, 17) captures last char of 16 index long line.
     }
   });
 
-  // Remove instructions of empty space
+  // Remove instructions of empty space. May be redundant at this point
   words = words.filter((word) => word != " ");
 
   return words;
@@ -104,13 +103,14 @@ function fillFrame(frame, startReadingFrom) {
       if (instructions[i] == "(") i++;
       // Check for parameters
       if (instructions[i] == ")") i++;
+      // Check for if function call
       if (instructions[i] == "{") {
         i++;
         frame.children.push(fillFrame(childFrame, i));
-      }
-
-      while (instructions[i] != "}" || instructions[i] < instructions.length) {
-        i++;
+        // Increment i until closing bracket, to finish building current frame
+        while (instructions[i] != "}" && i < instructions.length) {
+          i++;
+        }
       }
     }
 
