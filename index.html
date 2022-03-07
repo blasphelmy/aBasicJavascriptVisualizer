@@ -26,8 +26,10 @@
   <body>
 <style>
   .codeEditiors{
-    width: 49.5%;
+    width: 49%;
     display: inline-block;
+    border-width: 2px;
+
   }
 </style>
 <div class="codeEditiors">
@@ -56,6 +58,7 @@
 </div>
 <div class="frameContainer">
   <p id="frameName">Scope Name: Gobal</p>
+  <p id="parentsName">Parent's Name: Null</p>
     <div id="variablesMap" class="frameContainer">
       <p>variables : </p>
       <p>a = 10</p>
@@ -103,26 +106,27 @@ function initParse() {
   //step 1, we get javascript code from user as a raw string.
   var inputString = editor.getValue() + ";";
   //now we split the inputString into its induvidual components
-  statements = breakIntoComponents(inputString);
+  var CallStack = breakIntoComponents(inputString);
 
   var newString = "";
-  for(var index = 0; index < statements.length; index++){
-    newString = newString + statements[index] + "\n";
+  for(var index = 0; index < CallStack.length-1; index++){
+    newString = newString + CallStack[index] + "\n";
   }
   outPutEditor.getDoc().setValue(newString);
-  var newFunction = new functionDEF("Global", 0, statements.length);
+  var newFunction = new functionDEF("Global", 0, CallStack.length);
 
-  console.log(statements);
+  console.log(CallStack);
 
-  var FinalFrame = parseArray(0,statements, new frame(newFunction, statements.length));
+  var FinalFrame = interpretCallStack(0,CallStack, new frame(newFunction, CallStack.length));
   console.log(FinalFrame);
 }
 
-function parseArray(start, array, Frame) {
+function interpretCallStack(start, array, Frame) {
   //var Frame = newFrameObject;
   // console.log("current frame: ", Frame.returnParentFrame());
   for (var index = Frame.start; index <= Frame.end; index++) {
    console.log("index ", index);
+   console.log(Frame.id);
     //DETECT FUNCTION DECLATION TOKEN
    if (isFunctionDeclarion(array[index])) {
       index = functionDeclaredHandler(index, array, Frame);
@@ -148,7 +152,7 @@ function parseArray(start, array, Frame) {
       var newFrame = new frame(newFunctionDef, index);
       newFrame.previousNodeFrame = originFrame;
       originFrame.addChildFrame(newFrame);
-      parseArray(newFunctionDef.getStart, array, newFrame);
+      interpretCallStack(newFunctionDef.getStart, array, newFrame);
       }else{
         return "on line " + index + " error: function definition doesn't exist!";
       }
