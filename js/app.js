@@ -6,12 +6,13 @@ let runBtn;
 let inputSection;
 let inputString;
 let instructions;
-let frames = [];
+let totalFrames = [];
 
 function appMain() {
   initElements();
   run();
 
+  console.log(instructions);
   console.log(frames);
 }
 
@@ -66,8 +67,6 @@ function parseInstructions(inputString) {
     }
   });
 
-  console.log(words);
-
   // Remove instructions of empty space
   words = words.filter((word) => word != " ");
 
@@ -110,7 +109,6 @@ function fillFrame(frame, startReadingFrom) {
         frame.children.push(fillFrame(childFrame, i));
       }
 
-      // Skip to closing brace
       while (instructions[i] != "}" || instructions[i] < instructions.length) {
         i++;
       }
