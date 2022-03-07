@@ -19,6 +19,7 @@
     <script src="tools.js"></script>
     <script src="regexDefinitions.js"></script>
     <script src="handlers.js"></script>
+    <script src="eventListeners.js"></script>
     <link rel="stylesheet" href="style.css" />
 
     <title>parse</title>
@@ -26,7 +27,7 @@
   <body>
 <style>
   .codeEditiors{
-    width: 49%;
+    width: 46%;
     display: inline-block;
     border-width: 2px;
 
@@ -56,23 +57,24 @@
 <textarea id="code_array" name="code" style="position:relative; width: 50%;">
 </textarea>
 </div>
-<div class="frameContainer">
-  <p id="frameName">Scope Name: Gobal</p>
-  <p id="parentsName">Parent's Name: Null</p>
-    <div id="variablesMap" class="frameContainer">
-      <p>variables : </p>
-      <p>a = 10</p>
-      <p> name = "David"</p>
-    </div>
-    <div id="functionDefinitions" class="frameContainer">
-      <p>Function Definitions : </p>
-      <p>a() start: 1 end: 5</p>
-    </div>
-    <div id="childrenFrames" class="frameContainer">
-      <p>Children Frames : </p>
-    </div>
+<div id="mainFrameContainer">
+  <!-- <div class="frameContainer">
+    <p id="frameName">Scope Name: Gobal</p>
+    <p id="parentsName">Parent's Name: Null</p>
+      <div id="variablesMap" class="frameContainer">
+        <p>variables : </p>
+        <p>a = 10</p>
+        <p> name = "David"</p>
+      </div>
+      <div id="functionDefinitions" class="frameContainer">
+        <p>Function Definitions : </p>
+        <p>a() start: 1 end: 5</p>
+      </div>
+      <div id="childrenFrames" class="frameContainer">
+        <p>Children Frames : </p>
+      </div>
+  </div> -->
 </div>
-
 <button id="runBtn" onclick="initParse()">Run Code</button>
 </div>
 
@@ -81,52 +83,42 @@
   <script>
 var editor = null;
 var outPutEditor = null;
-window.addEventListener("load", function(e){
-  editor = CodeMirror.fromTextArea(document.getElementById("code"), {
-        firstLineNumber: 0,
-        lineNumbers: true,
-        theme: "material-palenight",
-        matchBrackets: true,
-        continueComments: "Enter",
-        extraKeys: {"Ctrl-Q": "toggleComment"},
-      });
-      editor.setSize(null, 400);
-      outPutEditor = CodeMirror.fromTextArea(document.getElementById("code_array"), {
-        firstLineNumber: 0,
-        lineNumbers: true,
-        theme: "material-palenight",
-        matchBrackets: true,
-        continueComments: "Enter",
-        extraKeys: {"Ctrl-Q": "toggleComment"},
-      });
-      outPutEditor.setSize(null, 400);
-});
+var count = 0;
 function initParse() {
   //console.clear();
+  document.getElementById("mainFrameContainer").innerHTML = "";
   //step 1, we get javascript code from user as a raw string.
   var inputString = editor.getValue() + ";";
   //now we split the inputString into its induvidual components
   var CallStack = breakIntoComponents(inputString);
-
-  var newString = "";
-  for(var index = 0; index < CallStack.length-1; index++){
-    newString = newString + CallStack[index] + "\n";
-  }
-  outPutEditor.getDoc().setValue(newString);
+  outPutCallStacktoCodeEditor(CallStack);
   var newFunction = new functionDEF("Global", 0, CallStack.length);
-
-  console.log(CallStack);
-
-  var FinalFrame = interpretCallStack(0,CallStack, new frame(newFunction, CallStack.length));
+  var FinalFrame = interpretCallStack(0, CallStack, new frame(newFunction, CallStack.length, count));
   console.log(FinalFrame);
 }
-
 function interpretCallStack(start, array, Frame) {
-  //var Frame = newFrameObject;
-  // console.log("current frame: ", Frame.returnParentFrame());
+  var element = null;
+  if(Frame.id === "Global"){
+    element = document.querySelector("#mainFrameContainer");
+  }else{
+    element = document.getElementById(Frame.previousNodeFrame.id + Frame.previousNodeFrame.fIndex);
+  }
+
+  var newScopeFrame = document.createElement("div");
+  newScopeFrame.id = Frame.id + Frame.fIndex;
+  newScopeFrame.classList.add("frameContainer");
+  newScopeFrame.innerHTML = "<p>Frame ID : " + Frame.id + "</p>";
+
+  var newVariableFrames = document.createElement("div");
+  newVariableFrames.id = Frame.id + count + "variables";
+  newVariableFrames.classList.add("frameContainer");
+
+  newScopeFrame.appendChild(newVariableFrames);
+  element.appendChild(newScopeFrame);
+
   for (var index = Frame.start; index <= Frame.end; index++) {
+    
    console.log("index ", index);
-   console.log(Frame.id);
     //DETECT FUNCTION DECLATION TOKEN
    if (isFunctionDeclarion(array[index])) {
       index = functionDeclaredHandler(index, array, Frame);
@@ -148,11 +140,12 @@ function interpretCallStack(start, array, Frame) {
     else if(detectFunctionCalls(array[index])){
       var originFrame = returnFrameContainingFunctionDEF(Frame, array[index]);
       if(originFrame.returnFunctionDefinitions(array[index])){
-      var newFunctionDef = originFrame.returnFunctionDefinitions(array[index]);
-      var newFrame = new frame(newFunctionDef, index);
-      newFrame.previousNodeFrame = originFrame;
-      originFrame.addChildFrame(newFrame);
-      interpretCallStack(newFunctionDef.getStart, array, newFrame);
+        var newFunctionDef = originFrame.returnFunctionDefinitions(array[index]);
+        var newFrame = new frame(newFunctionDef, index, count);
+        count++;
+        newFrame.previousNodeFrame = originFrame;
+        originFrame.addChildFrame(newFrame);
+        interpretCallStack(newFunctionDef.getStart, array, newFrame);
       }else{
         return "on line " + index + " error: function definition doesn't exist!";
       }

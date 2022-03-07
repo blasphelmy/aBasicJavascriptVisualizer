@@ -10,7 +10,7 @@ class frame {
     returnToIndex;
     start;
     end;
-    constructor(aFunctionDefinition, index) {
+    constructor(aFunctionDefinition, index, count) {
       this.variables = new Map();
       this.functionDefinitions = new Map();
       this.childrenFrames = new Array();
@@ -18,7 +18,7 @@ class frame {
       this.returnToIndex = index + 1;
       this.start = aFunctionDefinition.getStart();
       this.end = aFunctionDefinition.getEnd();
-      this.fIndex = index;
+      this.fIndex = count;
     }
     addVariables(variable) {
       //accepts an object of variable type

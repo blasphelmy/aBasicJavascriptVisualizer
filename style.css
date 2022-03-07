@@ -43,7 +43,9 @@ body {
 p {
   background-color: rgba(214, 120, 223, 0.031);
 }
-
+#mainFrameContainer{
+  background-color: rgba(214, 120, 223, 0.062);
+}
 .frameContainer { 
   margin: 15px;
   padding: 10px;

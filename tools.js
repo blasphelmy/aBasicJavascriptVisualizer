@@ -98,25 +98,6 @@ function returnFunctionStack(array, start, end){ //returns a stack of statements
   }
   return newArray;
 }
-function findEOFLine(array, start) {
-  //raw string -> breakIntoComponents() first. start is the index of the array where a function declartion is detected.
-  var count = 0;
-  var endLine = -1;
-  for (var x = start; x < array.length; x++) {
-    if (array[x].search("{") > -1) {
-      count = count + 1;
-    }
-    if (array[x].search("}") > -1) {
-      count = count - 1;
-    }
-    if (count === 0 && array[x].search("}") > -1) {
-      endLine = x;
-      break;
-    }
-    // console.log(count);
-  }
-  return endLine;
-}
 function breakExpressionIntoComponents(expression){ //expression should be a string.
   const basicArithmatics =  new RegExp(/([+/*-])/gm);
   var newComponentsArray = expression.split(basicArithmatics);
@@ -133,4 +114,11 @@ function returnFrameContainingFunctionDEF(newFrame, functionName){
     newFrame = newFrame.returnParentFrame();
   }
   return newFrame;
+}
+function outPutCallStacktoCodeEditor(CallStack){
+  var newString = "";
+  for(var index = 0; index < CallStack.length-1; index++){
+    newString = newString + CallStack[index] + "\n";
+  }
+  outPutEditor.getDoc().setValue(newString);
 }
