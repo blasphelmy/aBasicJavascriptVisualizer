@@ -47,8 +47,9 @@
 </body>
 
   <script>
+var editor = null;
 window.addEventListener("load", function(e){
-  var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+  editor = CodeMirror.fromTextArea(document.getElementById("code"), {
         lineNumbers: true,
         theme: "monokai",
         matchBrackets: true,
@@ -59,7 +60,8 @@ window.addEventListener("load", function(e){
 function initParse() {
   console.clear();
   //step 1, we get javascript code from user as a raw string.
-  var inputString = document.querySelector("#code").value;
+  var inputString = editor.getValue();
+  inputString = inputString + ";";
   //now we split the inputString into its induvidual components
   statements = breakIntoComponents(inputString);
   //findEOFLine(statements, 0);
