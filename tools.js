@@ -122,6 +122,15 @@ function breakExpressionIntoComponents(expression){ //expression should be a str
   var newComponentsArray = expression.split(basicArithmatics);
   return newComponentsArray;
 }
-function assignExpressionObjects(newComponentsArray){
-
+function returnFrameContainingVariable(newFrame, variableName){
+  while (!newFrame.variables.has(variableName) && typeof (newFrame.returnParentFrame()) !== "undefined") {
+    newFrame = newFrame.returnParentFrame();
+  }
+  return newFrame;
+}
+function returnFrameContainingFunctionDEF(newFrame, functionName){
+  while (!newFrame.returnFunctionDefinitions(functionName) && typeof (newFrame.returnParentFrame()) !== "undefined") {
+    newFrame = newFrame.returnParentFrame();
+  }
+  return newFrame;
 }
