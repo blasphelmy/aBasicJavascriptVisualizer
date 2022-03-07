@@ -83,10 +83,11 @@
   <script>
 var editor = null;
 var outPutEditor = null;
-var count = 0;
+var count = 1;
 function initParse() {
   //console.clear();
   document.getElementById("mainFrameContainer").innerHTML = "";
+  count = 1;
   //step 1, we get javascript code from user as a raw string.
   var inputString = editor.getValue() + ";";
   //now we split the inputString into its induvidual components
@@ -110,8 +111,9 @@ function interpretCallStack(start, array, Frame) {
   newScopeFrame.innerHTML = "<p>Frame ID : " + Frame.id + "</p>";
 
   var newVariableFrames = document.createElement("div");
-  newVariableFrames.id = Frame.id + count + "variables";
+  newVariableFrames.id = Frame.id + Frame.fIndex + "variables";
   newVariableFrames.classList.add("frameContainer");
+  newVariableFrames.innerHTML = "<p>Active Varibles : </p>";
 
   newScopeFrame.appendChild(newVariableFrames);
   element.appendChild(newScopeFrame);
