@@ -44,13 +44,18 @@ p {
   background-color: rgba(214, 120, 223, 0.000); 
   /* why does this work??*/
 }
-.frameContainer { 
-  margin: 15px;
-  padding: 10px;
-  background-color: rgba(214, 120, 223, 0.042);
-  border-left-width: 2px;
-  border-left-style: solid;
-  border-left-color: rgba(199, 120, 223, 0.329);
-  border-radius: 3px;
-  color: white;
+h1{
+  color: rgb(226, 210, 255);
+  padding: 40px;
+}
+#codeEditorWrapper {
+  position: relative;
+  max-height: 400px;
+  padding: 20px;
+  overflow: scroll;
+}
+.codeEditiors{
+  width: 46%;
+  display: inline-block;
+  border-width: 2px;
 }

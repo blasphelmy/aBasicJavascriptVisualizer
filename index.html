@@ -26,54 +26,57 @@
   </head>
   <body>
 <style>
-  .codeEditiors{
-    width: 46%;
-    display: inline-block;
-    border-width: 2px;
-
-  }
+.frameContainer { 
+  margin: 15px;
+  padding: 10px;
+  background-color: rgba(214, 120, 223, 0.042);
+  border-left-color: rgba(214, 120, 223, 0.042);
+  border-left-width: 2px;
+  border-left-style: solid;
+  border-radius: 3px;
+  color: rgb(255, 253, 223);
+}
+.variableColors{
+  background-color: rgba(17, 253, 9, 0.096);
+  border-left-color: rgba(17, 253, 9, 0.096);
+}
+.functDEF {
+  background-color: rgba(79, 255, 255, 0.082);
+  border-left-color: rgba(79, 255, 255, 0.082);
+}
+.activeFrames{
+  background-color: rgba(253, 107, 9, 0.062);
+  border-left-color: rgba(253, 107, 9, 0.096);
+}
 </style>
+<h1>A Simple Javascript Parser</h1>
+<div id="codeEditorWrapper">
 <div class="codeEditiors">
-<textarea id="code" name="code">
-  var a = 10;
-  function b(){
-    a = 5;  
-    c();
-    console.log(d);
-  }
-  function c(){
-    d = 6;
-    var a = 7;
-    e = 9;
-    function f(){
-      a = 2;
+  <textarea id="code" name="code">
+    var a = 10;
+    function b(){
+      a = 5;  
+      c();
+      console.log(d);
     }
-    f();
-  }
-  b();
-</textarea>
+    function c(){
+      d = 6;
+      var a = 7;
+      e = 9;
+      function f(){
+        a = 2;
+      }
+      f();
+    }
+    b();
+  </textarea>
 </div>
 <div class="codeEditiors">
-<textarea id="code_array" name="code">
-</textarea>
+  <textarea id="code_array" name="code">
+  </textarea>
+</div>
 </div>
 <div id="mainFrameContainer">
-  <!-- <div class="frameContainer">
-    <p id="frameName">Scope Name: Gobal</p>
-    <p id="parentsName">Parent's Name: Null</p>
-      <div id="variablesMap" class="frameContainer">
-        <p>variables : </p>
-        <p>a = 10</p>
-        <p> name = "David"</p>
-      </div>
-      <div id="functionDefinitions" class="frameContainer">
-        <p>Function Definitions : </p>
-        <p>a() start: 1 end: 5</p>
-      </div>
-      <div id="childrenFrames" class="frameContainer">
-        <p>Children Frames : </p>
-      </div>
-  </div> -->
 </div>
 <button id="runBtn" onclick="initParse()">Run Code</button>
 </div>
@@ -107,20 +110,26 @@ function interpretCallStack(start, array, Frame) {
 
   var newScopeFrame = document.createElement("div");
   newScopeFrame.id = Frame.id + Frame.fIndex;
-  newScopeFrame.classList.add("frameContainer");
+  newScopeFrame.classList.add("frameContainer", "scopeColors");
   newScopeFrame.innerHTML = "<p>Scope ID : " + Frame.id + "</p>";
 
   var newVariableFrames = document.createElement("div");
   newVariableFrames.id = Frame.id + Frame.fIndex + "variables";
-  newVariableFrames.classList.add("frameContainer");
+  newVariableFrames.classList.add("frameContainer", "variableColors");
   newVariableFrames.innerHTML = "<p>Active Variables : </p>";
+
+  var newFunctionDefContainer = document.createElement("div");
+  newFunctionDefContainer.id = Frame.id + Frame.fIndex + "FunctionDef";
+  newFunctionDefContainer.classList.add("frameContainer", "functDEF");
+  newFunctionDefContainer.innerHTML = "<p>Function Definitions : </p>";
 
   var newFramesContainer = document.createElement("div");
   newFramesContainer.id = Frame.id + Frame.fIndex + "ChildrenFrames";
-  newFramesContainer.classList.add("frameContainer");
+  newFramesContainer.classList.add("frameContainer",  "activeFrames");
   newFramesContainer.innerHTML = "<p>Active Frames : </p>";
 
   newScopeFrame.appendChild(newVariableFrames);
+  newScopeFrame.appendChild(newFunctionDefContainer);
   newScopeFrame.appendChild(newFramesContainer);
   element.appendChild(newScopeFrame);
 
@@ -129,9 +138,17 @@ function interpretCallStack(start, array, Frame) {
    console.log("index ", index);
     //DETECT FUNCTION DECLATION TOKEN
    if (isFunctionDeclarion(array[index])) {
-      index = functionDeclaredHandler(index, array, Frame);
+     index = functionDeclaredHandler(index, array, Frame);
       //DETECT VARIABLE DECLATION TOKEN
     } else if (isVarDeclartion(array[index])) {
+
+      try{
+        var temp = array[index+1].split("=");
+        console.log("eval = ", eval(temp[1]));
+     }catch{
+       return "error on index :" + index;
+     }
+
       index = variableDeclarationHandler(index, array, Frame);
       //DETECT VARIABLE REASSIGNMENT
     }else if(detectStatementVariableReassignment(array[index])){
@@ -154,7 +171,7 @@ function interpretCallStack(start, array, Frame) {
         newFrame.previousNodeFrame = originFrame;
         originFrame.addChildFrame(newFrame);
         interpretCallStack(newFunctionDef.getStart, array, newFrame);
-      }else{
+      }else if(array){
         return "on line " + index + " error: function definition doesn't exist!";
       }
     }
