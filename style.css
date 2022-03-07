@@ -41,12 +41,13 @@ body {
   width: 100%;
 }
 p {
-  background-color: rgba(214, 120, 223, 0.031);
+  background-color: rgba(214, 120, 223, 0.000); 
+  /* why does this work??*/
 }
 .frameContainer { 
   margin: 15px;
   padding: 10px;
-  background-color: rgba(214, 120, 223, 0.062);
+  background-color: rgba(214, 120, 223, 0.042);
   border-left-width: 2px;
   border-left-style: solid;
   border-left-color: rgba(199, 120, 223, 0.329);

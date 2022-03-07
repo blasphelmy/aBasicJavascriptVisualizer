@@ -54,7 +54,7 @@
 </textarea>
 </div>
 <div class="codeEditiors">
-<textarea id="code_array" name="code" style="position:relative; width: 50%;">
+<textarea id="code_array" name="code">
 </textarea>
 </div>
 <div id="mainFrameContainer">
@@ -102,7 +102,7 @@ function interpretCallStack(start, array, Frame) {
   if(Frame.id === "Global"){
     element = document.querySelector("#mainFrameContainer");
   }else{
-    element = document.getElementById(Frame.previousNodeFrame.id + Frame.previousNodeFrame.fIndex);
+    element = document.getElementById(Frame.previousNodeFrame.id + Frame.previousNodeFrame.fIndex + "ChildrenFrames");
   }
 
   var newScopeFrame = document.createElement("div");
