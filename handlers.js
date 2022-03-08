@@ -16,7 +16,7 @@ function functionDeclaredHandler(index, array, Frame){
 }
 function variableDeclarationHandler(index, array, Frame){
   
-  if(new RegExp("=").test(array[index+1])){
+  if(new RegExp("=").test(array[index+1]) && !(new RegExp(/([0-9])+([ ]*)+([=])/gm)).test(array[index + 1])){
     var keyValuePair = array[index+1].split("=");
     keyValuePair[0] = keyValuePair[0].trim();
 
