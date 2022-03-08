@@ -143,9 +143,9 @@ function createNewFrameElements(elementFrame, Frame){
   newFramesContainer.classList.add("frameContainer",  "activeFrames");
   newFramesContainer.innerHTML = "<p>Active Frames : </p>";
 
+  newScopeFrame.appendChild(newFramesContainer);
   newScopeFrame.appendChild(newFunctionDefContainer);
   newScopeFrame.appendChild(newVariableFrames);
-  newScopeFrame.appendChild(newFramesContainer);
   elementFrame.appendChild(newScopeFrame);
 }
 function appendVariablesToVisulizer(Frame){

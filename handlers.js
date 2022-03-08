@@ -23,27 +23,9 @@ function variableDeclarationHandler(index, array, Frame){
   var expression = keyValuePair[1];
   console.log(keyValuePair);
   expression = breakExpressionIntoComponents(expression);
-  // console.log(expression);
   var newVarible = new variable(keyValuePair[0], eval(keyValuePair[1])); //cheater!
   Frame.addVariables(newVarible);
   appendVariablesToVisulizer(Frame);
   index++;
   return index;
-}
-function appendVariablesToVisulizer(Frame){
-  var frameVariables = Frame.variables;
-  var element = document.getElementById(Frame.id + Frame.fIndex + "variables");
-  element.innerHTML = "";
-
-  var newElementChild = document.createElement("p");
-  newElementChild.innerHTML = "Active Variables :";
-
-  element.appendChild(newElementChild);
-
-  console.log(element);  
-  for (const [key, value] of frameVariables.entries()) {
-    var newElementChild = document.createElement("p");
-    newElementChild.innerHTML = "{ name: " + key + " value: " + value + " }";
-    element.appendChild(newElementChild);
-  }
 }
