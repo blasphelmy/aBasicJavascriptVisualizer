@@ -55,6 +55,12 @@
   border-left-color: rgba(253, 66, 9, 0.226);
   margin: 7px;
 }
+.hide{
+  display: none;
+}
+.show {
+  display:block;
+}
 </style>
 <h1>A Simple Javascript Parser</h1>
 <div id="codeEditorWrapper">
@@ -113,12 +119,11 @@ function interpretCallStack(start, array, Frame) {
     elementFrame = document.querySelector("#mainFrameContainer");
   }else{
     elementFrame = document.getElementById(Frame.previousNodeFrame.id + Frame.previousNodeFrame.fIndex + "ChildrenFrames");
+    elementFrame.classList.remove("hide");
+    elementFrame.classList.add("show");
   }
-
   createNewFrameElements(elementFrame, Frame);
-
   for (var index = Frame.start; index <= Frame.end; index++) {
-    
    console.log("index ", index);
     //DETECT FUNCTION DECLATION TOKEN
    if (isFunctionDeclarion(array[index])) {

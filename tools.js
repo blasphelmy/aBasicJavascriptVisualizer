@@ -130,17 +130,17 @@ function createNewFrameElements(elementFrame, Frame){
 
   var newVariableFrames = document.createElement("div");
   newVariableFrames.id = Frame.id + Frame.fIndex + "variables";
-  newVariableFrames.classList.add("frameContainer", "variableColors");
+  newVariableFrames.classList.add("frameContainer", "variableColors", "hide");
   // newVariableFrames.innerHTML = "<p>Active Variables : </p>";
 
   var newFunctionDefContainer = document.createElement("div");
   newFunctionDefContainer.id = Frame.id + Frame.fIndex + "FunctionDef";
-  newFunctionDefContainer.classList.add("frameContainer", "functDEF");
+  newFunctionDefContainer.classList.add("frameContainer", "functDEF", "hide");
   // newFunctionDefContainer.innerHTML = "<p>Function Definitions : </p>";
 
   var newFramesContainer = document.createElement("div");
   newFramesContainer.id = Frame.id + Frame.fIndex + "ChildrenFrames";
-  newFramesContainer.classList.add("frameContainer",  "activeFrames");
+  newFramesContainer.classList.add("frameContainer",  "activeFrames", "hide");
   newFramesContainer.innerHTML = "<p>Active Frames : </p>";
 
   newScopeFrame.appendChild(newFunctionDefContainer);
@@ -152,6 +152,8 @@ function appendVariablesToVisulizer(Frame){
   var frameVariables = Frame.variables;
   var element = document.getElementById(Frame.id + Frame.fIndex + "variables");
   element.innerHTML = "";
+  element.classList.remove("hide");
+  element.classList.add("show");
 
   var newElementChild = document.createElement("p");
   newElementChild.innerHTML = "Active Variables :";

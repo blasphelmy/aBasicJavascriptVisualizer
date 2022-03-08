@@ -6,7 +6,8 @@ function functionDeclaredHandler(index, array, Frame){
   var newFunctionDeclarationElement = document.createElement("p");
   newFunctionDeclarationElement.innerText = "FUNCTIONDEF: " + array[index+1] + "  { start: " + start + "; end: " + end + " }";
   element.appendChild(newFunctionDeclarationElement);
-
+  element.classList.remove("hide");
+  element.classList.add("show");
   //console.log(newFunctionDeclarationElement);
 
   var newFunction = new functionDEF(array[index+ 1], start+2, end);
