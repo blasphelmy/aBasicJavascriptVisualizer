@@ -1,5 +1,6 @@
 //**important notes: on a function call you will always need to initialize a the corrosponding frame... how?
 class frame {
+    Globalobjects;
     //a frame may contain variables, functionDEF....or...maybe a callStack...
     id; //name
     fIndex; //this tracks something...im not sure yet
@@ -45,6 +46,9 @@ class frame {
     }
     peak(){
       return this;
+    }
+    setDefaultGlobalObjects(objectsArray){
+      
     }
     get returnPreviousFrame(){
       return this.previousNodeFrame;
