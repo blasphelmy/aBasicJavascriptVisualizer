@@ -22,11 +22,10 @@ function variableDeclarationHandler(index, array, Frame){
 
     var variableName = keyValuePair[0];
     var expression = keyValuePair[1];
-    console.log(keyValuePair);
     expression = breakExpressionIntoComponents(expression);
     var newVarible = new variable(keyValuePair[0], eval(keyValuePair[1])); //cheater!
     Frame.addVariables(newVarible);
-  }else{
+  }else if(!(new RegExp(/([0-9])+([ ]*)+([;])/gm)).test(array[index+1])){
     var keyValuePair = array[index+1].split(";");
     keyValuePair[0] = keyValuePair[0].trim();
     var newVarible = new variable(keyValuePair[0], null); //cheater!

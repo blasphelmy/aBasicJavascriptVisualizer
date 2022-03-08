@@ -159,8 +159,7 @@ function appendVariablesToVisulizer(Frame){
   newElementChild.innerHTML = "Active Variables :";
 
   element.appendChild(newElementChild);
-
-  console.log(element);  
+ 
   for (const [key, value] of frameVariables.entries()) {
     var newElementChild = document.createElement("p");
     newElementChild.innerHTML = "{ name: " + key + " value: " + value + " }";
