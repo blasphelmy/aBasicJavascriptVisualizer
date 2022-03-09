@@ -161,3 +161,24 @@ function appendVariablesToVisulizer(Frame){
     element.appendChild(newElementChild);
   }
 }
+function evalExpression(string, Frame, index){ //in the format of 2 + 2 + a for example..
+  var newArray = breakExpressionIntoComponents(string);
+  console.log(newArray);
+  for(var index = 0; index < newArray.length; index++){
+    if((new RegExp(/(^[a-zA-Z][a-zA-Z]*[0-9]*)/gm)).test(newArray[index])){
+      var newFrame = returnFrameContainingVariable(Frame, newArray[index]);
+      newArray[index] = newFrame.variables.get(newArray[index]);
+      if(typeof(newArray[index]) === "undefined"){
+        newArray = "error";
+      }
+    }
+  }
+  return newArray.join("");
+}
+function breakExpressionIntoComponents(expression){ //expression should be a string.
+  const basicArithmatics =  new RegExp(/([+|\-|*|/|(|)])/gm);
+  var newComponentsArray = expression.split(basicArithmatics);
+  newComponentsArray = removeEmptyIndices(newComponentsArray);
+  newComponentsArray = trimStringInArray(newComponentsArray);
+  return newComponentsArray;
+}
