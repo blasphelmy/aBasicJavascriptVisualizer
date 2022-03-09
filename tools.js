@@ -167,6 +167,10 @@ function evalExpression(string, Frame, index){ //in the format of 2 + 2 + a for 
     if((new RegExp(/(^[a-zA-Z][a-zA-Z]*[0-9]*)/gm)).test(newArray[index])){
       var newFrame = returnFrameContainingVariable(Frame, newArray[index]);
       newArray[index] = newFrame.variables.get(newArray[index]);
+      if((new RegExp(/((^[a-zA-Z][a-zA-Z]*[0-9]*))/gm)).test(newArray[index])){
+        console.log("type string");
+        newArray[index] = '"' + newArray[index] + '"';
+      }
       if(typeof(newArray[index]) === "undefined"){
         newArray = "error";
       }
