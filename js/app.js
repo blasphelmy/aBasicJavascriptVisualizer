@@ -7,6 +7,7 @@ let codeEditor;
 let exampleInput;
 let inputSection;
 let inputString;
+let outputSection;
 let instructions;
 let globalFrame;
 let totalFrames;
@@ -15,9 +16,9 @@ function appMain() {
   initElements();
   run();
 
-  // console.log(instructions);
-  // console.log(globalFrame);
-  // console.log(totalFrames);
+  console.log(instructions);
+  console.log(globalFrame);
+  console.log(totalFrames);
 }
 
 function initElements() {
@@ -36,6 +37,7 @@ function initElements() {
   exampleInput =
     "var globalNum0 = 0;\nvar globalNum1 = 0;\n\nfunction oneLvlFunc0 () {\n\tvar oneDeepNum0 = 1;\n}\n\nfunction oneLvlFunc1 () {\n\tvar oneDeepNum1 = 1;\n\tfunction twoLvlFunc0 () {\n\t\tvar twoDeepNum0 = 2;\n\t}\n}\n\noneLvlFunc0();\noneLvlFunc1();";
   codeEditor.doc.setValue(exampleInput);
+  outputSection = document.getElementById("outputSection");
 
   // Add listeners
   runBtn.addEventListener("click", run, false);
@@ -154,8 +156,6 @@ function fillFrame(frame, startReadingFrom) {
   }
 }
 
-function displayFrames() {}
-
 class Variable {
   type;
   name;
@@ -177,5 +177,69 @@ class Frame {
     this.id = id;
     this.variables = [];
     this.children = [];
+  }
+}
+
+function displayFrames() {
+  outputSection.innerHTML = "";
+
+  globalSummary = createSummary(globalFrame);
+  globalSummary.open = true;
+  outputSection.appendChild(globalSummary);
+
+  function createSummary(frame) {
+    let details = document.createElement("details");
+    let summary = document.createElement("summary");
+
+    // ID
+    summary.innerHTML = frame.id;
+    details.appendChild(summary);
+
+    // Parent
+    let parent = document.createElement("div");
+    if (frame.id == "Global") parent.innerHTML = "undefined";
+    else parent.innerHTML = "Parent: " + frame.parent.id;
+    details.appendChild(parent);
+
+    // Variables
+    let localVariables = document.createElement("div");
+
+    let variablesTitle = document.createElement("div");
+    variablesTitle.innerHTML = "Variables: ";
+    localVariables.appendChild(variablesTitle);
+
+    frame.variables.forEach((variable) => {
+      let variableSummary = document.createElement("ul");
+      let li = document.createElement("li");
+
+      li.innerHTML =
+        "Type: " +
+        variable.type +
+        " Name: " +
+        variable.name +
+        " Value: " +
+        variable.value;
+
+      variableSummary.appendChild(li);
+
+      localVariables.appendChild(variableSummary);
+    });
+
+    details.appendChild(localVariables);
+
+    // Children
+    let frameChildren = document.createElement("div");
+
+    let childrenTitle = document.createElement("div");
+    childrenTitle.innerHTML = "Children: ";
+    frameChildren.appendChild(childrenTitle);
+
+    frame.children.forEach((child) => {
+      frameChildren.appendChild(createSummary(child));
+    });
+
+    details.appendChild(frameChildren);
+
+    return details;
   }
 }
