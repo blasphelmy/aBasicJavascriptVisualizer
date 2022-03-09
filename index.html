@@ -149,7 +149,7 @@ function interpretCallStack(start, array, Frame) {
         return;
       }
     }else if(!(new RegExp(/(['}{'])/gm).test(array[index])) && index < array.length-1){
-      addConsoleLine("error on line " + index);
+      addConsoleLine("error: on line " + index);
       errorDetected = true;
       return;
     }
