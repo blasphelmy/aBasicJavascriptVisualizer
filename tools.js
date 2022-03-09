@@ -27,14 +27,14 @@ function splitIntoTokens(array) { //ONLY USE THIS AFTER INPUT STRING IS COMPLETE
   for (var index = 0; index < array.length; index++) {
     //FOR FUNCTION DECLARATIONS
     if (array[index].match(/(function[ ])/gm)) {
-      var temp = array[index].split(/(function[ ])/gm);
+      var temp = array[index].split(/(function[ ]*)/gm);
       for (var x = 0; x < temp.length; x++) {
         newArray.push(temp[x]);
       }
     }
     //FOR VARIABLE DECLARATIONS
     else if (array[index].match(/(var[ ])/gm)) {
-      var temp = array[index].split(/(var)[ ]/gm);
+      var temp = array[index].split(/(var)[ ]*/gm);
       for (var x = 0; x < temp.length; x++) {
         newArray.push(temp[x]);
       }
