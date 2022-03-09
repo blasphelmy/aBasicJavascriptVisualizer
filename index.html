@@ -42,6 +42,10 @@
 #console > p{
   font-family: "Lucida Console", "Courier New", monospace;
   font-size: 13px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  background-color: rgb(93, 92, 110);
+  border-color: rgb(106, 104, 131);;
 }
 </style>
 <h1>A Simple Javascript Parser</h1>
@@ -49,12 +53,10 @@
 <div class="codeEditiors">
   <textarea id="code" name="code">
     var a = 10 + 10 * 4;   
-    var abc = a + 3 + 34;
+    var string1 = "hello";
     function b(){
       a = 5;
-      var x = abc;  
       c();
-      console.log(d);
     }
     function c(){
       d = 6;
@@ -62,10 +64,12 @@
       e = 9;
       function f(){
         a = 2;
+         string2 = "world!";
       }
       f();
     }
     b();
+    console.log(string1 + " " + string2);
   </textarea>
 </div>
 <div class="codeEditiors">
