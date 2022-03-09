@@ -45,8 +45,7 @@ function run() {
   inputString = codeEditor.getValue();
   instructions = parseInstructions(inputString);
   createFrames();
-  console.log(instructions);
-  console.log(globalFrame);
+  displayFrames();
 }
 
 function parseInstructions(inputString) {
@@ -154,6 +153,8 @@ function fillFrame(frame, startReadingFrom) {
     }
   }
 }
+
+function displayFrames() {}
 
 class Variable {
   type;
