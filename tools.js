@@ -168,7 +168,9 @@ function evalExpression(string, Frame, line){ //in the format of 2 + 2 + a for e
       var newFrame = returnFrameContainingVariable(Frame, newArray[index]);
       newArray[index] = newFrame.variables.get(newArray[index]);
       if(typeof(newArray[index]) === "undefined"){
-        console.log("error: variable undefined on line: " + line);
+        addConsoleLine("error: variable undefined on line: " + line);
+        errorDetected = true;
+        return;
       }
       if((new RegExp(/((^[a-zA-Z][a-zA-Z]*[0-9]*))/gm)).test(newArray[index]) && typeof(newArray[index]) !== "undefined"){
         newArray[index] = '"' + newArray[index] + '"';
@@ -180,7 +182,9 @@ function evalExpression(string, Frame, line){ //in the format of 2 + 2 + a for e
   try{
     eval(expression);
   }catch{
-    console.log("error on line : " + line);
+    addConsoleLine("error evaluating expression on " + line);
+    errorDetected = true;
+    return;
   }
   
   return expression;
@@ -191,4 +195,10 @@ function breakExpressionIntoComponents(expression){ //expression should be a str
   newComponentsArray = removeEmptyIndices(newComponentsArray);
   newComponentsArray = trimStringInArray(newComponentsArray);
   return newComponentsArray;
+}
+function addConsoleLine(string){
+  var element = document.getElementById("console");
+  var newConsoleLine = document.createElement("p");
+  newConsoleLine.innerText = string;
+  element.appendChild(newConsoleLine);
 }

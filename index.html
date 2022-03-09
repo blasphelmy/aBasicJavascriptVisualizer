@@ -41,6 +41,7 @@
 }
 #console > p{
   font-family: "Lucida Console", "Courier New", monospace;
+  font-size: 13px;
 }
 </style>
 <h1>A Simple Javascript Parser</h1>
@@ -73,7 +74,6 @@
 </div>
 </div>
 <div id="console">
-<p>sdfsdf</p>
 </div>
 <button id="runBtn" onclick="initParse()">Run Code</button>
 </div>
@@ -83,12 +83,15 @@
 </body>
 
 <script>
+var errorDetected = false;
 var editor = null;
 var outPutEditor = null;
 var count = 1;
 function initParse() {
   //console.clear();
   document.getElementById("mainFrameContainer").innerHTML = "";
+  document.getElementById("console").innerHTML = "";
+  errorDetected = false;
   count = 1;
   //step 1, we get javascript code from user as a raw string.
   var inputString = editor.getValue() + ";";
@@ -111,7 +114,7 @@ function interpretCallStack(start, array, Frame) {
   
   createNewFrameElements(elementFrame, Frame);
   
-  for (var index = Frame.start; index <= Frame.end; index++) {
+  for (var index = Frame.start; index <= Frame.end && errorDetected === false; index++) {
    console.log("index ", index);
     //DETECT FUNCTION DECLATION TOKEN
     if (isFunctionDeclarion(array[index])) {
@@ -124,7 +127,7 @@ function interpretCallStack(start, array, Frame) {
       variableReassignmentHandler(index, array, Frame);
     }
     else if(detectConsoleLog(array[index])){
-        console.log("console.log detected at ", index);
+        consoleLoghandler(index, array, Frame);
     }
     else if(detectFunctionCalls(array[index])){
       var originFrame = returnFrameContainingFunctionDEF(Frame, array[index]);
@@ -137,19 +140,19 @@ function interpretCallStack(start, array, Frame) {
         interpretCallStack(newFunctionDef.getStart, array, newFrame);
       }
       else{
-        console.log("on line " + index + " error: function definition doesn't exist!");
+        addConsoleLine("on line " + index + " error: function definition doesn't exist!");
+        errorDetected = true;
+        return;
       }
     }else if(!(new RegExp(/(['}{'])/gm).test(array[index])) && index < array.length-1){
-      console.log("error on line " + index);
+      addConsoleLine("error on line " + index);
+      errorDetected = true;
       return;
     }
   }
   if(Frame.id === "Global"){
     return Frame;
   }
-}
-function assignExpressionObjects(newComponentsArray){
-
 }
 function returnFunction(array) {}
   </script>

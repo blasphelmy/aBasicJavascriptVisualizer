@@ -21,7 +21,7 @@ function variableDeclarationHandler(index, array, Frame){
     var variableName = keyValuePair[0];
     var expression = keyValuePair[1];
     expression = expression.split(";");
-    expression = evalExpression(expression[0], Frame, index);
+    expression = evalExpression(expression[0], Frame, index+1);
     var newVarible = new variable(keyValuePair[0], eval(expression)); //cheater!
     Frame.addVariables(newVarible);
   }else if(!(new RegExp(/([0-9])+([ ]*)+([;])/gm)).test(array[index+1])){
@@ -30,7 +30,8 @@ function variableDeclarationHandler(index, array, Frame){
     var newVarible = new variable(keyValuePair[0], null); //cheater!
     Frame.addVariables(newVarible);
   }else{
-    console.log("error on line ", index);
+    addConsoleLine("error on line " + index + 1)
+    errorDetected = true;
     return;
   }
   appendVariablesToVisulizer(Frame);
@@ -47,4 +48,10 @@ function variableReassignmentHandler(index, array, Frame){
   var newFrame = returnFrameContainingVariable(Frame, variableName);
   newFrame.variables.set(variableName, eval(expression));
   appendVariablesToVisulizer(newFrame);
+}
+function consoleLoghandler(index, array, Frame){
+  var newRegex = new RegExp(/\(([^)]+)\)/gm);
+  var matches = newRegex.exec(array[index]);
+  expression = evalExpression(matches[1], Frame, index);
+  addConsoleLine(eval(expression));
 }
