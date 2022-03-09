@@ -79,22 +79,7 @@
 <div id="codeEditorWrapper">
 <div class="codeEditiors">
   <textarea id="code" name="code">
-var a = 10;
-function b(){
-  a = 5;  
-  c();
-  console.log(d);
-}
-function c(){
-  d = 6;
-  var a = 7;
-  e = 9;
-  function f(){
-    a = 2;
-  }
-  f();
-}
-b(); 
+var a = 10;function b(){a = 5;c();console.log(d);}function c(){ d = 6;var a = 7;e = 9;function f(){a=2;}f();}b(); 
   </textarea>
 </div>
 <div class="codeEditiors">
@@ -151,15 +136,7 @@ function interpretCallStack(start, array, Frame) {
       index = variableDeclarationHandler(index, array, Frame);
       //DETECT VARIABLE REASSIGNMENT
     }else if(detectStatementVariableReassignment(array[index])){
-      // console.log("variable reassigbment on line ", index);
-      // console.log(array[index]);
-      var tempArray = array[index].split("=");
-      var variableName = tempArray[0].trim();
-      var expression = tempArray[1].split(";");
-      expression = expression[0];
-      var newFrame = returnFrameContainingVariable(Frame, variableName);
-      newFrame.variables.set(variableName, eval(expression));
-      appendVariablesToVisulizer(newFrame);
+      variableReassignmentHandler(index, array, Frame);
     }
     else if(detectFunctionCalls(array[index])){
       var originFrame = returnFrameContainingFunctionDEF(Frame, array[index]);

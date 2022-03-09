@@ -35,3 +35,12 @@ function variableDeclarationHandler(index, array, Frame){
   index++;
   return index;
 }
+function variableReassignmentHandler(index, array, Frame){
+  var tempArray = array[index].split("=");
+  var variableName = tempArray[0].trim();
+  var expression = tempArray[1].split(";");
+  expression = expression[0];
+  var newFrame = returnFrameContainingVariable(Frame, variableName);
+  newFrame.variables.set(variableName, eval(expression));
+  appendVariablesToVisulizer(newFrame);
+}

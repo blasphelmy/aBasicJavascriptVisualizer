@@ -3,7 +3,7 @@ function getInputString() {}
 function breakIntoComponents(inputString) {
   //this needs more work
   //first, we must first remove all line breaks and whitespace. we also assume that user writes javascript with the use of semi colons...
-  inputString = inputString.replace(/\n/g, "");
+  inputString = inputString.replace(/\n/g, " ");
   inputString = inputString.split(/(;)/g);
   // inputString.match(/[^\;]+\;?|\;/g);
   var outputArray = new Array();
