@@ -9,7 +9,7 @@ let inputSection;
 let inputString;
 let instructions;
 let globalFrame;
-let totalFrames = [];
+let totalFrames;
 
 function appMain() {
   initElements();
@@ -17,7 +17,7 @@ function appMain() {
 
   console.log(instructions);
   console.log(globalFrame);
-  // console.log(totalFrames);
+  console.log(totalFrames);
 }
 
 function initElements() {
@@ -90,6 +90,7 @@ function parseInstructions(inputString) {
 }
 
 function createFrames() {
+  totalFrames = [];
   globalFrame = new Frame("Global");
   let startReadingFrom = 0;
   globalFrame = fillFrame(globalFrame, startReadingFrom);
@@ -97,17 +98,21 @@ function createFrames() {
 
 function fillFrame(frame, startReadingFrom) {
   // Where does global frame get pushed to frames?
+  let variableKeywords = ["var", "let", "const"];
 
   for (let i = startReadingFrom; i < instructions.length; i++) {
-    // Push frame at closing brace }
-    if (instructions[i] == "}") {
-      totalFrames.push(frame);
-      return frame;
-    }
+    // Return Global frame
+    if (i == instructions.length - 1) return frame;
 
     // Continue if semicolon ;
     if (instructions[i] == ";") {
       i++;
+    }
+
+    // Push frame at closing brace }
+    if (instructions[i] == "}") {
+      totalFrames.push(frame);
+      return frame;
     }
 
     // Parse Function
@@ -132,8 +137,6 @@ function fillFrame(frame, startReadingFrom) {
       }
     }
 
-    let variableKeywords = ["var", "let", "const"];
-
     // Parse Variable (In local scope)
     if (variableKeywords.includes(instructions[i])) {
       let newVariable = new Variable(instructions[i]);
@@ -146,7 +149,6 @@ function fillFrame(frame, startReadingFrom) {
         return;
       }
       newVariable.value = instructions[i];
-      if (instructions[i] == ";") i++;
       frame.variables.push(newVariable);
     }
   }
@@ -165,13 +167,13 @@ class Variable {
 class Frame {
   id;
   parent;
-  variables = [];
-  children = [];
+  variables;
+  children;
   callStack;
 
   constructor(id) {
     this.id = id;
-    this.variables;
-    this.children;
+    this.variables = [];
+    this.children = [];
   }
 }
