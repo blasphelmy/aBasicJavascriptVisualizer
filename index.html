@@ -37,6 +37,7 @@
   <textarea id="code" name="code">
     var year = 2;
     var hellomessage = "Hello! Welcome to my landing page!";
+ 	var keyword = "internship";
     function moreInfo(){
       hellomessage = "More information could be found on my about me page!";
       console.log(" ");
@@ -47,7 +48,7 @@
       var location;
       function b(){
         location = "Renton Technical College.";
-        goal = "What I'm looking for are CompSci internship opportunities.";
+        goal = "What I'm looking for are CompSci "+ keyword + " opportunities.";
       }
       b();
       console.log(hellomessage + location);
@@ -55,7 +56,7 @@
     }
     function offer(){
         var haveOffer = "If you have any opportunities";
-      console.log(haveOffer + "  and would like to offer me an internship...");
+      console.log(haveOffer + "  and would like to offer me an " + keyword + "...");
     }
     function contactMe(){
       var email = "dhnguyen08@student.rtc.edu";
