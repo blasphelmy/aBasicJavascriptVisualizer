@@ -163,7 +163,6 @@ function appendVariablesToVisulizer(Frame){
 }
 function evalExpression(string, Frame, index){ //in the format of 2 + 2 + a for example..
   var newArray = breakExpressionIntoComponents(string);
-  console.log(newArray);
   for(var index = 0; index < newArray.length; index++){
     if((new RegExp(/(^[a-zA-Z][a-zA-Z]*[0-9]*)/gm)).test(newArray[index])){
       var newFrame = returnFrameContainingVariable(Frame, newArray[index]);
