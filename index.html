@@ -79,7 +79,23 @@
 <div id="codeEditorWrapper">
 <div class="codeEditiors">
   <textarea id="code" name="code">
-var a = 10;function b(){a = 5;c();console.log(d);}function c(){ d = 6;var a = 7;e = 9;function f(){a=2;}f();}b(); 
+    var a = 10 + 10 * 4;
+    var abc = a + 3 + 34;
+    function b(){
+      a = 5;  
+      c();
+      console.log(d);
+    }
+    function c(){
+      d = 6;
+      var a = 7;
+      e = 9;
+      function f(){
+        a = 2;
+      }
+      f();
+    }
+    b();
   </textarea>
 </div>
 <div class="codeEditiors">
@@ -97,7 +113,7 @@ var a = 10;function b(){a = 5;c();console.log(d);}function c(){ d = 6;var a = 7;
 
 </body>
 
-  <script>
+<script>
 var editor = null;
 var outPutEditor = null;
 var count = 1;
@@ -138,6 +154,9 @@ function interpretCallStack(start, array, Frame) {
     }else if(detectStatementVariableReassignment(array[index])){
       variableReassignmentHandler(index, array, Frame);
     }
+    else if(detectConsoleLog(array[index])){
+        console.log("console.log detected at ", index);
+    }
     else if(detectFunctionCalls(array[index])){
       var originFrame = returnFrameContainingFunctionDEF(Frame, array[index]);
       if(originFrame.returnFunctionDefinitions(array[index])){
@@ -147,7 +166,8 @@ function interpretCallStack(start, array, Frame) {
         newFrame.previousNodeFrame = originFrame;
         originFrame.addChildFrame(newFrame);
         interpretCallStack(newFunctionDef.getStart, array, newFrame);
-      }else{
+      }
+      else{
         return "on line " + index + " error: function definition doesn't exist!";
       }
     }

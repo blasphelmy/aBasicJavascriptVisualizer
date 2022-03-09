@@ -98,11 +98,6 @@ function returnFunctionStack(array, start, end){ //returns a stack of statements
   }
   return newArray;
 }
-function breakExpressionIntoComponents(expression){ //expression should be a string.
-  const basicArithmatics =  new RegExp(/([+/*-])/gm);
-  var newComponentsArray = expression.split(basicArithmatics);
-  return newComponentsArray;
-}
 function returnFrameContainingVariable(newFrame, variableName){
   while (!newFrame.variables.has(variableName) && typeof (newFrame.returnParentFrame()) !== "undefined") {
     newFrame = newFrame.returnParentFrame();

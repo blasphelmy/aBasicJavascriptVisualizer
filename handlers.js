@@ -15,15 +15,14 @@ function functionDeclaredHandler(index, array, Frame){
   return end;
 }
 function variableDeclarationHandler(index, array, Frame){
-  
   if(new RegExp("=").test(array[index+1]) && !(new RegExp(/([0-9])+([ ]*)+([=])/gm)).test(array[index + 1])){
     var keyValuePair = array[index+1].split("=");
     keyValuePair[0] = keyValuePair[0].trim();
-
     var variableName = keyValuePair[0];
     var expression = keyValuePair[1];
-    expression = breakExpressionIntoComponents(expression);
-    var newVarible = new variable(keyValuePair[0], eval(keyValuePair[1])); //cheater!
+    expression = expression.split(";");
+    expression = evalExpression(expression[0], Frame, index);
+    var newVarible = new variable(keyValuePair[0], eval(expression)); //cheater!
     Frame.addVariables(newVarible);
   }else if(!(new RegExp(/([0-9])+([ ]*)+([;])/gm)).test(array[index+1])){
     var keyValuePair = array[index+1].split(";");
@@ -39,8 +38,31 @@ function variableReassignmentHandler(index, array, Frame){
   var tempArray = array[index].split("=");
   var variableName = tempArray[0].trim();
   var expression = tempArray[1].split(";");
-  expression = expression[0];
+
+  expression = evalExpression(expression[0], Frame, index);
+
   var newFrame = returnFrameContainingVariable(Frame, variableName);
   newFrame.variables.set(variableName, eval(expression));
   appendVariablesToVisulizer(newFrame);
+}
+
+function evalExpression(string, Frame, index){ //in the format of 2 + 2 + a for example..
+  var newArray = breakExpressionIntoComponents(string);
+  for(var index = 0; index < newArray.length; index++){
+    if((new RegExp(/(^[a-zA-Z][a-zA-Z]*[0-9]*)/gm)).test(newArray[index])){
+      var newFrame = returnFrameContainingVariable(Frame, newArray[index]);
+      newArray[index] = newFrame.variables.get(newArray[index]);
+      if(typeof(newArray[index]) === "undefined"){
+        newArray = "error";
+      }
+    }
+  }
+  return newArray.join("");
+}
+function breakExpressionIntoComponents(expression){ //expression should be a string.
+  const basicArithmatics =  new RegExp(/([ ]*)+([+|\-|*|/|(|)])+([ ]*)/gm);
+  var newComponentsArray = expression.split(basicArithmatics);
+  newComponentsArray = removeEmptyIndices(newComponentsArray);
+  newComponentsArray = trimStringInArray(newComponentsArray);
+  return newComponentsArray;
 }

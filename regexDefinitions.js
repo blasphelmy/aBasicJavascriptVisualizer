@@ -41,3 +41,7 @@ function detectFunctionCalls(string){
       return "hasValue";
     }
   }
+  function detectConsoleLog(string){
+    var detectConsole = new RegExp(/([ ]*)+([a-zA-Z])+([ ]*)+([.])+([ ]*)+(?:log)/gm);
+    return detectConsole.test(string);
+  }
