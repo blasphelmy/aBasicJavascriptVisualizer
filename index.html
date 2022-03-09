@@ -125,7 +125,7 @@ function interpretCallStack(start, array, Frame) {
         interpretCallStack(newFunctionDef.getStart, array, newFrame);
       }
       else{
-        addConsoleLine("error: on line" + index + "function definition doesn't exist!");
+        addConsoleLine("error: on line " + index + " function definition doesn't exist!");
         errorDetected = true;
         return;
       }
