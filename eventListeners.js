@@ -19,4 +19,5 @@ window.addEventListener("load", function(e){
           extraKeys: {"Ctrl-Q": "toggleComment"},
         });
         outPutEditor.setSize(null, 400);
+        initParse();
   });

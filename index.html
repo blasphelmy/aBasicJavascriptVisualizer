@@ -29,36 +29,54 @@
   <body>
 <style>
 </style>
-<h1>A Simple Javascript Parser</h1>
+<h1>David Nguyen</h1>
+<div id="console">
+</div>
 <div id="codeEditorWrapper">
 <div class="codeEditiors">
   <textarea id="code" name="code">
-    var a = 10 + 10 * 4;   
-    var string1 = "hello";
-    function b(){
-      a = 5;
-      c();
+    var year = 2;
+    var hellomessage = "Hello! Welcome to my landing page!";
+    function moreInfo(){
+      hellomessage = "More information could be found on my about me page!";
+      console.log(" ");
+      console.log(goal);
     }
-    function c(){
-      d = 6;
-      var  a = 7;
-      e = 9;
-      function f(){
-        a = 2;
-         string2 = "world!";
+    function a(){
+      hellomessage = "I’m a " + year + "nd  year CSI student at ";
+      var location;
+      function b(){
+        location = "Renton Technical College.";
+        goal = "What I'm looking for are CompSci internship opportunities.";
       }
-      f();
+      b();
+      console.log(hellomessage + location);
+      moreInfo();
     }
-    b();
-    console.log(string1 + " " + string2);
+    function offer(){
+        var haveOffer = "If you have any opportunities";
+      console.log(haveOffer + "  and would like to offer me an internship...");
+    }
+    function contactMe(){
+      var email = "dhnguyen08@student.rtc.edu";
+      console.log("Or, you could shoot me an email @ " + email);
+      function a(){
+        console.log(" ");
+        console.log("Thanks for stopping by!");
+      }
+      a();
+    }
+    console.log(hellomessage);
+    a();
+    offer();
+    console.log(hellomessage);
+    contactMe();    
   </textarea>
 </div>
 <div class="codeEditiors">
   <textarea id="code_array" name="code">
   </textarea>
 </div>
-</div>
-<div id="console">
 </div>
 <button id="runBtn" onclick="initParse()">Run Code</button>
 </div>
