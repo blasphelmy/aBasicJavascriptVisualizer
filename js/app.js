@@ -15,9 +15,9 @@ function appMain() {
   initElements();
   run();
 
-  console.log(instructions);
-  console.log(globalFrame);
-  console.log(totalFrames);
+  // console.log(instructions);
+  // console.log(globalFrame);
+  // console.log(totalFrames);
 }
 
 function initElements() {
@@ -45,6 +45,8 @@ function run() {
   inputString = codeEditor.getValue();
   instructions = parseInstructions(inputString);
   createFrames();
+  console.log(instructions);
+  console.log(globalFrame);
 }
 
 function parseInstructions(inputString) {
@@ -130,7 +132,6 @@ function fillFrame(frame, startReadingFrom) {
         i++;
         frame.children.push(fillFrame(childFrame, i));
         // Increment i until closing bracket, to finish building current frame
-        // ERROR - Must implement a way to count inner brackets
         while (instructions[i] != "}" && i < instructions.length) {
           i++;
         }
