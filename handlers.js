@@ -15,7 +15,7 @@ function functionDeclaredHandler(index, array, Frame){
   return end;
 }
 function variableDeclarationHandler(index, array, Frame){
-  if(new RegExp("=").test(array[index+1]) && !(new RegExp(/([0-9])+([ ]*)+([=])/gm)).test(array[index + 1])){
+  if(new RegExp("=").test(array[index+1]) && (new RegExp(/(^[a-zA-Z0-9]*)+([ ]*)+([=])/gm)).test(array[index + 1])){
     var keyValuePair = array[index+1].split("=");
     keyValuePair[0] = keyValuePair[0].trim();
     var variableName = keyValuePair[0];
@@ -29,6 +29,9 @@ function variableDeclarationHandler(index, array, Frame){
     keyValuePair[0] = keyValuePair[0].trim();
     var newVarible = new variable(keyValuePair[0], null); //cheater!
     Frame.addVariables(newVarible);
+  }else{
+    console.log("error on line ", index);
+    return;
   }
   appendVariablesToVisulizer(Frame);
   index++;

@@ -28,42 +28,8 @@
   </head>
   <body>
 <style>
-.frameContainer { 
-  margin-top: 25px;
-  margin-left: 30px;
-  padding: 10px;
-  background-color: rgba(214, 120, 223, 0.042);
-  border-left-color: rgba(215, 120, 223, 0.24);
-  border-left-width: 2px;
-  border-left-style: solid;
-  border-radius: 10px;
-  color: rgb(255, 253, 223);
-  -webkit-box-shadow: 0px 0px 15px 4px rgba(0, 0, 0, 0.07); 
-  box-shadow: 0px 0px 15px 4px rgba(0, 0, 0, 0.07);
-  font-size: 15px;
-}
-.variableColors{
-  background-color: rgba(17, 253, 9, 0.096);
-  border-left-color: rgba(17, 253, 9, 0.144);
-  margin: 7px;
-}
-.functDEF {
-  background-color: rgba(79, 255, 255, 0.082);
-  border-left-color: rgba(79, 255, 255, 0.137);
-  margin: 7px;
-}
-.activeFrames{
-  background-color: rgba(253, 58, 9, 0.062);
-  border-left-color: rgba(253, 66, 9, 0.226);
-  margin: 7px;
-}
-.hide{
-  display: none;
-}
-.show {
-  display:block;
-}
 #console {
+  position: relative;
   display: block;
   width: 100%;
   height: 100px;
@@ -81,10 +47,11 @@
 <div id="codeEditorWrapper">
 <div class="codeEditiors">
   <textarea id="code" name="code">
-    var a = 10 + 10 * 4;
+    var a = 10 + 10 * 4;   
     var abc = a + 3 + 34;
     function b(){
-      a = 5;  
+      a = 5;
+      var x = abc;  
       c();
       console.log(d);
     }
@@ -147,7 +114,7 @@ function interpretCallStack(start, array, Frame) {
   for (var index = Frame.start; index <= Frame.end; index++) {
    console.log("index ", index);
     //DETECT FUNCTION DECLATION TOKEN
-   if (isFunctionDeclarion(array[index])) {
+    if (isFunctionDeclarion(array[index])) {
      index = functionDeclaredHandler(index, array, Frame);
       //DETECT VARIABLE DECLATION TOKEN
     } else if (isVarDeclartion(array[index])) {
@@ -170,8 +137,11 @@ function interpretCallStack(start, array, Frame) {
         interpretCallStack(newFunctionDef.getStart, array, newFrame);
       }
       else{
-        return "on line " + index + " error: function definition doesn't exist!";
+        console.log("on line " + index + " error: function definition doesn't exist!");
       }
+    }else if(!(new RegExp(/(['}{'])/gm).test(array[index])) && index < array.length-1){
+      console.log("error on line " + index);
+      return;
     }
   }
   if(Frame.id === "Global"){

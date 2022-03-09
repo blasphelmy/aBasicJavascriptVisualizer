@@ -33,7 +33,7 @@ function splitIntoTokens(array) { //ONLY USE THIS AFTER INPUT STRING IS COMPLETE
       }
     }
     //FOR VARIABLE DECLARATIONS
-    else if (array[index].match(/(var[ ]*)/gm)) {
+    else if (array[index].match(/(var[ ])/gm)) {
       var temp = array[index].split(/(var)[ ]/gm);
       for (var x = 0; x < temp.length; x++) {
         newArray.push(temp[x]);
@@ -157,26 +157,33 @@ function appendVariablesToVisulizer(Frame){
  
   for (const [key, value] of frameVariables.entries()) {
     var newElementChild = document.createElement("p");
-    newElementChild.innerHTML = "{ name: " + key + " value: " + value + " }";
+    newElementChild.innerHTML = "{ name: " + key + "; value: " + value + " }";
     element.appendChild(newElementChild);
   }
 }
-function evalExpression(string, Frame, index){ //in the format of 2 + 2 + a for example..
+function evalExpression(string, Frame, line){ //in the format of 2 + 2 + a for example..
   var newArray = breakExpressionIntoComponents(string);
   for(var index = 0; index < newArray.length; index++){
     if((new RegExp(/(^[a-zA-Z][a-zA-Z]*[0-9]*)/gm)).test(newArray[index])){
       var newFrame = returnFrameContainingVariable(Frame, newArray[index]);
       newArray[index] = newFrame.variables.get(newArray[index]);
-      if((new RegExp(/((^[a-zA-Z][a-zA-Z]*[0-9]*))/gm)).test(newArray[index])){
-        console.log("type string");
-        newArray[index] = '"' + newArray[index] + '"';
-      }
       if(typeof(newArray[index]) === "undefined"){
-        newArray = "error";
+        console.log("error: variable undefined on line: " + line);
+      }
+      if((new RegExp(/((^[a-zA-Z][a-zA-Z]*[0-9]*))/gm)).test(newArray[index]) && typeof(newArray[index]) !== "undefined"){
+        newArray[index] = '"' + newArray[index] + '"';
       }
     }
   }
-  return newArray.join("");
+  var expression = newArray.join("");
+
+  try{
+    eval(expression);
+  }catch{
+    console.log("error on line : " + line);
+  }
+  
+  return expression;
 }
 function breakExpressionIntoComponents(expression){ //expression should be a string.
   const basicArithmatics =  new RegExp(/([+|\-|*|/|(|)])/gm);

@@ -14,7 +14,7 @@ function detectFunctionCalls(string){
     return isFunctionDeclartion.test(string);
   }
   function detectStatementVariableReassignment(string){
-    const detectVarReassignStatement = new RegExp(/^[a-zA-Z,0-9]*[ ]*[=][ , a-zA-Z, 0-9, *, /, +, -, ;]*/gm);
+    const detectVarReassignStatement = new RegExp(/^([a-zA-Z0-9]*[ ]*[=][ , a-zA-Z, 0-9, *, /, +, -, ;]*)/gm);
     //improve this regex here: https://regex101.com/r/Gp6J3c/1
     return detectVarReassignStatement.test(string);
   }
