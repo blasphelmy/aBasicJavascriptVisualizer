@@ -112,7 +112,7 @@ function returnFrameContainingFunctionDEF(newFrame, functionName){
 }
 function outPutCallStacktoCodeEditor(CallStack){
   var newString = "";
-  for(var index = 0; index < CallStack.length-1; index++){
+  for(var index = 0; index < CallStack.length; index++){
     newString = newString + CallStack[index] + "\n";
   }
   outPutEditor.getDoc().setValue(newString);
@@ -182,7 +182,7 @@ function evalExpression(string, Frame, line){ //in the format of 2 + 2 + a for e
   try{
     eval(expression);
   }catch{
-    addConsoleLine("error evaluating expression on " + line);
+    addConsoleLine("error evaluating expression on line: " + line);
     errorDetected = true;
     return;
   }

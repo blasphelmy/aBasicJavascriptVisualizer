@@ -30,7 +30,7 @@ function variableDeclarationHandler(index, array, Frame){
     var newVarible = new variable(keyValuePair[0], null); //cheater!
     Frame.addVariables(newVarible);
   }else{
-    addConsoleLine("error on line " + index + 1)
+    addConsoleLine("error on line: " + index + 1)
     errorDetected = true;
     return;
   }
