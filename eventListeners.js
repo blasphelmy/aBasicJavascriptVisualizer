@@ -4,6 +4,7 @@ window.addEventListener("load", function(e){
           lineNumbers: true,
           theme: "material-palenight",
           matchBrackets: true,
+          autoCloseBrackets: true,
           continueComments: "Enter",
           extraKeys: {"Ctrl-Q": "toggleComment"},
         });
@@ -13,6 +14,7 @@ window.addEventListener("load", function(e){
           lineNumbers: true,
           theme: "material-palenight",
           matchBrackets: true,
+          autoCloseBrackets: true,
           continueComments: "Enter",
           extraKeys: {"Ctrl-Q": "toggleComment"},
         });
