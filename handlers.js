@@ -43,10 +43,7 @@ function variableDeclarationHandler(index, array, Frame){
     errorDetected = true;
     return;
   }
-  setTimeout(() => {
     appendVariablesToVisulizer(Frame);
-  }, count * defaultDelay);
-  count++
   index++;
   return index;
 }
@@ -59,10 +56,7 @@ function variableReassignmentHandler(index, array, Frame){
 
   var newFrame = returnFrameContainingVariable(Frame, variableName);
   newFrame.variables.set(variableName, eval(expression));
-  setTimeout(() => {
     appendVariablesToVisulizer(newFrame);
-  }, count * defaultDelay);
-  count++;
 }
 function consoleLoghandler(index, array, Frame){
   var newRegex = new RegExp(/\(([^)]+)\)/gm);

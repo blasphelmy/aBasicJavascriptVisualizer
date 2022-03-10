@@ -148,8 +148,10 @@ function appendVariablesToVisulizer(Frame){
   var element = document.getElementById(Frame.id + Frame.fIndex + "variables");
   element.innerHTML = "";
   if(element.classList.contains("hide")){
-    element.classList.remove("hide");
-    element.classList.add("show");
+    setTimeout(() => {
+      element.classList.remove("hide");
+      element.classList.add("show", "fade-in");
+    }, count * defaultDelay);
   }
 
   var newElementChild = document.createElement("p");
