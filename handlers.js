@@ -44,7 +44,7 @@ function variableDeclarationHandler(index, array, Frame){
     return;
   }
   setTimeout(() => {
-    appendVariablesToVisulizer(JSON.parse(JSON.stringify(Frame)));
+    appendVariablesToVisulizer(Frame);
   }, count * defaultDelay);
   count++
   index++;
@@ -62,6 +62,7 @@ function variableReassignmentHandler(index, array, Frame){
   setTimeout(() => {
     appendVariablesToVisulizer(newFrame);
   }, count * defaultDelay);
+  count++;
 }
 function consoleLoghandler(index, array, Frame){
   var newRegex = new RegExp(/\(([^)]+)\)/gm);
