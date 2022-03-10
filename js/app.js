@@ -11,6 +11,7 @@ let outputSection;
 let instructions;
 let globalFrame;
 let totalFrames;
+let callStack = [];
 
 function appMain() {
   initElements();
@@ -19,6 +20,7 @@ function appMain() {
   console.log(instructions);
   console.log(globalFrame);
   console.log(totalFrames);
+  console.log(callStack);
 }
 
 function initElements() {
@@ -101,6 +103,7 @@ function createFrames() {
 
 function fillFrame(frame, startReadingFrom) {
   // Where does global frame get pushed to frames?
+
   let variableKeywords = ["var", "let", "const"];
 
   for (let i = startReadingFrom; i < instructions.length; i++) {
@@ -118,27 +121,6 @@ function fillFrame(frame, startReadingFrom) {
       return frame;
     }
 
-    // Parse Function
-    if (instructions[i] == "function") {
-      i++;
-      let functionName = instructions[i];
-      let childFrame = new Frame(functionName); // Id = function name
-      childFrame.parent = frame;
-      i++;
-      if (instructions[i] == "(") i++;
-      // Check for parameters
-      if (instructions[i] == ")") i++;
-      // Check for if function call
-      if (instructions[i] == "{") {
-        i++;
-        frame.children.push(fillFrame(childFrame, i));
-        // Increment i until closing bracket, to finish building current frame
-        while (instructions[i] != "}" && i < instructions.length) {
-          i++;
-        }
-      }
-    }
-
     // Parse Variable (In local scope)
     if (variableKeywords.includes(instructions[i])) {
       let newVariable = new Variable(instructions[i]);
@@ -152,6 +134,37 @@ function fillFrame(frame, startReadingFrom) {
       }
       newVariable.value = instructions[i];
       frame.variables.push(newVariable);
+    }
+
+    // Parse Function
+    if (instructions[i] == "function") {
+      // Get function name
+      i++;
+      let functionName = instructions[i];
+      i++;
+
+      // Check for parameters
+      if (instructions[i] == "(") i++;
+      let parameters = [];
+      while (instructions[i] != ")") {
+        parameters.push(instructions[i]);
+        i++;
+        if (instructions[i] == ",") i++;
+      }
+
+      if (instructions[i] == ")") i++;
+
+      // Function declaration - Create new frame
+      if (instructions[i] == "{") {
+        let childFrame = new Frame(functionName); // Id = function name
+        childFrame.parent = frame;
+        i++;
+        frame.children.push(fillFrame(childFrame, i));
+        // Increment i until closing bracket, to finish building current frame
+        while (instructions[i] != "}" && i < instructions.length) {
+          i++;
+        }
+      }
     }
   }
 }
@@ -167,14 +180,14 @@ class Variable {
 }
 
 class Frame {
-  id;
+  name;
   parent;
   variables;
   children;
   callStack;
 
-  constructor(id) {
-    this.id = id;
+  constructor(name) {
+    this.name = name;
     this.variables = [];
     this.children = [];
   }
@@ -192,12 +205,12 @@ function displayFrames() {
     let summary = document.createElement("summary");
 
     // ID
-    summary.innerHTML = frame.id;
+    summary.innerHTML = frame.name;
     details.appendChild(summary);
 
     // Parent
     let parent = document.createElement("div");
-    if (frame.id == "Global") parent.innerHTML = "undefined";
+    if (frame.name == "Global") parent.innerHTML = "Parent: undefined";
     else parent.innerHTML = "Parent: " + frame.parent.id;
     details.appendChild(parent);
 
