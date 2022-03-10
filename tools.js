@@ -138,8 +138,8 @@ function createNewFrameElements(elementFrame, Frame){
   newFramesContainer.classList.add("frameContainer",  "activeFrames", "hide");
   newFramesContainer.innerHTML = "<p>Active Frames : </p>";
 
-  newScopeFrame.appendChild(newFunctionDefContainer);
   newScopeFrame.appendChild(newVariableFrames);
+  newScopeFrame.appendChild(newFunctionDefContainer);
   newScopeFrame.appendChild(newFramesContainer);
   elementFrame.appendChild(newScopeFrame);
 }
