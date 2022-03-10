@@ -197,6 +197,7 @@ function displayFrames() {
   function createSummary(frame) {
     let details = document.createElement("details");
     let summary = document.createElement("summary");
+    let content = document.createElement("div");
 
     // ID
     summary.innerHTML = frame.name;
@@ -206,7 +207,7 @@ function displayFrames() {
     let parent = document.createElement("div");
     if (frame.name == "Global") parent.innerHTML = "Parent: undefined";
     else parent.innerHTML = "Parent: " + frame.parent.id;
-    details.appendChild(parent);
+    content.appendChild(parent);
 
     // Variables
     let localVariables = document.createElement("div");
@@ -232,7 +233,7 @@ function displayFrames() {
       localVariables.appendChild(variableSummary);
     });
 
-    details.appendChild(localVariables);
+    content.appendChild(localVariables);
 
     // Children
     let frameChildren = document.createElement("div");
@@ -245,7 +246,12 @@ function displayFrames() {
       frameChildren.appendChild(createSummary(child));
     });
 
-    details.appendChild(frameChildren);
+    content.appendChild(frameChildren);
+
+    // Set style
+    content.style.padding = "5px 20px";
+    details.style.padding = "0px 10px";
+    details.appendChild(content);
 
     return details;
   }
