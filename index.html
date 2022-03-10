@@ -96,6 +96,7 @@ var errorDetected = false;
 var editor = null;
 var outPutEditor = null;
 var count = 1;
+var consoleline = 1;
 var defaultDelay = 250;
 function initParse() {
   //console.clear();
@@ -103,6 +104,7 @@ function initParse() {
   document.getElementById("console").innerHTML = "";
   errorDetected = false;
   count = 1;
+  consoleline = 1;
   //step 1, we get javascript code from user as a raw string.
   var inputString = editor.getValue() + ";";
   //now we split the inputString into its induvidual components

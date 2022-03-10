@@ -200,10 +200,13 @@ function breakExpressionIntoComponents(expression){ //expression should be a str
   return newComponentsArray;
 }
 function addConsoleLine(string){
-  var element = document.getElementById("console");
-  var newConsoleLine = document.createElement("p");
-  newConsoleLine.innerText = string;
-  element.appendChild(newConsoleLine);
+  setTimeout(() => {
+    var element = document.getElementById("console");
+    var newConsoleLine = document.createElement("p");
+    newConsoleLine.innerText = string;
+    element.appendChild(newConsoleLine);
+  }, consoleline * defaultDelay/3);
+   consoleline = consoleline+1;
 }
 function runButton(){
   var element = document.getElementById("mainFrameContainer");

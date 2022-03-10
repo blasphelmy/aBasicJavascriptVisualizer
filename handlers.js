@@ -1,6 +1,8 @@
 function functionDeclaredHandler(index, array, Frame){
   var start = index;
   var end = findEOFLine(array, index);
+
+  console.log(array[index]);
   
   var element = document.getElementById(Frame.id + Frame.fIndex + "FunctionDef");
   var newFunctionDeclarationElement = document.createElement("p");
@@ -62,5 +64,5 @@ function consoleLoghandler(index, array, Frame){
   var newRegex = new RegExp(/\(([^)]+)\)/gm);
   var matches = newRegex.exec(array[index]);
   expression = evalExpression(matches[1], Frame, index);
-  addConsoleLine(eval(expression));
+  addConsoleLine(index + "> " + eval(expression));
 }
