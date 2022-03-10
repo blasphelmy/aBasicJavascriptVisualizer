@@ -210,10 +210,6 @@ function addConsoleLine(string){
 }
 function runButton(){
   var element = document.getElementById("mainFrameContainer");
-  if(element.classList.contains("hide")){
-    element.classList.remove("hide");
-    element.classList.add("show", "fade-in");
-  }
   initParse();
 }
 function showHide(){

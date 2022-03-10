@@ -1,38 +1,9 @@
-@font-face {
-  /* i really like this font */
-  font-family: "San Francisco";
-  font-weight: 100;
-  src: url("https://applesocial.s3.amazonaws.com/assets/styles/fonts/sanfrancisco/sanfranciscodisplay-ultralight-webfont.woff");
-}
-
-@font-face {
-  font-family: "San Francisco Thin";
-  font-weight: 200;
-  src: url("https://applesocial.s3.amazonaws.com/assets/styles/fonts/sanfrancisco/sanfranciscodisplay-thin-webfont.woff");
-}
-
-@font-face {
-  font-family: "San Francisco Regular";
-  font-weight: 400;
-  src: url("https://applesocial.s3.amazonaws.com/assets/styles/fonts/sanfrancisco/sanfranciscodisplay-regular-webfont.woff");
-}
-
-@font-face {
-  font-family: "San Francisco Bold";
-  font-weight: 700;
-  src: url("https://applesocial.s3.amazonaws.com/assets/styles/fonts/sanfrancisco/sanfranciscodisplay-bold-webfont.woff");
-}
-
-@font-face {
-  font-family: "San Francisco Medium";
-  font-weight: 500;
-  src: url("https://applesocial.s3.amazonaws.com/assets/styles/fonts/sanfrancisco/sanfranciscodisplay-medium-webfont.woff");
-}
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family: "San Francisco Regular";
+  /* font-family: "San Francisco Regular"; */
+  font-family: "Lucida Console", "Courier New", monospace;
 }
 
 body {
@@ -121,10 +92,14 @@ h1{
   border-color: rgb(106, 104, 131);;
 }
 button {
+  position: relative;
+  top: 5px;
   padding: 10px;
   margin: 30px;
-  float: right;
-  margin-left: -30px;
+  float: left;
+  margin-right: -25px;
+  border-radius: 3px;
+  border-style: none;
 }
 .fade-in {
 	opacity: 1;
@@ -149,6 +124,27 @@ button {
 	}
 }
 @keyframes fadeInOpacity {
+	0% {
+		opacity: 0;
+    transform: scale(.5);
+	}
+  70% {
+    transform: scale(1.03);
+		opacity: .7;
+	}
+	100% {
+    transform: scale(1);
+		opacity: 1;
+	}
+}
+.slideIn{
+	opacity: 1;
+	animation-name: slideInKF;
+	animation-iteration-count: 1;
+	animation-timing-function: ease-in;
+	animation-duration:400ms;
+}
+@keyframes slideInKF {
 	0% {
 		opacity: 0;
     transform: scale(.5);

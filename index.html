@@ -28,11 +28,17 @@
   </head>
   <body>
 <style>
+#navbar{
+  background-color: rgb(106, 104, 131);
+}
 </style>
+<div id = "navbar">
 <h1 style="display: inline-block;">David Nguyen</h1>
-<button id="runBtn" onclick="runButton()">Run Code / Show Scoping Rules</button>
+</div>
+<button id="runBtn" onclick="runButton()">Run Code</button>
 <button onclick="showHide()">Show/Hide Scope Visualiser</button>
 </div>
+<br><br><br><br>
 <div id="mainFrameContainer" class="hide">
 </div>
 <div id="console">
@@ -131,7 +137,8 @@ function interpretCallStack(start, array, Frame) {
   
   for (var index = Frame.start; index <= Frame.end && errorDetected === false; index++) {
    console.log("index ", index);
-    //DETECT FUNCTION DECLATION TOKEN
+    //DETECT FUNCTION DECLATION TOKEN 
+    //nothing fancy, just regex and more regex
     if (isFunctionDeclarion(array[index])) {
      index = functionDeclaredHandler(index, array, Frame);
       //DETECT VARIABLE DECLATION TOKEN
