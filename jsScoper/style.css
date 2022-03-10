@@ -138,23 +138,23 @@ button {
 	}
 }
 .slideIn{
+  position: relative;
 	opacity: 1;
 	animation-name: slideInKF;
 	animation-iteration-count: 1;
-	animation-timing-function: ease-in;
-	animation-duration:400ms;
+	animation-timing-function:ease;
+	animation-duration:100ms;
 }
 @keyframes slideInKF {
 	0% {
-		opacity: 0;
-    transform: scale(.5);
+		top: 15px;
+    opacity: 0;
 	}
   70% {
-    transform: scale(1.03);
 		opacity: .7;
 	}
 	100% {
-    transform: scale(1);
+    top: 0px;
 		opacity: 1;
 	}
 }

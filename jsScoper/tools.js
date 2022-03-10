@@ -203,6 +203,7 @@ function addConsoleLine(string){
   setTimeout(() => {
     var element = document.getElementById("console");
     var newConsoleLine = document.createElement("p");
+    newConsoleLine.classList.add("slideIn");
     newConsoleLine.innerText = string;
     element.appendChild(newConsoleLine);
   }, consoleline * defaultDelay/3);
