@@ -147,14 +147,15 @@ function appendVariablesToVisulizer(Frame){
   var frameVariables = Frame.variables;
   var element = document.getElementById(Frame.id + Frame.fIndex + "variables");
   element.innerHTML = "";
-  element.classList.remove("hide");
-  element.classList.add("show");
+  if(element.classList.contains("hide")){
+    element.classList.remove("hide");
+    element.classList.add("show");
+  }
 
   var newElementChild = document.createElement("p");
   newElementChild.innerHTML = "Active Variables :";
 
   element.appendChild(newElementChild);
- 
   for (const [key, value] of frameVariables.entries()) {
     var newElementChild = document.createElement("p");
     newElementChild.innerHTML = "{ name: " + key + "; value: " + value + " }";
@@ -201,4 +202,23 @@ function addConsoleLine(string){
   var newConsoleLine = document.createElement("p");
   newConsoleLine.innerText = string;
   element.appendChild(newConsoleLine);
+}
+function runButton(){
+  var element = document.getElementById("mainFrameContainer");
+  if(element.classList.contains("hide")){
+    element.classList.remove("hide");
+    element.classList.add("show", "fade-in");
+  }
+  initParse();
+}
+function showHide(){
+  var element = document.getElementById("mainFrameContainer");
+  if(element.classList.contains("hide")){
+    element.classList.remove("hide");
+    element.classList.add("show", "fade-in");
+  }
+  else{
+    element.classList.remove("show");
+    element.classList.add("hide");
+  }
 }

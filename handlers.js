@@ -4,10 +4,19 @@ function functionDeclaredHandler(index, array, Frame){
   
   var element = document.getElementById(Frame.id + Frame.fIndex + "FunctionDef");
   var newFunctionDeclarationElement = document.createElement("p");
+  newFunctionDeclarationElement.classList.add("fade-in");
   newFunctionDeclarationElement.innerText = "FUNCTIONDEF: " + array[index+1] + "  { start: " + (start+2) + "; end: " + end + " }";
-  element.appendChild(newFunctionDeclarationElement);
-  element.classList.remove("hide");
-  element.classList.add("show");
+  if(element.classList.contains("hide")){
+    setTimeout(() => {
+      element.classList.remove("hide");
+      element.classList.add("show", "fade-in");
+    }, count*defaultDelay);
+    count++;
+  }
+  setTimeout(() => {
+    element.appendChild(newFunctionDeclarationElement);
+  }, count * defaultDelay);
+  count++;
   
   var newFunction = new functionDEF(array[index+ 1], start+2, end);
   //console.log(newFunction);
@@ -34,7 +43,10 @@ function variableDeclarationHandler(index, array, Frame){
     errorDetected = true;
     return;
   }
-  appendVariablesToVisulizer(Frame);
+  setTimeout(() => {
+    appendVariablesToVisulizer(JSON.parse(JSON.stringify(Frame)));
+  }, count * defaultDelay);
+  count++
   index++;
   return index;
 }
@@ -47,7 +59,9 @@ function variableReassignmentHandler(index, array, Frame){
 
   var newFrame = returnFrameContainingVariable(Frame, variableName);
   newFrame.variables.set(variableName, eval(expression));
-  appendVariablesToVisulizer(newFrame);
+  setTimeout(() => {
+    appendVariablesToVisulizer(newFrame);
+  }, count * defaultDelay);
 }
 function consoleLoghandler(index, array, Frame){
   var newRegex = new RegExp(/\(([^)]+)\)/gm);

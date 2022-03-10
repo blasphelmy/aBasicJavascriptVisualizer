@@ -29,14 +29,20 @@
   <body>
 <style>
 </style>
-<h1>David Nguyen</h1>
+<h1 style="display: inline-block;">David Nguyen</h1>
+<button id="runBtn" onclick="runButton()">Run Code / Show Scoping Rules</button>
+<button onclick="showHide()">Show/Hide Scope Visualiser</button>
+</div>
+<div id="mainFrameContainer" class="hide">
+</div>
 <div id="console">
 </div>
 <div id="codeEditorWrapper">
 <div class="codeEditiors">
   <textarea id="code" name="code">
     var year = 2;
-    var hellomessage = "Hello! Welcome to my landing page!";
+    var hellomessage = "Hello! Welcome to my landing page! ";
+    var aQuickAbout = "here, you will soon be able to find more projects that I've done during my time at Renton Technical College along with some additional information about me and my interests outside of school"; 
  	var keyword = "internship";
     function moreInfo(){
       hellomessage = "More information could be found on my about me page!";
@@ -52,6 +58,7 @@
       }
       b();
       console.log(hellomessage + location);
+      console.log(aQuickAbout);
       moreInfo();
     }
     function offer(){
@@ -79,10 +86,6 @@
   </textarea>
 </div>
 </div>
-<button id="runBtn" onclick="initParse()">Run Code</button>
-</div>
-<div id="mainFrameContainer">
-</div>
 
 </body>
 
@@ -91,6 +94,7 @@ var errorDetected = false;
 var editor = null;
 var outPutEditor = null;
 var count = 1;
+var defaultDelay = 100;
 function initParse() {
   //console.clear();
   document.getElementById("mainFrameContainer").innerHTML = "";
@@ -110,12 +114,17 @@ function interpretCallStack(start, array, Frame) {
   var elementFrame = null;
   if(Frame.id === "Global"){
     elementFrame = document.querySelector("#mainFrameContainer");
+    setTimeout(() => {
+    }, count * defaultDelay);
+    count++;
   }else{
     elementFrame = document.getElementById(Frame.previousNodeFrame.id + Frame.previousNodeFrame.fIndex + "ChildrenFrames");
-    elementFrame.classList.remove("hide");
-    elementFrame.classList.add("show");
+    setTimeout(() => {
+      elementFrame.classList.remove("hide");
+      elementFrame.classList.add("show", "fade-in");
+    }, count * defaultDelay);
+    count++;
   }
-  
   createNewFrameElements(elementFrame, Frame);
   
   for (var index = Frame.start; index <= Frame.end && errorDetected === false; index++) {
