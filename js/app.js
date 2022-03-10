@@ -1,5 +1,6 @@
 window.addEventListener("load", () => {
-  appMain();
+  initElements();
+  run();
 });
 
 let runBtn;
@@ -12,11 +13,6 @@ let instructions;
 let globalFrame;
 let totalFrames;
 let callStack = [];
-
-function appMain() {
-  initElements();
-  run();
-}
 
 function initElements() {
   // Set elements
@@ -45,11 +41,6 @@ function run() {
   instructions = parseInstructions(inputString);
   createFrames();
   displayFrames();
-  console.clear();
-  console.log(instructions);
-  console.log(globalFrame);
-  console.log(totalFrames);
-  console.log(callStack);
 }
 
 function parseInstructions(inputString) {
@@ -193,6 +184,13 @@ function displayFrames() {
   globalSummary = createSummary(globalFrame);
   globalSummary.open = true;
   outputSection.appendChild(globalSummary);
+
+  // Display to console
+  console.clear();
+  console.log(instructions);
+  console.log(globalFrame);
+  console.log(totalFrames);
+  console.log(callStack);
 
   function createSummary(frame) {
     let details = document.createElement("details");
