@@ -32,7 +32,7 @@ function initElements() {
     autofocus: true,
   });
   exampleInput =
-    "var globalNum0 = 0;\nvar globalNum1 = 0;\n\nfunction oneLvlFunc0 () {\n\tvar oneDeepNum0 = 1;\n}\n\nfunction oneLvlFunc1 () {\n\tvar oneDeepNum1 = 1;\n\tfunction twoLvlFunc0 () {\n\t\tvar twoDeepNum0 = 2;\n\t}\n}\n\noneLvlFunc0();\noneLvlFunc1();";
+    "var globalNum0 = 0;\nvar globalNum1 = 0;\n\nfunction oneLvlFunc0 (param1) {\n\tvar oneDeepNum0 = 1;\n}\n\nfunction oneLvlFunc1 () {\n\tvar oneDeepNum1 = 1;\n\tfunction twoLvlFunc0 () {\n\t\tvar twoDeepNum0 = 2;\n\t}\n}\n\noneLvlFunc0();\noneLvlFunc1();";
   codeEditor.doc.setValue(exampleInput);
   outputSection = document.getElementById("outputSection");
 
@@ -71,19 +71,16 @@ function parseInstructions(inputString) {
   lines.forEach((line) => {
     let foot = 0;
     for (let i = 0; i <= line.length; i++) {
-      if (
-        delimiters.includes(line[i]) ||
-        (i == line.length && delimiters.includes(line[foot]))
-      ) {
-        let word = line.slice(foot, i);
-        if (word != " ") words.push(word.trim());
-        foot = i;
+      if (delimiters.includes(line[i])) {
+        if (i > foot) {
+          let word = line.slice(foot, i);
+          words.push(word);
+        }
+        if (line[i] != " ") {
+          words.push(line[i]);
+        }
+        foot = i + 1;
       }
-
-      // Note: 'i' will go past last index
-      // Second if() condition will recognize this situation
-      // .slice() will capture the last char if it is a delimiter.
-      // Example: slice(16, 17) captures last char of 16 index long line.
     }
   });
 
