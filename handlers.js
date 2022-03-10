@@ -6,7 +6,7 @@ function functionDeclaredHandler(index, array, Frame){
   
   var element = document.getElementById(Frame.id + Frame.fIndex + "FunctionDef");
   var newFunctionDeclarationElement = document.createElement("p");
-  newFunctionDeclarationElement.classList.add("fade-in");
+  newFunctionDeclarationElement.classList.add("fade-in-no-bounce");
   newFunctionDeclarationElement.innerText = "FUNCTIONDEF: " + array[index+1] + "  { start: " + (start+2) + "; end: " + end + " }";
   if(element.classList.contains("hide")){
     setTimeout(() => {

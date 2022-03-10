@@ -131,14 +131,34 @@ button {
 	animation-name: fadeInOpacity;
 	animation-iteration-count: 1;
 	animation-timing-function: ease-in;
-	animation-duration:300ms;
+	animation-duration:400ms;
 }
-
-@keyframes fadeInOpacity {
+.fade-in-no-bounce {
+	opacity: 1;
+	animation-name: fadeInOpacityNoBounce;
+	animation-iteration-count: 1;
+	animation-timing-function: ease-in;
+	animation-duration:400ms;
+}
+@keyframes fadeInOpacityNoBounce {
 	0% {
 		opacity: 0;
 	}
 	100% {
+		opacity: 1;
+	}
+}
+@keyframes fadeInOpacity {
+	0% {
+		opacity: 0;
+    transform: scale(.5);
+	}
+  70% {
+    transform: scale(1.03);
+		opacity: .7;
+	}
+	100% {
+    transform: scale(1);
 		opacity: 1;
 	}
 }
