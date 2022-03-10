@@ -114,9 +114,6 @@ function interpretCallStack(start, array, Frame) {
   var elementFrame = null;
   if(Frame.id === "Global"){
     elementFrame = document.querySelector("#mainFrameContainer");
-    setTimeout(() => {
-    }, count * defaultDelay);
-    count++;
   }else{
     elementFrame = document.getElementById(Frame.previousNodeFrame.id + Frame.previousNodeFrame.fIndex + "ChildrenFrames");
     setTimeout(() => {

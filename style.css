@@ -63,8 +63,8 @@ h1{
   border-width: 2px;
 }
 .frameContainer { 
-  margin-top: 25px;
-  margin-left: 30px;
+  margin-top: 10px;
+  margin-left: 20px;
   padding: 10px;
   background-color: rgba(214, 120, 223, 0.042);
   border-left-color: rgba(215, 120, 223, 0.24);
@@ -74,7 +74,7 @@ h1{
   color: rgb(255, 253, 223);
   -webkit-box-shadow: 0px 0px 15px 4px rgba(0, 0, 0, 0.07); 
   box-shadow: 0px 0px 15px 4px rgba(0, 0, 0, 0.07);
-  font-size: 15px;
+  font-size: 10px;
 }
 .variableColors{
   background-color: rgba(17, 253, 9, 0.096);
