@@ -16,11 +16,6 @@ let callStack = [];
 function appMain() {
   initElements();
   run();
-
-  console.log(instructions);
-  console.log(globalFrame);
-  console.log(totalFrames);
-  console.log(callStack);
 }
 
 function initElements() {
@@ -50,6 +45,11 @@ function run() {
   instructions = parseInstructions(inputString);
   createFrames();
   displayFrames();
+  console.clear();
+  console.log(instructions);
+  console.log(globalFrame);
+  console.log(totalFrames);
+  console.log(callStack);
 }
 
 function parseInstructions(inputString) {
@@ -145,9 +145,8 @@ function fillFrame(frame, startReadingFrom) {
 
       // Check for parameters
       if (instructions[i] == "(") i++;
-      let parameters = [];
       while (instructions[i] != ")") {
-        parameters.push(instructions[i]);
+        frame.inputParameters.push(instructions[i]);
         i++;
         if (instructions[i] == ",") i++;
       }
@@ -181,15 +180,13 @@ class Variable {
 
 class Frame {
   name;
+  inputParameters = [];
   parent;
-  variables;
-  children;
-  callStack;
+  variables = [];
+  children = [];
 
   constructor(name) {
     this.name = name;
-    this.variables = [];
-    this.children = [];
   }
 }
 
