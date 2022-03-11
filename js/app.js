@@ -189,8 +189,8 @@ function displayFrames() {
   console.clear();
   console.log(instructions);
   console.log(globalFrame);
-  console.log(totalFrames);
-  console.log(callStack);
+  //console.log(totalFrames);
+  //console.log(callStack);
 
   function createSummary(frame) {
     let details = document.createElement("details");
