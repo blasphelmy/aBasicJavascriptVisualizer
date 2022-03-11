@@ -126,7 +126,7 @@ function fillFrame(frame, startReadingFrom) {
       }
       newVariable.value = instructions[i];
       frame.variables.push(newVariable);
-      i++;
+      //i++;
     }
 
     // Parse Function Declarations
@@ -157,9 +157,19 @@ function fillFrame(frame, startReadingFrom) {
         i++;
         frame.children.push(fillFrame(childFrame, i));
         // Increment i until closing bracket, to finish building current frame
-        while (instructions[i] != "}" && i < instructions.length) {
+        let leftTracker = 1;
+        let rightTracker = 0;
+
+        while (leftTracker != rightTracker) {
+          if (instructions[i] == "}") rightTracker++;
+          if (instructions[i] == "{") leftTracker++;
+
           i++;
         }
+
+        // while (instructions[i] != "}" && i < instructions.length) {
+        //   i++;
+        // }
       }
     }
 
@@ -192,6 +202,8 @@ class Variable {
 // Name
 // StartLine
 // Parent
+
+class Function {}
 
 class Frame {
   name;
