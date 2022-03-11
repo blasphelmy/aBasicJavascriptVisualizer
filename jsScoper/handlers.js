@@ -29,6 +29,10 @@ function variableDeclarationHandler(index, array, Frame){
   if(new RegExp("=").test(array[index+1]) && (new RegExp(/(^[a-zA-Z0-9]*)+([ ]*)+([=])/gm)).test(array[index + 1])){
     var keyValuePair = array[index+1].split("=");
     keyValuePair[0] = keyValuePair[0].trim();
+    if(new RegExp(/\s/gm).test(keyValuePair[0])){
+      addConsoleLine("variable declaration error on line: " + index + 1);
+      return;
+    }
     var variableName = keyValuePair[0];
     var expression = keyValuePair[1];
     expression = expression.split(";");
@@ -38,10 +42,14 @@ function variableDeclarationHandler(index, array, Frame){
   }else if(!(new RegExp(/([0-9])+([ ]*)+([;])/gm)).test(array[index+1])){
     var keyValuePair = array[index+1].split(";");
     keyValuePair[0] = keyValuePair[0].trim();
+    if(new RegExp(/\s/gm).test(keyValuePair[0])){
+      addConsoleLine("variable declaration error on line: " + (index + 1));
+      return;
+    }
     var newVarible = new variable(keyValuePair[0], null); //cheater!
     Frame.addVariables(newVarible);
   }else{
-    addConsoleLine("error on line: " + index + 1)
+    addConsoleLine("error on line: " + (index + 1));
     errorDetected = true;
     return;
   }
@@ -53,7 +61,10 @@ function variableReassignmentHandler(index, array, Frame){
   var tempArray = array[index].split("=");
   var variableName = tempArray[0].trim();
   var expression = tempArray[1].split(";");
-
+  if(new RegExp(/\s/gm).test(variableName)){
+    addConsoleLine("variable error on line: " + (index + 1));
+    return;
+  }
   expression = evalExpression(expression[0], Frame, index);
 
   var newFrame = returnFrameContainingVariable(Frame, variableName);
