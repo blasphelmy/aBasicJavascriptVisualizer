@@ -28,7 +28,7 @@ function initElements() {
     autofocus: true,
   });
   exampleInput =
-    "var globalNum0 = 0;\nvar globalNum1 = 0;\n\nfunction oneLvlFunc0 (param1) {\n\tvar oneDeepNum0 = 1;\n}\n\nfunction oneLvlFunc1 () {\n\tvar oneDeepNum1 = 1;\n\tfunction twoLvlFunc0 () {\n\t\tvar twoDeepNum0 = 2;\n\t}\n}\n\noneLvlFunc0();\noneLvlFunc1();";
+    "var globalNum0 = 0;\nvar globalNum1 = 0;\n\nfunction fn1 (param1) {\n\tvar oneDeepNum0 = 1;\n}\n\nfunction fn2 () {\n\tvar oneDeepNum1 = 1;\n\tfunction fn3 () {\n\t\tvar twoDeepNum0 = 2;\n\t}\n}\n\nglobalNum1 = 5;\n\noneLvlFunc0();\noneLvlFunc1();";
   // Back tics
   codeEditor.doc.setValue(exampleInput);
   outputSection = document.getElementById("outputSection");
@@ -42,6 +42,8 @@ function run() {
   instructions = parseInstructions(inputString);
   createFrames();
   displayFrames();
+  console.log(instructions);
+  console.log(globalFrame);
 }
 
 function parseInstructions(inputString) {
@@ -105,12 +107,13 @@ function fillFrame(frame, startReadingFrom) {
     }
 
     // Push frame at closing brace }
+    // Currently is pushing global frame before reaching end of instructions
     if (instructions[i] == "}") {
       totalFrames.push(frame);
       return frame;
     }
 
-    // Parse Variable (In local scope)
+    // Parse Variable Declarations
     if (variableKeywords.includes(instructions[i])) {
       let newVariable = new Variable(instructions[i]);
       i++;
@@ -123,9 +126,10 @@ function fillFrame(frame, startReadingFrom) {
       }
       newVariable.value = instructions[i];
       frame.variables.push(newVariable);
+      i++;
     }
 
-    // Parse Function
+    // Parse Function Declarations
     if (instructions[i] == "function") {
       // Get function name
       i++;
@@ -143,7 +147,7 @@ function fillFrame(frame, startReadingFrom) {
 
       if (instructions[i] == ")") i++;
 
-      // Function declaration - Create new frame
+      // Create new frame
       if (instructions[i] == "{") {
         let childFrame = new Frame(functionName);
         childFrame.parent = frame;
@@ -158,6 +162,17 @@ function fillFrame(frame, startReadingFrom) {
         }
       }
     }
+
+    // Check Variable Call
+    if (frame.variables.includes(instructions[i])) {
+      console.log(instructions[i]);
+    } else if (frame.parent) {
+      if (frame.parent.variables.includes(instructions[i])) {
+        console.log(instructions[i]);
+      }
+    }
+
+    // Check Function Call
 
     // Create frame upon function call
   }
@@ -199,9 +214,9 @@ function displayFrames() {
   outputSection.appendChild(globalSummary);
 
   // Display to console
-  console.clear();
-  console.log(instructions);
-  console.log(globalFrame);
+  //console.clear();
+  //console.log(instructions);
+  //console.log(globalFrame);
   //console.log(totalFrames);
   //console.log(callStack);
 
