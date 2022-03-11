@@ -29,6 +29,7 @@ function initElements() {
   });
   exampleInput =
     "var globalNum0 = 0;\nvar globalNum1 = 0;\n\nfunction oneLvlFunc0 (param1) {\n\tvar oneDeepNum0 = 1;\n}\n\nfunction oneLvlFunc1 () {\n\tvar oneDeepNum1 = 1;\n\tfunction twoLvlFunc0 () {\n\t\tvar twoDeepNum0 = 2;\n\t}\n}\n\noneLvlFunc0();\noneLvlFunc1();";
+  // Back tics
   codeEditor.doc.setValue(exampleInput);
   outputSection = document.getElementById("outputSection");
 
@@ -132,9 +133,10 @@ function fillFrame(frame, startReadingFrom) {
       i++;
 
       // Check for parameters
+      let inputParameters = [];
       if (instructions[i] == "(") i++;
       while (instructions[i] != ")") {
-        frame.inputParameters.push(instructions[i]);
+        inputParameters.push(instructions[i]);
         i++;
         if (instructions[i] == ",") i++;
       }
@@ -143,8 +145,11 @@ function fillFrame(frame, startReadingFrom) {
 
       // Function declaration - Create new frame
       if (instructions[i] == "{") {
-        let childFrame = new Frame(functionName); // Id = function name
+        let childFrame = new Frame(functionName);
         childFrame.parent = frame;
+        if (inputParameters) {
+          childFrame.inputParameters = inputParameters;
+        }
         i++;
         frame.children.push(fillFrame(childFrame, i));
         // Increment i until closing bracket, to finish building current frame
@@ -153,6 +158,8 @@ function fillFrame(frame, startReadingFrom) {
         }
       }
     }
+
+    // Create frame upon function call
   }
 }
 
@@ -166,11 +173,17 @@ class Variable {
   }
 }
 
+// Function class
+// Name
+// StartLine
+// Parent
+
 class Frame {
   name;
   inputParameters = [];
   parent;
   variables = [];
+  // functions
   children = [];
 
   constructor(name) {
@@ -204,7 +217,7 @@ function displayFrames() {
     // Parent
     let parent = document.createElement("div");
     if (frame.name == "Global") parent.innerHTML = "Parent: undefined";
-    else parent.innerHTML = "Parent: " + frame.parent.id;
+    else parent.innerHTML = "Parent: " + frame.parent.name;
     content.appendChild(parent);
 
     // Variables
