@@ -31,6 +31,7 @@ function variableDeclarationHandler(index, array, Frame){
     keyValuePair[0] = keyValuePair[0].trim();
     if(new RegExp(/\s/gm).test(keyValuePair[0])){
       addConsoleLine("variable declaration error on line: " + index + 1);
+      errorDetected = true;
       return;
     }
     var variableName = keyValuePair[0];
@@ -44,6 +45,7 @@ function variableDeclarationHandler(index, array, Frame){
     keyValuePair[0] = keyValuePair[0].trim();
     if(new RegExp(/\s/gm).test(keyValuePair[0])){
       addConsoleLine("variable declaration error on line: " + (index + 1));
+      errorDetected = true;
       return;
     }
     var newVarible = new variable(keyValuePair[0], null); //cheater!
@@ -62,6 +64,7 @@ function variableReassignmentHandler(index, array, Frame){
   var variableName = tempArray[0].trim();
   var expression = tempArray[1].split(";");
   if(new RegExp(/\s/gm).test(variableName)){
+    errorDetected = true;
     addConsoleLine("variable error on line: " + (index + 1));
     return;
   }
