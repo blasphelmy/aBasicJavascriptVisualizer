@@ -149,7 +149,12 @@ function interpretCallStack(start, array, Frame) {
       variableReassignmentHandler(index, array, Frame);
     }
     else if(detectConsoleLog(array[index])){
-        consoleLoghandler(index, array, Frame);
+      if(array[index].match(/(^console)+([ ]*)+[.]/)){
+        consoleLoghandler(index, array, Frame); 
+      }else{
+        addConsoleLine("syntax error on line " + index);
+        errorDetected = true;
+      }
     }
     else if(detectFunctionCalls(array[index])){
       var originFrame = returnFrameContainingFunctionDEF(Frame, array[index]);
