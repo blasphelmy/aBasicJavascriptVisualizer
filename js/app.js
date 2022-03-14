@@ -10,9 +10,7 @@ let inputSection;
 let inputString;
 let outputSection;
 let instructions;
-let globalFrame;
-let totalFrames = [];
-let executionQueue = [];
+let globalScope;
 
 function initElements() {
   // Set elements
@@ -40,11 +38,8 @@ function initElements() {
 function run() {
   inputString = codeEditor.getValue();
   instructions = parseInstructions(inputString);
-  console.log(instructions);
-  globalFrame = new Scope("Global");
-  buildScope(globalFrame, instructions);
-  console.log(globalFrame);
-  executeFromExecQueue();
+  globalScope = new Scope("Global");
+  buildScope(globalScope, instructions);
 }
 
 function parseInstructions(inputString) {
@@ -88,7 +83,6 @@ function parseInstructions(inputString) {
 
 function buildScope(scope, instructions) {
   let variableKeywords = ["var", "let", "const"];
-  console.log("Building Global Scope...");
   for (let i = 0; i < instructions.length; i++) {
     // Parse Variable Declarations
     if (variableKeywords.includes(instructions[i])) {
@@ -162,27 +156,27 @@ function buildScope(scope, instructions) {
         i++;
         if (instructions[i] == "(") i++;
         if (instructions[i] == ")") {
-          executionQueue.push(fn);
+          scope.executionQueue.push(fn);
         }
       }
     });
   }
-  //console.log(scope.functions);
-  //console.log(scope.variables);
-  //console.log(executionQueue);
-  console.log("Done.");
+
+  console.log(scope);
 }
 
-function executeFromExecQueue() {
+function executeQueue({ executionQueue }) {
+  console.log("Executing functions: ");
+
   while (executionQueue.length) {
     let fn = executionQueue.shift();
     let subInstructions = instructions.slice(fn.start, fn.end + 1);
     let newScope = new Scope(fn.name);
     buildScope(newScope, subInstructions);
-    totalFrames.push(newScope);
+    totalScopeFrames.push(newScope);
   }
 
-  console.log(totalFrames);
+  console.log(totalScopeFrames);
 }
 
 // function createFrames() {
@@ -314,6 +308,7 @@ class Scope {
   parent;
   variables = [];
   functions = [];
+  executionQueue = [];
 
   constructor(name) {
     this.name = name;
