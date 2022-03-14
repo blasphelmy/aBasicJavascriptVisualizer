@@ -162,6 +162,8 @@ function buildScope(scope, instructions) {
     });
   }
 
+  display(scope);
+
   console.log(scope);
 }
 
@@ -314,6 +316,8 @@ class Scope {
     this.name = name;
   }
 }
+
+function display(scope) {}
 
 // function displayFrames() {
 //   outputSection.innerHTML = "";
