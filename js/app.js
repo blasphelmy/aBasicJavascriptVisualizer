@@ -11,6 +11,8 @@ let inputString;
 let outputSection;
 let instructions;
 let globalScope;
+let executionQueue = [];
+let totalScopeFrames = [];
 
 function initElements() {
   // Set elements
@@ -38,8 +40,10 @@ function initElements() {
 function run() {
   inputString = codeEditor.getValue();
   instructions = parseInstructions(inputString);
-  globalScope = new Scope("Global");
+  globalScope = new Frame("Global");
   buildScope(globalScope, instructions);
+  totalScopeFrames.push(globalScope);
+  executeQueue(executionQueue);
 }
 
 function parseInstructions(inputString) {
@@ -81,7 +85,7 @@ function parseInstructions(inputString) {
   return words;
 }
 
-function buildScope(scope, instructions) {
+function buildScope(frame, instructions) {
   let variableKeywords = ["var", "let", "const"];
   for (let i = 0; i < instructions.length; i++) {
     // Parse Variable Declarations
@@ -96,7 +100,7 @@ function buildScope(scope, instructions) {
         return;
       }
       newVariable.value = instructions[i];
-      scope.variables.push(newVariable);
+      frame.variables.push(newVariable);
     }
 
     // Store Function Instructions
@@ -120,7 +124,7 @@ function buildScope(scope, instructions) {
       // Create new function
       if (instructions[i] == "{") {
         let newFunction = new Function(functionName);
-        newFunction.scope = scope;
+        newFunction.scope = frame;
         if (inputParameters) {
           newFunction.inputParameters = inputParameters;
         }
@@ -137,13 +141,13 @@ function buildScope(scope, instructions) {
         }
         i--;
         newFunction.end = i - 1; // Right before closing bracket
-        scope.functions.push(newFunction);
+        frame.functions.push(newFunction);
       }
     }
 
     // Add Variable Calls and Function Calls to Execution Queue
-    scope.variables.forEach((variable) => {
-      // Reassigns Variable Value
+    frame.variables.forEach((variable) => {
+      // Reassigns Scoped Variable Value
       if (instructions[i] == variable.name) {
         i++;
         if (instructions[i] == "=") i++;
@@ -151,31 +155,30 @@ function buildScope(scope, instructions) {
       }
     });
 
-    scope.functions.forEach((fn) => {
+    // Look Up the Scope for Variables
+
+    frame.functions.forEach((fn) => {
       if (instructions[i] == fn.name) {
         i++;
         if (instructions[i] == "(") i++;
         if (instructions[i] == ")") {
-          scope.executionQueue.push(fn);
+          executionQueue.push(fn);
         }
       }
     });
   }
-
-  display(scope);
-
-  console.log(scope);
 }
 
-function executeQueue({ executionQueue }) {
+function executeQueue(executionQueue) {
   console.log("Executing functions: ");
 
   while (executionQueue.length) {
     let fn = executionQueue.shift();
     let subInstructions = instructions.slice(fn.start, fn.end + 1);
-    let newScope = new Scope(fn.name);
-    buildScope(newScope, subInstructions);
-    totalScopeFrames.push(newScope);
+    let newFrame = new Frame(fn.name);
+    newFrame.parent = fn.scope.name;
+    buildScope(newFrame, subInstructions);
+    totalScopeFrames.push(newFrame);
   }
 
   console.log(totalScopeFrames);
@@ -287,11 +290,6 @@ class Variable {
   }
 }
 
-// Function class
-// Name
-// StartLine
-// Parent
-
 class Function {
   name;
   inputParameters = [];
@@ -304,13 +302,12 @@ class Function {
   }
 }
 
-class Scope {
+class Frame {
   name;
   inputParameters = [];
   parent;
   variables = [];
   functions = [];
-  executionQueue = [];
 
   constructor(name) {
     this.name = name;
