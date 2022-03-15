@@ -10,9 +10,8 @@ let inputSection;
 let inputString;
 let outputSection;
 let instructions;
-let globalScope;
-let executionQueue = [];
-let totalScopeFrames = [];
+let globalFrame;
+let totalFrames = [];
 
 function initElements() {
   // Set elements
@@ -28,8 +27,9 @@ function initElements() {
     autofocus: true,
   });
   exampleInput =
-    "var global0 = 0;\nvar global1 = 0;\nvar global2 = 0;\n\nfunction changeGlobal() {\n\tglobal0 = 10;\n}\n\nfunction innerReassignment() {\n\tvar twoNum0 = 0;\n\ttwoNum0 = 2;\n}\n\nfunction containedScope() {\n\tvar containedNum = 0;\n\n\tfunction innerChangeGlobal() {\n\t\tglobal1 = 15;\n\t}\n\n\tinnerChangeGlobal();\n}\n\nglobal1 = 5;\nchangeGlobal();\ninnerReassignment();\ncontainedScope();";
-  // Back tics
+    "var global0 = 0;\nvar global1 = 0;\nvar global2 = 0;\n\nfunction changeGlobal() {\n\tglobal0 = 10;\n}\n\nfunction innerReassignment() {\n\tvar twoNum = 0;\n\ttwoNum0 = 2;\n}\n\nfunction containedScope() {\n\tvar containedNum = 0;\n\n\tfunction innerChangeGlobal() {\n\t\tglobal1 = 15;\n\t}\n\n\tinnerChangeGlobal();\n}\n\nglobal1 = 5;\nchangeGlobal();\ninnerReassignment();\ncontainedScope();";
+  //\ninnerReassignment();\ncontainedScope();
+  // Possible to use back tics for example input?
   codeEditor.doc.setValue(exampleInput);
   outputSection = document.getElementById("outputSection");
 
@@ -40,10 +40,10 @@ function initElements() {
 function run() {
   inputString = codeEditor.getValue();
   instructions = parseInstructions(inputString);
-  globalScope = new Frame("Global");
-  buildScope(globalScope, instructions);
-  totalScopeFrames.push(globalScope);
-  executeQueue(executionQueue);
+  globalFrame = new Frame("Global");
+  totalFrames.push(globalFrame);
+  buildFrames(globalFrame, instructions);
+  display(totalFrames);
 }
 
 function parseInstructions(inputString) {
@@ -85,10 +85,10 @@ function parseInstructions(inputString) {
   return words;
 }
 
-function buildScope(frame, instructions) {
+function buildFrames(frame, instructions) {
   let variableKeywords = ["var", "let", "const"];
   for (let i = 0; i < instructions.length; i++) {
-    // Parse Variable Declarations
+    // Case: Variable Declarations
     if (variableKeywords.includes(instructions[i])) {
       let newVariable = new Variable(instructions[i]);
       i++;
@@ -103,7 +103,7 @@ function buildScope(frame, instructions) {
       frame.variables.push(newVariable);
     }
 
-    // Store Function Instructions
+    // Case: Function Declarations
     if (instructions[i] == "function") {
       // Get function name
       i++;
@@ -145,43 +145,53 @@ function buildScope(frame, instructions) {
       }
     }
 
-    // Add Variable Calls and Function Calls to Execution Queue
-    frame.variables.forEach((variable) => {
-      // Reassigns Scoped Variable Value
-      if (instructions[i] == variable.name) {
-        i++;
-        if (instructions[i] == "=") i++;
-        variable.value = instructions[i];
-      }
-    });
-
-    // Look Up the Scope for Variables
-
-    frame.functions.forEach((fn) => {
-      if (instructions[i] == fn.name) {
-        i++;
-        if (instructions[i] == "(") i++;
-        if (instructions[i] == ")") {
-          executionQueue.push(fn);
+    // Case: Function Call - Build new frame
+    if (frame.functions) {
+      frame.functions.forEach((fn) => {
+        if (instructions[i] == fn.name) {
+          //console.log("Must execute " + fn.name);
+          let newFrame = new Frame(fn.name + ": " + fn.numberOfCalls++);
+          newFrame.parent = frame;
+          buildFrames(newFrame, fn.instructions);
+          totalFrames.push(newFrame);
         }
+      });
+    }
+
+    // Case: Variable Reassignment in Local Scope
+    if (frame.variables) {
+      frame.variables.forEach((variable) => {
+        // Reassigns Scoped Variable Value
+        if (instructions[i] == variable.name) {
+          i++;
+          if (instructions[i] == "=") i++;
+          variable.value = instructions[i];
+        }
+      });
+    }
+
+    // Case: Variable Reassignment in Parent Scope
+    if (frame.parent) {
+      if (frame.parent.variables) {
+        frame.parent.variables.forEach((variable) => {
+          if (instructions[i] == variable.name) {
+            i++;
+            if (instructions[i] == "=") i++;
+            // console.log(
+            //   variable.name +
+            //     " value = " +
+            //     variable.value +
+            //     "... Being reassigned to: " +
+            //     instructions[i] +
+            //     " in scope: " +
+            //     frame.name
+            // );
+            variable.value = instructions[i];
+          }
+        });
       }
-    });
+    }
   }
-}
-
-function executeQueue(executionQueue) {
-  console.log("Executing functions: ");
-
-  while (executionQueue.length) {
-    let fn = executionQueue.shift();
-    let subInstructions = instructions.slice(fn.start, fn.end + 1);
-    let newFrame = new Frame(fn.name);
-    newFrame.parent = fn.scope.name;
-    buildScope(newFrame, subInstructions);
-    totalScopeFrames.push(newFrame);
-  }
-
-  console.log(totalScopeFrames);
 }
 
 // function createFrames() {
@@ -296,15 +306,20 @@ class Function {
   scope;
   start;
   end;
+  numberOfCalls = 0;
 
   constructor(name) {
     this.name = name;
+  }
+
+  get instructions() {
+    let subInstructions = instructions.slice(this.start, this.end + 1);
+    return subInstructions;
   }
 }
 
 class Frame {
   name;
-  inputParameters = [];
   parent;
   variables = [];
   functions = [];
@@ -314,7 +329,80 @@ class Frame {
   }
 }
 
-function display(scope) {}
+function display(frames) {
+  outputSection.innerHTML = "";
+
+  if (frames) {
+    frames.forEach((frame) => {
+      outputSection.appendChild(createSummary(frame));
+    });
+  }
+
+  function createSummary(frame) {
+    let details = document.createElement("details");
+    let summary = document.createElement("summary");
+    let content = document.createElement("div");
+
+    // ID
+    summary.innerHTML = frame.name;
+    details.appendChild(summary);
+
+    // Parent
+    let frameParent = document.createElement("div");
+    if (frame.parent) frameParent.innerHTML = "Parent: " + frame.parent.name;
+    else frameParent.innerHTML = "Parent: Undefined";
+    content.appendChild(frameParent);
+
+    // Variables
+    let localVariables = document.createElement("div");
+
+    let variablesTitle = document.createElement("div");
+    variablesTitle.innerHTML = "Variables: ";
+    localVariables.appendChild(variablesTitle);
+    let variableSummary = document.createElement("ul");
+
+    if (frame.variables) {
+      frame.variables.forEach((variable) => {
+        let li = document.createElement("li");
+
+        li.innerHTML =
+          variable.type + " " + variable.name + ": " + variable.value;
+
+        variableSummary.appendChild(li);
+
+        localVariables.appendChild(variableSummary);
+      });
+    }
+
+    content.appendChild(localVariables);
+
+    // Functions
+    let frameFunctions = document.createElement("div");
+
+    let functionTitle = document.createElement("div");
+    functionTitle.innerHTML = "Functions: ";
+    frameFunctions.appendChild(functionTitle);
+
+    let functionsSummary = document.createElement("ul");
+
+    if (frame.functions) {
+      frame.functions.forEach((fn) => {
+        let functionName = document.createElement("li");
+        functionName.innerHTML = fn.name;
+        functionsSummary.appendChild(functionName);
+      });
+    }
+    frameFunctions.appendChild(functionsSummary);
+    content.appendChild(frameFunctions);
+
+    // Set style
+    content.style.padding = "5px 20px";
+    details.style.padding = "0px 10px";
+    details.appendChild(content);
+
+    return details;
+  }
+}
 
 // function displayFrames() {
 //   outputSection.innerHTML = "";
