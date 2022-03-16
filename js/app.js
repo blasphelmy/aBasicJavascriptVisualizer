@@ -27,7 +27,7 @@ function initElements() {
     autofocus: true,
   });
   exampleInput =
-    "var global0 = 0;\nvar global1 = 0;\nvar global2 = 0;\n\nfunction changeGlobal() {\n\tglobal0 = 10;\n}\n\nfunction innerReassignment() {\n\tvar twoNum = 0;\n\ttwoNum0 = 2;\n}\n\nfunction containedScope() {\n\tvar containedNum = 0;\n\n\tfunction innerChangeGlobal() {\n\t\tglobal1 = 15;\n\t}\n\n\tinnerChangeGlobal();\n}\n\nglobal1 = 5;\nchangeGlobal();\ninnerReassignment();\ncontainedScope();";
+    "var global0 = 0;\nvar global1 = 0;\nvar global2 = 0;\n\nfunction changeGlobal() {\n\tglobal0 = 10;\n}\n\nfunction innerReassignment() {\n\tvar twoNum = 0;\n\ttwoNum = 2;\n}\n\nfunction containedScope() {\n\tvar containedNum = 0;\n\n\tfunction innerChangeGlobal() {\n\t\tglobal1 = 15;\n\t}\n\n\tinnerChangeGlobal();\n}\n\nglobal1 = 5;\nchangeGlobal();\ninnerReassignment();\ncontainedScope();";
   //\ninnerReassignment();\ncontainedScope();
   // Possible to use back tics for example input?
   codeEditor.doc.setValue(exampleInput);
@@ -38,11 +38,14 @@ function initElements() {
 }
 
 function run() {
+  totalFrames = [];
   inputString = codeEditor.getValue();
   instructions = parseInstructions(inputString);
   globalFrame = new Frame("Global");
   totalFrames.push(globalFrame);
-  buildFrames(globalFrame, instructions);
+  let startReadingFrom = 0;
+  let endReadingAt = instructions.length;
+  buildFrames(globalFrame, startReadingFrom, endReadingAt);
   display(totalFrames);
 }
 
@@ -85,9 +88,9 @@ function parseInstructions(inputString) {
   return words;
 }
 
-function buildFrames(frame, instructions) {
+function buildFrames(frame, startReadingFrom, endReadingAt) {
   let variableKeywords = ["var", "let", "const"];
-  for (let i = 0; i < instructions.length; i++) {
+  for (let i = startReadingFrom; i < endReadingAt; i++) {
     // Case: Variable Declarations
     if (variableKeywords.includes(instructions[i])) {
       let newVariable = new Variable(instructions[i]);
@@ -149,10 +152,20 @@ function buildFrames(frame, instructions) {
     if (frame.functions) {
       frame.functions.forEach((fn) => {
         if (instructions[i] == fn.name) {
-          //console.log("Must execute " + fn.name);
+          //Must execute fn.name);
           let newFrame = new Frame(fn.name + ": " + fn.numberOfCalls++);
+          i++;
+          // Check for parameters
+          let inputParameters = [];
+          if (instructions[i] == "(") i++;
+          while (instructions[i] != ")") {
+            inputParameters.push(instructions[i]);
+            i++;
+            if (instructions[i] == ",") i++;
+          }
+
           newFrame.parent = frame;
-          buildFrames(newFrame, fn.instructions);
+          buildFrames(newFrame, fn.start, fn.end);
           totalFrames.push(newFrame);
         }
       });
@@ -170,7 +183,7 @@ function buildFrames(frame, instructions) {
       });
     }
 
-    // Case: Variable Reassignment in Parent Scope
+    // Case: Variable Reassignment in Parent Scope - Does not look further than one step.
     if (frame.parent) {
       if (frame.parent.variables) {
         frame.parent.variables.forEach((variable) => {
@@ -310,11 +323,6 @@ class Function {
 
   constructor(name) {
     this.name = name;
-  }
-
-  get instructions() {
-    let subInstructions = instructions.slice(this.start, this.end + 1);
-    return subInstructions;
   }
 }
 
