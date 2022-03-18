@@ -36,7 +36,6 @@ function initElements() {
 }
 
 function run() {
-  totalFrames = [];
   inputString = codeEditor.getValue();
   instructions = parseInstructions(inputString);
   globalFrame = new Frame("Global");
@@ -91,9 +90,7 @@ function buildFrames(frame, startReadingFrom, endReadingAt) {
 
   readInstructionsLoop: for (let i = startReadingFrom; i < endReadingAt; i++) {
     // Case: Semicolon
-    if (instructions[i] == ";") {
-      continue;
-    }
+    if (instructions[i] == ";") continue;
 
     // Case: Variable Declarations
     if (variableKeywords.includes(instructions[i])) {
@@ -188,6 +185,7 @@ function buildFrames(frame, startReadingFrom, endReadingAt) {
         }
       }
 
+      // Case: No variable found, declare new Var and assign to Global.
       if (!variableAssigned) {
         let newVariable = new Variable("var");
         if (instructions[i + 1] == "=") {
@@ -211,7 +209,7 @@ function buildFrames(frame, startReadingFrom, endReadingAt) {
           return;
         }
         if (instructions[i] == fn.name) {
-          //Must execute fn.name
+          //Function Match Found - Must execute fn
           let newFrame = new Frame(fn.name + ": " + fn.numberOfCalls++);
           i++;
           // Check for parameters
