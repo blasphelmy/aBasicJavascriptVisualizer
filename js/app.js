@@ -27,7 +27,6 @@ function initElements() {
   });
   exampleInput =
     "var global0 = 0;\nvar global1 = 0;\nvar global2 = 0;\n\nfunction changeGlobal() {\n\tglobal0 = 10;\n}\n\nfunction innerReassignment() {\n\tvar twoNum = 0;\n\ttwoNum = 2;\n}\n\nfunction containedScope() {\n\tvar containedNum = 0;\n\n\tfunction innerChangeGlobal() {\n\t\tglobal1 = 15;\n\t}\n\n\tinnerChangeGlobal();\n}\n\nglobal1 = 5;\nchangeGlobal();\ninnerReassignment();\ncontainedScope();";
-  //\ninnerReassignment();\ncontainedScope();
   // Possible to use back tics for example input?
   codeEditor.doc.setValue(exampleInput);
   frameOutput = document.getElementById("frameOutput");
@@ -373,80 +372,3 @@ function display(frames) {
     return details;
   }
 }
-
-// function displayFrames() {
-//   outputSection.innerHTML = "";
-
-//   globalSummary = createSummary(globalFrame);
-//   globalSummary.open = true;
-//   outputSection.appendChild(globalSummary);
-
-//   // Display to console
-//   //console.clear();
-//   //console.log(instructions);
-//   //console.log(globalFrame);
-//   //console.log(totalFrames);
-//   //console.log(callStack);
-
-//   function createSummary(frame) {
-//     let details = document.createElement("details");
-//     let summary = document.createElement("summary");
-//     let content = document.createElement("div");
-
-//     // ID
-//     summary.innerHTML = frame.name;
-//     details.appendChild(summary);
-
-//     // Parent
-//     let parent = document.createElement("div");
-//     if (frame.name == "Global") parent.innerHTML = "Parent: undefined";
-//     else parent.innerHTML = "Parent: " + frame.parent.name;
-//     content.appendChild(parent);
-
-//     // Variables
-//     let localVariables = document.createElement("div");
-
-//     let variablesTitle = document.createElement("div");
-//     variablesTitle.innerHTML = "Variables: ";
-//     localVariables.appendChild(variablesTitle);
-
-//     frame.variables.forEach((variable) => {
-//       let variableSummary = document.createElement("ul");
-//       let li = document.createElement("li");
-
-//       li.innerHTML =
-//         "Type: " +
-//         variable.type +
-//         " Name: " +
-//         variable.name +
-//         " Value: " +
-//         variable.value;
-
-//       variableSummary.appendChild(li);
-
-//       localVariables.appendChild(variableSummary);
-//     });
-
-//     content.appendChild(localVariables);
-
-//     // Children
-//     let frameChildren = document.createElement("div");
-
-//     let childrenTitle = document.createElement("div");
-//     childrenTitle.innerHTML = "Children: ";
-//     frameChildren.appendChild(childrenTitle);
-
-//     frame.children.forEach((child) => {
-//       frameChildren.appendChild(createSummary(child));
-//     });
-
-//     content.appendChild(frameChildren);
-
-//     // Set style
-//     content.style.padding = "5px 20px";
-//     details.style.padding = "0px 10px";
-//     details.appendChild(content);
-
-//     return details;
-//   }
-// }
