@@ -148,7 +148,9 @@ function buildFrames(frame, startReadingFrom, endReadingAt) {
       }
     }
 
-    // Case: Function Call - Build new frame
+    let frameParent = frame.parent;
+
+    // Case: Function Call in Local Scope - Build new frame
     if (frame.functions) {
       frame.functions.forEach((fn) => {
         if (instructions[i] == fn.name) {
@@ -169,6 +171,31 @@ function buildFrames(frame, startReadingFrom, endReadingAt) {
           totalFrames.push(newFrame);
         }
       });
+    } else {
+      // Case: Variable Reassignment in Parent Scope - Trying to look further than one step.
+      while (frameParent) {
+        if (frameParent.variables) {
+          frame.parent.variables.forEach((variable) => {
+            if (instructions[i] == variable.name) {
+              i++;
+              if (instructions[i] == "=") i++;
+              console.log(
+                variable.name +
+                  " value = " +
+                  variable.value +
+                  "... Being reassigned to: " +
+                  instructions[i] +
+                  " in scope: " +
+                  frame.name
+              );
+              variable.value = instructions[i];
+            }
+          });
+        }
+
+        // Look further up the scope
+        frameParent = frameParent.parent;
+      }
     }
 
     // Case: Variable Reassignment in Local Scope
@@ -181,29 +208,45 @@ function buildFrames(frame, startReadingFrom, endReadingAt) {
           variable.value = instructions[i];
         }
       });
+    } else {
+      // Case: Variable Reassignment in Parent Scope
+      while (frameParent) {
+        if (frame.parent.variables) {
+          frame.parent.variables.forEach((variable) => {
+            if (instructions[i] == variable.name) {
+              i++;
+              if (instructions[i] == "=") i++;
+              variable.value = instructions[i];
+            }
+          });
+        }
+
+        // Look further up the scope
+        frameParent = frameParent.parent;
+      }
     }
 
     // Case: Variable Reassignment in Parent Scope - Does not look further than one step.
-    if (frame.parent) {
-      if (frame.parent.variables) {
-        frame.parent.variables.forEach((variable) => {
-          if (instructions[i] == variable.name) {
-            i++;
-            if (instructions[i] == "=") i++;
-            // console.log(
-            //   variable.name +
-            //     " value = " +
-            //     variable.value +
-            //     "... Being reassigned to: " +
-            //     instructions[i] +
-            //     " in scope: " +
-            //     frame.name
-            // );
-            variable.value = instructions[i];
-          }
-        });
-      }
-    }
+    // if (frame.parent) {
+    //   if (frame.parent.variables) {
+    //     frame.parent.variables.forEach((variable) => {
+    //       if (instructions[i] == variable.name) {
+    //         i++;
+    //         if (instructions[i] == "=") i++;
+    //         // console.log(
+    //         //   variable.name +
+    //         //     " value = " +
+    //         //     variable.value +
+    //         //     "... Being reassigned to: " +
+    //         //     instructions[i] +
+    //         //     " in scope: " +
+    //         //     frame.name
+    //         // );
+    //         variable.value = instructions[i];
+    //       }
+    //     });
+    //   }
+    // }
   }
 }
 
