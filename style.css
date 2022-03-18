@@ -14,6 +14,10 @@ body {
   background-color: rgba(128, 128, 128, 0.37);
 }
 
+.centeredText {
+  text-align: center;
+}
+
 #mainWrapper {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -29,20 +33,22 @@ body {
 }
 
 #outputSection {
-  padding: 10px;
+  padding: 20px;
 }
 
 #codeExample {
   display: none;
 }
-
+.CodeMirror {
+  height: 100%;
+}
 #codeEditor {
   width: 100%;
 
   box-shadow: 0px 0px 15px gray;
-  /* padding: 5px; */
-  /* background-color: rgb(128, 128, 128); */
-  /* border-radius: 3px; */
+  /* padding: 5px;
+  background-color: rgb(128, 128, 128);
+  border-radius: 3px; */
 }
 
 #runBtn {
