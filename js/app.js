@@ -186,8 +186,6 @@ function buildFrames(frame, startReadingFrom, endReadingAt) {
             }
           });
           parentFrame = parentFrame.parent;
-        } else {
-          console.log("No match must declare new global variable");
         }
       }
 
