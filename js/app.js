@@ -190,8 +190,9 @@ function buildFrames(frame, startReadingFrom, endReadingAt) {
       }
 
       if (!variableAssigned) {
-        let newVariable = new Variable(instructions[i]);
+        let newVariable = new Variable("var");
         if (instructions[i + 1] == "=") {
+          newVariable.name = instructions[i];
           i++;
           i++;
           newVariable.value = instructions[i];
@@ -257,10 +258,9 @@ function buildFrames(frame, startReadingFrom, endReadingAt) {
             functionCalled = true;
           }
         });
-        if (functionCalled) continue;
-      } else {
         parentFrame = parentFrame.parent;
       }
+      if (functionCalled) continue;
     }
   }
 
