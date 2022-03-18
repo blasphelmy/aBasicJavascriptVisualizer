@@ -1,6 +1,5 @@
 window.addEventListener("load", () => {
   initElements();
-  run();
 });
 
 let runBtn;
@@ -90,7 +89,13 @@ function parseInstructions(inputString) {
 
 function buildFrames(frame, startReadingFrom, endReadingAt) {
   let variableKeywords = ["var", "let", "const"];
-  for (let i = startReadingFrom; i < endReadingAt; i++) {
+
+  readInstructionsLoop: for (let i = startReadingFrom; i < endReadingAt; i++) {
+    // Case: Semicolon
+    if (instructions[i] == ";") {
+      continue;
+    }
+
     // Case: Variable Declarations
     if (variableKeywords.includes(instructions[i])) {
       let newVariable = new Variable(instructions[i]);
@@ -104,6 +109,7 @@ function buildFrames(frame, startReadingFrom, endReadingAt) {
       }
       newVariable.value = instructions[i];
       frame.variables.push(newVariable);
+      continue;
     }
 
     // Case: Function Declarations
@@ -143,16 +149,71 @@ function buildFrames(frame, startReadingFrom, endReadingAt) {
           i++;
         }
         i--;
-        newFunction.end = i - 1; // Right before closing bracket
+        newFunction.end = i - 1;
         frame.functions.push(newFunction);
       }
+      continue;
+    }
+
+    // Case: Variable Reassignment in Local Scope
+    if (frame.variables) {
+      let variableReassigned = false;
+      frame.variables.forEach((variable) => {
+        if (instructions[i] == variable.name) {
+          // Reassign Variable Value
+          i++;
+          if (instructions[i] == "=") i++;
+          variable.value = instructions[i];
+          variableReassigned = true;
+        }
+      });
+      if (variableReassigned) continue;
+    }
+
+    // Case: Variable Reassignment in Parent Scope - Look to Parent for Variable
+    let parentFrame = frame.parent;
+    if (parentFrame) {
+      let variableAssigned = false;
+      while (parentFrame && !variableAssigned) {
+        if (parentFrame.variables) {
+          parentFrame.variables.forEach((variable) => {
+            if (instructions[i] == variable.name) {
+              // Reassign Variable Value
+              i++;
+              if (instructions[i] == "=") i++;
+              variable.value = instructions[i];
+              variableAssigned = true;
+            }
+          });
+          parentFrame = parentFrame.parent;
+        } else {
+          console.log("No match must declare new global variable");
+        }
+      }
+
+      if (!variableAssigned) {
+        let newVariable = new Variable(instructions[i]);
+        if (instructions[i + 1] == "=") {
+          i++;
+          i++;
+          newVariable.value = instructions[i];
+          globalFrame.variables.push(newVariable);
+          variableAssigned = true;
+        }
+      }
+
+      if (variableAssigned) continue;
     }
 
     // Case: Function Call in Local Scope - Build new frame
     if (frame.functions) {
+      let functionCalled = false;
       frame.functions.forEach((fn) => {
+        if (functionCalled) {
+          return;
+        }
         if (instructions[i] == fn.name) {
-          //Must execute fn.name);
+          //Must execute fn.name
           let newFrame = new Frame(fn.name + ": " + fn.numberOfCalls++);
           i++;
           // Check for parameters
@@ -167,85 +228,200 @@ function buildFrames(frame, startReadingFrom, endReadingAt) {
           newFrame.parent = frame;
           buildFrames(newFrame, fn.start, fn.end);
           totalFrames.push(newFrame);
+          functionCalled = true;
         }
       });
+      if (functionCalled) continue;
     }
 
-    // Case: Variable Reassignment in Local Scope
-    if (frame.variables) {
-      frame.variables.forEach((variable) => {
-        // Reassigns Scoped Variable Value
-        if (instructions[i] == variable.name) {
-          i++;
-          if (instructions[i] == "=") i++;
-          variable.value = instructions[i];
-        }
-      });
-    }
-
-    // Case: Variable Reassignment in Parent Scope
-    let frameParent = frame.parent;
-    while (frameParent) {
-      if (frame.parent.variables) {
-        frame.parent.variables.forEach((variable) => {
-          if (instructions[i] == variable.name) {
+    // Case: Function Call in Parent Scope - Build new frame
+    parentFrame = frame.parent;
+    let functionCalled = false;
+    while (parentFrame && !functionCalled) {
+      if (parentFrame.functions) {
+        parentFrame.functions.forEach((fn) => {
+          if (instructions[i] == fn.name) {
+            //Must execute fn.name
+            let newFrame = new Frame(fn.name + ": " + fn.numberOfCalls++);
             i++;
-            if (instructions[i] == "=") i++;
-            variable.value = instructions[i];
+            // Check for parameters
+            let inputParameters = [];
+            if (instructions[i] == "(") i++;
+            while (instructions[i] != ")") {
+              inputParameters.push(instructions[i]);
+              i++;
+              if (instructions[i] == ",") i++;
+            }
+
+            newFrame.parent = frame;
+            buildFrames(newFrame, fn.start, fn.end);
+            totalFrames.push(newFrame);
+            functionCalled = true;
           }
         });
-      }
-
-      // Look further up the scope
-      frameParent = frame.parent.parent;
-    }
-
-    // Case: Variable Reassignment in Parent Scope - Trying to look further than one step.
-    while (frameParent) {
-      if (frameParent.variables) {
-        frame.parent.variables.forEach((variable) => {
-          if (instructions[i] == variable.name) {
-            i++;
-            if (instructions[i] == "=") i++;
-            console.log(
-              variable.name +
-                " value = " +
-                variable.value +
-                "... Being reassigned to: " +
-                instructions[i] +
-                " in scope: " +
-                frame.name
-            );
-            variable.value = instructions[i];
-          }
-        });
-      }
-
-      // Look further up the scope
-      frameParent = frame.parent.parent;
-    }
-
-    if (frame.parent) {
-      if (frame.parent.variables) {
-        frame.parent.variables.forEach((variable) => {
-          if (instructions[i] == variable.name) {
-            i++;
-            if (instructions[i] == "=") i++;
-            // console.log(
-            //   variable.name +
-            //     " value = " +
-            //     variable.value +
-            //     "... Being reassigned to: " +
-            //     instructions[i] +
-            //     " in scope: " +
-            //     frame.name
-            // );
-            variable.value = instructions[i];
-          }
-        });
+        if (functionCalled) continue;
+      } else {
+        parentFrame = parentFrame.parent;
       }
     }
   }
+
+  // for (let i = startReadingFrom; i < endReadingAt; i++) {
+  //   // Get Parent
+  //   let frameParent = frame.parent;
+
+  //   // Case: Variable Declarations
+  //   if (variableKeywords.includes(instructions[i])) {
+  //     let newVariable = new Variable(instructions[i]);
+  //     i++;
+  //     newVariable.name = instructions[i];
+  //     i++;
+  //     if (instructions[i] == "=") i++;
+  //     else {
+  //       console.log("Expected assignment");
+  //       return;
+  //     }
+  //     newVariable.value = instructions[i];
+  //     frame.variables.push(newVariable);
+  //   }
+
+  //   // Case: Function Declarations
+  //   else if (instructions[i] == "function") {
+  //     // Get function name
+  //     i++;
+  //     let functionName = instructions[i];
+  //     i++;
+
+  //     // Check for parameters
+  //     let inputParameters = [];
+  //     if (instructions[i] == "(") i++;
+  //     while (instructions[i] != ")") {
+  //       inputParameters.push(instructions[i]);
+  //       i++;
+  //       if (instructions[i] == ",") i++;
+  //     }
+
+  //     if (instructions[i] == ")") i++;
+
+  //     // Create new function
+  //     if (instructions[i] == "{") {
+  //       let newFunction = new Function(functionName);
+  //       newFunction.scope = frame;
+  //       if (inputParameters) {
+  //         newFunction.inputParameters = inputParameters;
+  //       }
+  //       i++;
+  //       newFunction.start = i;
+  //       // Increment i until closing bracket, to finish building current frame
+  //       let leftTracker = 1;
+  //       let rightTracker = 0;
+
+  //       while (leftTracker > rightTracker && i < instructions.length) {
+  //         if (instructions[i] == "{") leftTracker++;
+  //         if (instructions[i] == "}") rightTracker++;
+  //         i++;
+  //       }
+  //       i--;
+  //       newFunction.end = i - 1; // Right before closing bracket
+  //       frame.functions.push(newFunction);
+  //     }
+  //   }
+
+  //   // Case: Variable Reassignment in Local Scope
+  //   else if (frame.variables) {
+  //     frame.variables.forEach((variable) => {
+  //       // Reassigns Scoped Variable Value
+  //       if (instructions[i] == variable.name) {
+  //         i++;
+  //         if (instructions[i] == "=") i++;
+  //         variable.value = instructions[i];
+  //       }
+  //     });
+  //   } else if (frame.parent) {
+  //     if (frame.parent.variables) {
+  //       frame.parent.variables.forEach((variable) => {
+  //         if (instructions[i] == variable.name) {
+  //           i++;
+  //           if (instructions[i] == "=") i++;
+  //           // console.log(
+  //           //   variable.name +
+  //           //     " value = " +
+  //           //     variable.value +
+  //           //     "... Being reassigned to: " +
+  //           //     instructions[i] +
+  //           //     " in scope: " +
+  //           //     frame.name
+  //           // );
+  //           variable.value = instructions[i];
+  //         }
+  //       });
+  //     }
+  //   }
+
+  //   // Case: Function Call in Local Scope - Build new frame
+  //   else if (frame.functions) {
+  //     frame.functions.forEach((fn) => {
+  //       if (instructions[i] == fn.name) {
+  //         //Must execute fn.name);
+  //         let newFrame = new Frame(fn.name + ": " + fn.numberOfCalls++);
+  //         i++;
+  //         // Check for parameters
+  //         let inputParameters = [];
+  //         if (instructions[i] == "(") i++;
+  //         while (instructions[i] != ")") {
+  //           inputParameters.push(instructions[i]);
+  //           i++;
+  //           if (instructions[i] == ",") i++;
+  //         }
+
+  //         newFrame.parent = frame;
+  //         buildFrames(newFrame, fn.start, fn.end);
+  //         totalFrames.push(newFrame);
+  //       }
+  //     });
+  //   }
+
+  // Case: Variable Reassignment in Parent Scope
+  // while (frameParent) {
+  //   if (frame.parent.variables) {
+  //     frame.parent.variables.forEach((variable) => {
+  //       if (instructions[i] == variable.name) {
+  //         i++;
+  //         if (instructions[i] == "=") i++;
+  //         variable.value = instructions[i];
+  //       }
+  //     });
+  //   }
+
+  //   // Look further up the scope
+  //   frameParent = frame.parent.parent;
+  // }
+
+  // Case: Variable Reassignment in Parent Scope - Trying to look further than one step.
+  // while (frameParent) {
+  //   if (frameParent.variables) {
+  //     frame.parent.variables.forEach((variable) => {
+  //       if (instructions[i] == variable.name) {
+  //         i++;
+  //         if (instructions[i] == "=") i++;
+  //         console.log(
+  //           variable.name +
+  //             " value = " +
+  //             variable.value +
+  //             "... Being reassigned to: " +
+  //             instructions[i] +
+  //             " in scope: " +
+  //             frame.name
+  //         );
+  //         variable.value = instructions[i];
+  //       }
+  //     });
+  //   }
+
+  //   // Look further up the scope
+  //   frameParent = frame.parent.parent;
+  // }
+  // }
 }
 
 // function createFrames() {
