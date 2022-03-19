@@ -10,7 +10,7 @@ let inputString;
 let frameOutput;
 let instructions;
 let globalFrame;
-let totalFrames = [];
+let totalFrames;
 
 function initElements() {
   // Set elements
@@ -36,6 +36,7 @@ function initElements() {
 }
 
 function run() {
+  totalFrames = [];
   inputString = codeEditor.getValue();
   instructions = parseInstructions(inputString);
   globalFrame = new Frame("Global");
@@ -139,6 +140,7 @@ function buildFrames(frame, startReadingFrom, endReadingAt) {
         let leftTracker = 1;
         let rightTracker = 0;
 
+        // Do While?
         while (leftTracker > rightTracker && i < instructions.length) {
           if (instructions[i] == "{") leftTracker++;
           if (instructions[i] == "}") rightTracker++;
