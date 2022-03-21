@@ -1,5 +1,5 @@
 function detectFunctionCalls(string){
-    const detectFunctCalls = new RegExp(/(^[a-z,A-Z,0-9]*)+([ ]*)+([(])+([a-z,A-Z,0-9,\s,.,+,-,*,/, =]*)+([)])+([;])/gm);
+    const detectFunctCalls = new RegExp(/(^[a-z,A-Z,0-9]*)+([ ]*)+([(])+([a-z,A-Z,0-9,\s,.,+,-,*,/,=,"]*)+([)])+([;])/gm);
     //make improvements here https://regex101.com/r/MqSsCA/1
     if(detectFunctCalls.test(string)){
       return true;

@@ -61,28 +61,7 @@ function interpretCallStack(array, Frame) {
       }
     }
     else if(detectFunctionCalls(array[index])){
-
-      var functionCallBreakdown = extractFunctionParameters(array[index]);
-      console.log(functionCallBreakdown);
-      var originFrame = returnFrameContainingFunctionDEF(Frame, functionCallBreakdown[0]);
-      if(originFrame.returnFunctionDefinitions(functionCallBreakdown[0])){
-        var newFunctionDef = originFrame.returnFunctionDefinitions(functionCallBreakdown[0]);
-        var newFrame = new frame(newFunctionDef, index, count);
-        if(newFunctionDef.inputParamenters != ''){
-          for(var i = 0; i < newFunctionDef.inputParamenters.length; i++){
-            functionCallBreakdown[1][i] = eval(evalExpression(functionCallBreakdown[1][i], Frame, index));
-            newFrame.variables.set(newFunctionDef.inputParamenters[i], functionCallBreakdown[1][i]);
-          }
-        }
-        newFrame.previousNodeFrame = originFrame;
-        originFrame.addChildFrame(newFrame);
-        interpretCallStack(array, newFrame);
-      }
-      else{
-        addConsoleLine("error: on line " + index + " function definition doesn't exist!");
-        errorDetected = true;
-        return;
-      }
+      functionCallHandler(array, index, Frame);
     }
     else if(new RegExp(/(return+[ ])/gm).test(array[index])){
       returnHandler(array, index, Frame);
@@ -94,6 +73,29 @@ function interpretCallStack(array, Frame) {
   }
   if(Frame.id === "Global"){
     return Frame;
+  }
+}
+function functionCallHandler(array, index, Frame){
+  var functionCallBreakdown = extractFunctionParameters(array[index]);
+  console.log(functionCallBreakdown);
+  var originFrame = returnFrameContainingFunctionDEF(Frame, functionCallBreakdown[0]);
+  if(originFrame.returnFunctionDefinitions(functionCallBreakdown[0])){
+    var newFunctionDef = originFrame.returnFunctionDefinitions(functionCallBreakdown[0]);
+    var newFrame = new frame(newFunctionDef, index, count);
+    if(newFunctionDef.inputParamenters != ''){
+      for(var i = 0; i < newFunctionDef.inputParamenters.length; i++){
+        functionCallBreakdown[1][i] = eval(evalExpression(functionCallBreakdown[1][i], Frame, index));
+        newFrame.variables.set(newFunctionDef.inputParamenters[i], functionCallBreakdown[1][i]);
+      }
+    }
+    newFrame.previousNodeFrame = originFrame;
+    originFrame.addChildFrame(newFrame);
+    interpretCallStack(array, newFrame);
+  }
+  else{
+    addConsoleLine("error: on line " + index + " function definition doesn't exist!");
+    errorDetected = true;
+    return;
   }
 }
 function returnHandler(array, index, Frame){
