@@ -165,10 +165,32 @@ function appendVariablesToVisulizer(Frame){
     element.appendChild(newElementChild);
   }
 }
-function evalExpression(string, Frame, line){ //in the format of 2 + 2 + a for example..
+function evalExpression(string, Frame, line, array){ //in the format of 2 + 2 + a for example..
   var newArray = breakExpressionIntoComponents(string);
   for(var index = 0; index < newArray.length; index++){
-    if((new RegExp(/(^[a-zA-Z][a-zA-Z]*[0-9]*)/gm)).test(newArray[index])){
+    if(detectFunctionCalls(newArray[index])){
+      var functionCallBreakdown = extractFunctionParameters(newArray[index]);
+      var originFrame = returnFrameContainingFunctionDEF(Frame, functionCallBreakdown[0]);
+      if(originFrame.returnFunctionDefinitions(functionCallBreakdown[0])){
+        var newFunctionDef = originFrame.returnFunctionDefinitions(functionCallBreakdown[0]);
+        var newFrame = new frame(newFunctionDef, line, count);
+        if(newFunctionDef.inputParamenters != ''){
+          for(var i = 0; i < newFunctionDef.inputParamenters.length; i++){
+            functionCallBreakdown[1][i] = eval(evalExpression(functionCallBreakdown[1][i], Frame, line));
+            newFrame.variables.set(newFunctionDef.inputParamenters[i], functionCallBreakdown[1][i]);
+          }
+        }
+        newFrame.previousNodeFrame = originFrame;
+        originFrame.addChildFrame(newFrame);
+        newArray[index] =  interpretCallStack(array, newFrame);
+      }
+      else{
+        addConsoleLine("error: on line " + index + " function definition doesn't exist!");
+        errorDetected = true;
+        return;
+      }
+    }
+    else if((new RegExp(/(^[a-zA-Z][a-zA-Z]*[0-9]*)/gm)).test(newArray[index])){
       var newFrame = returnFrameContainingVariable(Frame, newArray[index]);
       newArray[index] = newFrame.variables.get(newArray[index]);
       // console.log("frame: ", Frame, "line: ", line, "array.index = ", newArray[index]);
@@ -195,7 +217,7 @@ function evalExpression(string, Frame, line){ //in the format of 2 + 2 + a for e
   return expression;
 }
 function breakExpressionIntoComponents(expression){ //expression should be a string.
-  const basicArithmatics =  new RegExp(/([+|\-|*|/|(|)])/gm);
+  const basicArithmatics =  new RegExp(/([+|\-|*|/])(?![^(]*\))/gm);
   var newComponentsArray = expression.split(basicArithmatics);
   newComponentsArray = removeEmptyIndices(newComponentsArray);
   newComponentsArray = trimStringInArray(newComponentsArray);

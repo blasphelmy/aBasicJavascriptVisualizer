@@ -64,7 +64,7 @@ function interpretCallStack(array, Frame) {
       functionCallHandler(array, index, Frame);
     }
     else if(new RegExp(/(return+[ ])/gm).test(array[index])){
-      returnHandler(array, index, Frame);
+      return returnHandler(array, index, Frame);
     }else if(!(new RegExp(/(['}{'])/gm).test(array[index])) && index < array.length-1){
       addConsoleLine("error: on line " + index);
       errorDetected = true;
@@ -77,7 +77,6 @@ function interpretCallStack(array, Frame) {
 }
 function functionCallHandler(array, index, Frame){
   var functionCallBreakdown = extractFunctionParameters(array[index]);
-  console.log(functionCallBreakdown);
   var originFrame = returnFrameContainingFunctionDEF(Frame, functionCallBreakdown[0]);
   if(originFrame.returnFunctionDefinitions(functionCallBreakdown[0])){
     var newFunctionDef = originFrame.returnFunctionDefinitions(functionCallBreakdown[0]);
@@ -105,7 +104,7 @@ function returnHandler(array, index, Frame){
   
   var expression = newArray[1].split(";");
   var expression = evalExpression(expression[0], Frame, index);
-  console.log("return equals = " + eval(expression));
+  return eval(expression);
 
 }
 function extractFunctionParameters(newString){ //abc(x,y,x), returns an array[abc(), array[x,y,z]]

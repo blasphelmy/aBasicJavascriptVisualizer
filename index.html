@@ -64,12 +64,14 @@ function c(f){
     console.log("y = " + y);
     console.log("z = " + z);
     z = z + 23;
-    return z;
+    return z/x;
   }
-  f = f * a;
-  f(e, a, f/a);
+  var f = 2;
+  console.log("f = " + f);
+  f = f + f(e, a, a);
+  console.log("f = " + f);
 }
-b(a*123);
+b(a*123);        
 </textarea>
 </div>
 <div class="codeEditiors">
