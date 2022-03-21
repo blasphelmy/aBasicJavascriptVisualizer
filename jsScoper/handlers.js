@@ -2,7 +2,8 @@ function functionDeclaredHandler(index, array, Frame){
   var start = index;
   var end = findEOFLine(array, index);
 
-  console.log(array[index]);
+  //console.log(array[index+1]);
+  var newFunctionDefArray = extractFunctionParameters(array[index+1]);
   
   var element = document.getElementById(Frame.id + Frame.fIndex + "FunctionDef");
   var newFunctionDeclarationElement = document.createElement("p");
@@ -20,7 +21,7 @@ function functionDeclaredHandler(index, array, Frame){
   }, count * defaultDelay);
   count++;
   
-  var newFunction = new functionDEF(array[index+ 1], start+2, end);
+  var newFunction = new functionDEF(newFunctionDefArray, start+2, end);
   //console.log(newFunction);
   Frame.addFunctionDefinition(newFunction);
   return end;

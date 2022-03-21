@@ -59,10 +59,12 @@ class frame {
   }
   class functionDEF {
     name; //what is your name
+    inputParamenters; //array
     start; //index of array
     end; //end of array...
-    constructor(name, start, end) {
-      this.name = name;
+    constructor(newFunctionDefArray, start, end) {
+      this.name = newFunctionDefArray[0];
+      this.inputParamenters = newFunctionDefArray[1];
       this.start = start;
       this.end = end;
     }

@@ -7,6 +7,7 @@ window.addEventListener("load", function(e){
           autoCloseBrackets: true,
           continueComments: "Enter",
           extraKeys: {"Ctrl-Q": "toggleComment"},
+          lineWrapping: true,
         });
         editor.setSize(null, 400);
         outPutEditor = CodeMirror.fromTextArea(document.getElementById("code_array"), {
@@ -17,6 +18,7 @@ window.addEventListener("load", function(e){
           autoCloseBrackets: true,
           continueComments: "Enter",
           extraKeys: {"Ctrl-Q": "toggleComment"},
+          lineWrapping: true,
         });
         outPutEditor.setSize(null, 400);
         initParse();

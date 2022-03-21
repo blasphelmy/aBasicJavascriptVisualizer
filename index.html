@@ -22,6 +22,7 @@
     <script src="jsScoper/regexDefinitions.js"></script>
     <script src="jsScoper/handlers.js"></script>
     <script src="jsScoper/eventListeners.js"></script>
+    <script src="jsScoper/init.js"></script>
     <link rel="stylesheet" href="jsScoper/style.css" />
 
     <title>parse</title>
@@ -33,7 +34,7 @@
 }
 </style>
 <div id = "navbar">
-<h1 style="display: inline-block;">David Nguyen</h1>
+<h1 style="display: inline-block;">Js Scoper</h1>
 </div>
 <button id="runBtn" onclick="runButton()">Run Code</button>
 <button onclick="showHide()">Show/Hide Scope Visualiser</button>
@@ -45,49 +46,31 @@
 </div>
 <div id="codeEditorWrapper">
 <div class="codeEditiors">
-  <textarea id="code" name="code">
-var year = (11+5)/16 * 2;
-var hellomessage = "Hello! Welcome to my landing page! ";
-var aQuickAbout = "here, you will soon be able to find more projects that I've done during my time at Renton Technical College along with some additional information about me and my interests outside of school"; 
-var keyword = "internship";
-function moreInfo(){
-  hellomessage = "More information could be found on my about me page!";
-  console.log(" ");
-  console.log(goal);
+<textarea id="code" name="code">
+var a = 10;
+function b(g){
+  a = 5;
+  g = g + 2;
+  c(g);
+  console.log("d = " + d);
 }
-function a(){
-  hellomessage = "I’m a " + year + "nd  year CSI student at ";
-  var location;
-  function b(){
-    location = "Renton Technical College.";
-    goal = "What I'm looking for are CompSci "+ keyword + " opportunities.";
+function c(f){
+  d = 6;
+  var a = 7;
+  e = 9;
+  function f(x, y, z){
+    a = 2;
+    console.log("x = " + x);
+    console.log("y = " + y);
+    console.log("z = " + z);
+    z = z + 23;
+    return z;
   }
-  b();
-  console.log(hellomessage + location);
-  console.log(aQuickAbout);
-  moreInfo();
+  f = f * a;
+  f(e, a, f);
 }
-function offer(){
-    var haveOffer = "If you have any opportunities";
-  console.log(haveOffer + "  and would like to offer me an " + keyword + "...");
-}
-function contactMe(){
-  var email = "dhnguyen08@student.rtc.edu";
-  console.log("Or, you could shoot me an email @ \n" + email);
-  var goodbyeMessage = "Thanks for stopping by!";
-  function a(){
-    console.log(" ");
-    console.log("Thanks for stopping by!");
-  }
-  a();
-}
-console.log(hellomessage);
-a();
-offer();
-console.log(hellomessage);
-contactMe();    
-
-  </textarea>
+b(a);
+</textarea>
 </div>
 <div class="codeEditiors">
   <textarea id="code_array" name="code">
@@ -98,89 +81,5 @@ contactMe();
 </body>
 
 <script>
-var errorDetected = false;
-var editor = null;
-var outPutEditor = null;
-var count = 1;
-var consoleline = 1;
-var defaultDelay = 250;
-function initParse() {
-  //console.clear();
-  document.getElementById("mainFrameContainer").innerHTML = "";
-  document.getElementById("console").innerHTML = "";
-  errorDetected = false;
-  count = 1;
-  consoleline = 1;
-  //step 1, we get javascript code from user as a raw string.
-  var inputString = editor.getValue() + ";";
-  //now we split the inputString into its induvidual components
-  var CallStack = breakIntoComponents(inputString);
-  outPutCallStacktoCodeEditor(CallStack);
-  var newFunction = new functionDEF("Global", 0, CallStack.length);
-  var FinalFrame = interpretCallStack(0, CallStack, new frame(newFunction, CallStack.length, count));
-  console.log(FinalFrame);
-}
-function interpretCallStack(start, array, Frame) {
-  var elementFrame = null;
-  if(Frame.id === "Global"){
-    elementFrame = document.querySelector("#mainFrameContainer");
-    elementFrame.classList.add("fade-in");
-  }else{
-    elementFrame = document.getElementById(Frame.previousNodeFrame.id + Frame.previousNodeFrame.fIndex + "ChildrenFrames");
-    setTimeout(() => {
-      elementFrame.classList.remove("hide");
-      elementFrame.classList.add("show", "fade-in");
-    }, count * defaultDelay);
-    count++;
-  }
-  createNewFrameElements(elementFrame, Frame);
-  
-  for (var index = Frame.start; index <= Frame.end && errorDetected === false; index++) {
-   console.log("index ", index);
-    //DETECT FUNCTION DECLATION TOKEN 
-    //nothing fancy, just regex and more regex
-    if (isFunctionDeclarion(array[index])) {
-     index = functionDeclaredHandler(index, array, Frame);
-      //DETECT VARIABLE DECLATION TOKEN
-    } else if (isVarDeclartion(array[index])) {
-      index = variableDeclarationHandler(index, array, Frame);
-      //DETECT VARIABLE REASSIGNMENT
-    }else if(detectStatementVariableReassignment(array[index])){
-      variableReassignmentHandler(index, array, Frame);
-    }
-    else if(detectConsoleLog(array[index])){
-      if(array[index].match(/(^console)+([ ]*)+[.]/)){
-        consoleLoghandler(index, array, Frame); 
-      }else{
-        addConsoleLine("syntax error on line " + index);
-        errorDetected = true;
-      }
-    }
-    else if(detectFunctionCalls(array[index])){
-      var originFrame = returnFrameContainingFunctionDEF(Frame, array[index]);
-      if(originFrame.returnFunctionDefinitions(array[index])){
-        var newFunctionDef = originFrame.returnFunctionDefinitions(array[index]);
-        var newFrame = new frame(newFunctionDef, index, count);
-        count++;
-        newFrame.previousNodeFrame = originFrame;
-        originFrame.addChildFrame(newFrame);
-        interpretCallStack(newFunctionDef.getStart, array, newFrame);
-      }
-      else{
-        addConsoleLine("error: on line " + index + " function definition doesn't exist!");
-        errorDetected = true;
-        return;
-      }
-    }else if(!(new RegExp(/(['}{'])/gm).test(array[index])) && index < array.length-1){
-      addConsoleLine("error: on line " + index);
-      errorDetected = true;
-      return;
-    }
-  }
-  if(Frame.id === "Global"){
-    return Frame;
-  }
-}
-function returnFunction(array) {}
   </script>
 </html>

@@ -153,6 +153,7 @@ function appendVariablesToVisulizer(Frame){
       element.classList.add("show", "fade-in");
     }, count * defaultDelay);
   }
+  count++;
 
   var newElementChild = document.createElement("p");
   newElementChild.innerHTML = "Active Variables :";
@@ -170,6 +171,7 @@ function evalExpression(string, Frame, line){ //in the format of 2 + 2 + a for e
     if((new RegExp(/(^[a-zA-Z][a-zA-Z]*[0-9]*)/gm)).test(newArray[index])){
       var newFrame = returnFrameContainingVariable(Frame, newArray[index]);
       newArray[index] = newFrame.variables.get(newArray[index]);
+      // console.log("frame: ", Frame, "line: ", line, "array.index = ", newArray[index]);
       if(typeof(newArray[index]) === "undefined"){
         addConsoleLine("error: variable undefined on line: " + line);
         errorDetected = true;
@@ -210,7 +212,6 @@ function addConsoleLine(string){
    consoleline = consoleline+1;
 }
 function runButton(){
-  var element = document.getElementById("mainFrameContainer");
   initParse();
 }
 function showHide(){
