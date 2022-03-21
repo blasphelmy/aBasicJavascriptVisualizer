@@ -51,8 +51,7 @@ var a = 10;
 function b(g){
   a = 5;
   g = g + 2;
-  c(g);
-  console.log("d = " + d);
+  return c(g);
 }
 function c(f){
   d = 6;
@@ -70,8 +69,10 @@ function c(f){
   console.log("f = " + f);
   f = f + f(e, a, a);
   console.log("f = " + f);
+  return f;
 }
-b(a*123);        
+var xyz = b(a*123); 
+console.log("xyz = " + xyz);        
 </textarea>
 </div>
 <div class="codeEditiors">

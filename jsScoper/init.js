@@ -103,7 +103,7 @@ function returnHandler(array, index, Frame){
   newArray = trimStringInArray(newArray);
   
   var expression = newArray[1].split(";");
-  var expression = evalExpression(expression[0], Frame, index);
+  var expression = evalExpression(expression[0], Frame, index, array);
   return eval(expression);
 
 }
