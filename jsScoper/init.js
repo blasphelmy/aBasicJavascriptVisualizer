@@ -61,16 +61,16 @@ function interpretCallStack(array, Frame) {
       }
     }
     else if(detectFunctionCalls(array[index])){
+
       var functionCallBreakdown = extractFunctionParameters(array[index]);
-      if(functionCallBreakdown[1] != ''){
-        functionCallBreakdown[1] = findParametersVariables(functionCallBreakdown[1], Frame, index);
-      }
+      console.log(functionCallBreakdown);
       var originFrame = returnFrameContainingFunctionDEF(Frame, functionCallBreakdown[0]);
       if(originFrame.returnFunctionDefinitions(functionCallBreakdown[0])){
         var newFunctionDef = originFrame.returnFunctionDefinitions(functionCallBreakdown[0]);
         var newFrame = new frame(newFunctionDef, index, count);
         if(newFunctionDef.inputParamenters != ''){
           for(var i = 0; i < newFunctionDef.inputParamenters.length; i++){
+            functionCallBreakdown[1][i] = eval(evalExpression(functionCallBreakdown[1][i], Frame, index));
             newFrame.variables.set(newFunctionDef.inputParamenters[i], functionCallBreakdown[1][i]);
           }
         }
@@ -83,6 +83,9 @@ function interpretCallStack(array, Frame) {
         errorDetected = true;
         return;
       }
+    }
+    else if(new RegExp(/(return+[ ])/gm).test(array[index])){
+      returnHandler(array, index, Frame);
     }else if(!(new RegExp(/(['}{'])/gm).test(array[index])) && index < array.length-1){
       addConsoleLine("error: on line " + index);
       errorDetected = true;
@@ -93,26 +96,15 @@ function interpretCallStack(array, Frame) {
     return Frame;
   }
 }
-function findParametersVariables(array, Frame, line){
-  for(var index = 0; index < array.length; index++){
-    if((new RegExp(/(^[a-zA-Z][a-zA-Z]*[0-9]*)/gm)).test(array[index])){
-      var newFrame = returnFrameContainingVariable(Frame, array[index]);
-      array[index] = newFrame.variables.get(array[index]);
-      if(typeof(array[index]) === "undefined"){
-        addConsoleLine("error: variable undefined " + line);
-          errorDetected = true;
-          return;
-      }
-    }else{
-      array[index] = Number(array[index]);
-    }
-    if(Number.isNaN(array[index])){
-        addConsoleLine("error: parameter error on " + line);
-          errorDetected = true;
-          return;
-      }
-  }
-  return array;
+function returnHandler(array, index, Frame){
+  var newArray = array[index].split(/(return+[ ]*)/);
+  newArray = removeEmptyIndices(newArray);
+  newArray = trimStringInArray(newArray);
+  
+  var expression = newArray[1].split(";");
+  var expression = evalExpression(expression[0], Frame, index);
+  console.log("return equals = " + eval(expression));
+
 }
 function extractFunctionParameters(newString){ //abc(x,y,x), returns an array[abc(), array[x,y,z]]
   var newArray = new Array();

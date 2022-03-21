@@ -81,3 +81,6 @@ function consoleLoghandler(index, array, Frame){
   expression = evalExpression(matches[1], Frame, index);
   addConsoleLine(index + "> " + eval(expression));
 }
+function functionCallHandler(){
+  
+}
