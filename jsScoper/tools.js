@@ -72,18 +72,25 @@ function removeEmptyIndices(array) {
   }
   return newArray;
 }
-function findEOFLine(array, start) {
+function findMatching(array, start, token) {
   //raw string -> breakIntoComponents() first. start is the index of the array where a function declartion is detected.
+  var token_2 = null;
+  if(token === "{"){
+    token_2 = "}";
+  }else if(token === "("){
+    token = (/([(])/g);
+    token_2 = (/([)])/g);
+  }
   var count = 0;
   var endLine = -1;
   for (index = start; index < array.length; index++) {
-    if (array[index].search("{") > -1) {
+    if (array[index].search(token) > -1) {
       count = count + 1;
     }
-    if (array[index].search("}") > -1) {
+    if (array[index].search(token_2) > -1) {
       count = count - 1;
     }
-    if (count === 0 && array[index].search("}") > -1) {
+    if (count === 0 && array[index].search(token_2) > -1) {
       endLine = index;
       break;
     }
@@ -166,7 +173,7 @@ function appendVariablesToVisulizer(Frame){
   }
 }
 function evalExpression(string, Frame, line, array){ //in the format of 2 + 2 + a for example..
-  var newArray = breakExpressionIntoComponents(string);
+  var newArray = breakExpressionIntoComponents(string, Frame, line, array);
   for(var index = 0; index < newArray.length; index++){
     if(detectFunctionCalls(newArray[index])){
       var functionCallBreakdown = extractFunctionParameters(newArray[index]);
@@ -216,12 +223,41 @@ function evalExpression(string, Frame, line, array){ //in the format of 2 + 2 + 
   
   return expression;
 }
-function breakExpressionIntoComponents(expression){ //expression should be a string.
-  const basicArithmatics =  new RegExp(/([+|\-|*|/])(?![^(]*\))/gm);
-  var newComponentsArray = expression.split(basicArithmatics);
-  newComponentsArray = removeEmptyIndices(newComponentsArray);
-  newComponentsArray = trimStringInArray(newComponentsArray);
-  return newComponentsArray;
+function breakExpressionIntoComponents(expression, Frame, line, array){ //expression should be a string.
+  const basicArithmatics =  new RegExp(/([+|\-|*|/|<|>|=|(|)])/gm);
+  var newArray = expression.split(basicArithmatics);
+  newArray = removeEmptyIndices(newArray);
+  newArray = trimStringInArray(newArray);
+  var newTestArray_2 = new Array();
+  for(var index = 0; index < newArray.length; index++){
+    if(newArray[index].match(/([a-zA-Z0-9])/g) && newArray[index+1] === "("){ //detect a function call in an expression
+      var start = index;
+      index = findMatching(newArray, start, "(");
+      var end = index;
+      var newTempArray = newArray.slice(start, end+1);
+      var newExpression = newArray.slice(start+2, end).join("");
+
+      var newTempArray3 = new Array();
+      newTempArray3.push(newArray[start]);
+      newTempArray3.push("(");
+      if(newExpression.match(/[,]/gm)){
+        newExpression = newExpression.split(/[,]/gm);
+        for(var i = 0; i < newExpression.length; i++){
+          newExpression[i] = evalExpression(newExpression[i], Frame, line, array);
+        }
+        newExpression = newExpression.join(",");
+        newTempArray3.push(newExpression);
+      }else{
+        newExpression = evalExpression(newExpression, Frame, line, array);
+        newTempArray3.push(newExpression);
+      }
+      newTempArray3.push(")");
+      newTestArray_2.push(newTempArray3.join(""));
+    }else{
+      newTestArray_2.push(newArray[index]);
+    }
+  }
+  return newTestArray_2;
 }
 function addConsoleLine(string){
   setTimeout(() => {
@@ -246,4 +282,13 @@ function showHide(){
     element.classList.remove("show");
     element.classList.add("hide");
   }
+}
+function extractFunctionParameters(newString){ //abc(x,y,x), returns an array[abc(), array[x,y,z]]
+  var newArray = new Array();
+  newString = newString.split(/[)(]/);
+  newArray.push(newString[0].trim() + "()");
+  newString = newString[1].split(',');
+  newString = trimStringInArray(newString);
+  newArray.push(newString);
+  return newArray;
 }

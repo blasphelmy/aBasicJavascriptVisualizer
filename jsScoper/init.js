@@ -3,7 +3,7 @@ var editor = null;
 var outPutEditor = null;
 var count = 1;
 var consoleline = 1;
-var defaultDelay = 250;
+const defaultDelay = 250;
 function initParse() {
   //console.clear();
   document.getElementById("mainFrameContainer").innerHTML = "";
@@ -74,45 +74,4 @@ function interpretCallStack(array, Frame) {
   if(Frame.id === "Global"){
     return Frame;
   }
-}
-function functionCallHandler(array, index, Frame){
-  var functionCallBreakdown = extractFunctionParameters(array[index]);
-  var originFrame = returnFrameContainingFunctionDEF(Frame, functionCallBreakdown[0]);
-  if(originFrame.returnFunctionDefinitions(functionCallBreakdown[0])){
-    var newFunctionDef = originFrame.returnFunctionDefinitions(functionCallBreakdown[0]);
-    var newFrame = new frame(newFunctionDef, index, count);
-    if(newFunctionDef.inputParamenters != ''){
-      for(var i = 0; i < newFunctionDef.inputParamenters.length; i++){
-        functionCallBreakdown[1][i] = eval(evalExpression(functionCallBreakdown[1][i], Frame, index));
-        newFrame.variables.set(newFunctionDef.inputParamenters[i], functionCallBreakdown[1][i]);
-      }
-    }
-    newFrame.previousNodeFrame = originFrame;
-    originFrame.addChildFrame(newFrame);
-    interpretCallStack(array, newFrame);
-  }
-  else{
-    addConsoleLine("error: on line " + index + " function definition doesn't exist!");
-    errorDetected = true;
-    return;
-  }
-}
-function returnHandler(array, index, Frame){
-  var newArray = array[index].split(/(return+[ ]*)/);
-  newArray = removeEmptyIndices(newArray);
-  newArray = trimStringInArray(newArray);
-  
-  var expression = newArray[1].split(";");
-  var expression = evalExpression(expression[0], Frame, index, array);
-  return eval(expression);
-
-}
-function extractFunctionParameters(newString){ //abc(x,y,x), returns an array[abc(), array[x,y,z]]
-  var newArray = new Array();
-  newString = newString.split(/[)(]/);
-  newArray.push(newString[0].trim() + "()");
-  newString = newString[1].split(',');
-  newString = trimStringInArray(newString);
-  newArray.push(newString);
-  return newArray;
 }

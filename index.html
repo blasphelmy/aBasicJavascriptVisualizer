@@ -47,7 +47,16 @@
 <div id="codeEditorWrapper">
 <div class="codeEditiors">
 <textarea id="code" name="code">
-var a = 10;
+function ac(w){
+  return w;
+}
+function ab(w){
+  return w;
+}  
+var a = ((10) + 23 + (ab(3) + ab(3)));
+console.log(a);
+a = (10) + 23 + (2 + ab(3 * ac(2)));
+console.log(a);
 function b(g){
   a = 5;
   g = g + 2;
@@ -71,8 +80,8 @@ function c(f){
   console.log("f = " + f);
   return f;
 }
-var xyz = b(a*123); 
-console.log("xyz = " + xyz);        
+var xyz = b(a*123) <= b(a);      
+console.log(xyz);  
 </textarea>
 </div>
 <div class="codeEditiors">
