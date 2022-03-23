@@ -47,41 +47,30 @@
 <div id="codeEditorWrapper">
 <div class="codeEditiors">
 <textarea id="code" name="code">
-function ac(w){
-  return w;
+var radius = 4;
+var tempF = 82;
+function returnPi(){
+  return 3.14159265;
 }
-function ab(w){
-  return w;
-}  
-var a = ((10) + 23 + (ab(3) + ab(3)));
-console.log(a);
-a = (10) + 23 + (2 + ab(3 * ac(2)));
-console.log(a);
-function b(g){
-  a = 5;
-  g = g + 2;
-  return c(g);
+function convertFtoC(input){
+  return (input - 32) * (5/9);
 }
-function c(f){
-  d = 6;
-  var a = 7;
-  e = 9;
-  function f(x, y, z){
-    a = 2;
-    console.log("x = " + x);
-    console.log("y = " + y);
-    console.log("z = " + z);
-    z = z + 23;
-    return z/x;
-  }
-  var f = 2;
-  console.log("f = " + f);
-  f = f + f(e, a, a);
-  console.log("f = " + f);
-  return f;
+var tempC = convertFtoC(tempF);
+console.log(tempF + " in degrees celcius is " + tempC + "c");
+console.log(" ");
+
+function calculateSphereVolume(radius){
+  var pi = 3.14159265;
+  var radius = radius * radius * radius;
+  return (4/3) * returnPi() * radius;
 }
-var xyz = b(a*123) <= b(a);      
-console.log(xyz);  
+console.log("Sphere volume with a radius of " + radius + " is : " + calculateSphereVolume(radius));
+
+function CalculateAverageGrades(Sub1, Sub2, Sub3, Sub4, Sub5){
+  return (Sub1 + Sub2 + Sub3 + Sub4 + Sub5)/5;
+}
+var averageGrade = CalculateAverageGrades(95, 76, 85, 180/2, 89);
+console.log("Average Grade[95, 76, 85, 90, 89] : " + averageGrade);
 </textarea>
 </div>
 <div class="codeEditiors">

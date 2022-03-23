@@ -40,7 +40,7 @@ function interpretCallStack(array, Frame) {
   createNewFrameElements(elementFrame, Frame);
   
   for (var index = Frame.start; index <= Frame.end && errorDetected === false; index++) {
-   //console.log("index ", index);
+   console.log("index ", index);
     //DETECT FUNCTION DECLATION TOKEN 
     //nothing fancy, just regex and more regex
     if (isFunctionDeclarion(array[index])) {
@@ -60,11 +60,11 @@ function interpretCallStack(array, Frame) {
         errorDetected = true;
       }
     }
-    else if(detectFunctionCalls(array[index])){
-      functionCallHandler(array, index, Frame);
-    }
     else if(new RegExp(/(return+[ ])/gm).test(array[index])){
       return returnHandler(array, index, Frame);
+    }
+    else if(detectFunctionCalls(array[index])){
+      functionCallHandler(array, index, Frame);
     }else if(!(new RegExp(/(['}{'])/gm).test(array[index])) && index < array.length-1){
       addConsoleLine("error: on line " + index);
       errorDetected = true;

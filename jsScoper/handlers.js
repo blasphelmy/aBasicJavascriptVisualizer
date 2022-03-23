@@ -76,9 +76,8 @@ function variableReassignmentHandler(index, array, Frame){
     appendVariablesToVisulizer(newFrame);
 }
 function consoleLoghandler(index, array, Frame){
-  var newRegex = new RegExp(/\(([^)]+)\)/gm);
-  var matches = newRegex.exec(array[index]);
-  expression = evalExpression(matches[1], Frame, index, array);
+  var newExpression = array[index].split(/^([ ]*)+(?:[console])+([ ]*)+([.])+([ ]*)+(?:log)/gm);
+  expression = evalExpression(newExpression[5], Frame, index, array);
   addConsoleLine(index + "> " + eval(expression));
 }
 function functionCallHandler(array, index, Frame){
@@ -104,7 +103,7 @@ function functionCallHandler(array, index, Frame){
   }
 }
 function returnHandler(array, index, Frame){
-  var newArray = array[index].split(/(return+[ ]*)/);
+  var newArray = array[index].split(/(return+[ ]+)/);
   newArray = removeEmptyIndices(newArray);
   newArray = trimStringInArray(newArray);
   

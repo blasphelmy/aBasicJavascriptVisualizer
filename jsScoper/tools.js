@@ -224,7 +224,7 @@ function evalExpression(string, Frame, line, array){ //in the format of 2 + 2 + 
   return expression;
 }
 function breakExpressionIntoComponents(expression, Frame, line, array){ //expression should be a string.
-  const basicArithmatics =  new RegExp(/([+|\-|*|/|<|>|=|(|)])/gm);
+  const basicArithmatics =  new RegExp(/([+|\-|*|^|/|<|>|=|(|)])/gm);
   var newArray = expression.split(basicArithmatics);
   newArray = removeEmptyIndices(newArray);
   newArray = trimStringInArray(newArray);
