@@ -33,6 +33,22 @@ h1{
   width: 48%;
   border-width: 2px;
 }
+.hideWhen {
+  display: inline-block;
+}
+@media (max-width:1100px){
+  .codeEditiors{
+    position: relative;
+    display: block;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    width: 100%;
+    border-width: 2px;
+}
+.hideWhen {
+  display: none;
+}
+}
 .frameContainer { 
   margin-top: 10px;
   margin-left: 20px;
