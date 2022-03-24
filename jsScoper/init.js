@@ -20,10 +20,11 @@ function initParse() {
   newFunctionDefArray.push("Global");
   newFunctionDefArray.push(new Array());
   var newFunction = new functionDEF(newFunctionDefArray, 0, CallStack.length);
-  var FinalFrame = interpretCallStack(CallStack, new frame(newFunction, CallStack.length, count));
+  var newFrame = new frame(newFunction, CallStack.length, count);
+  var FinalFrame = interpretCallStack(CallStack, newFrame, newFrame.start, newFrame.end);
   console.log(FinalFrame);
 }
-function interpretCallStack(array, Frame) {
+function interpretCallStack(array, Frame, startLine, endLine) {
   
   var elementFrame = null;
   if(typeof(Frame.previousNodeFrame) === "undefined"){ //dont check if id is global. check if it is the root of the tree.
@@ -38,8 +39,7 @@ function interpretCallStack(array, Frame) {
     count++;
   }
   createNewFrameElements(elementFrame, Frame);
-  
-  for (var index = Frame.start; index <= Frame.end && errorDetected === false; index++) {
+  for (var index = startLine; index <= endLine && errorDetected === false; index++) {
    console.log("index ", index);
     //DETECT FUNCTION DECLATION TOKEN 
     //nothing fancy, just regex and more regex
@@ -62,6 +62,8 @@ function interpretCallStack(array, Frame) {
     }
     else if(new RegExp(/(return+[ ])/gm).test(array[index])){
       return returnHandler(array, index, Frame);
+    }else if(new RegExp(/^(?:[i]+[f]+[ ]*[(])/gm).test(array[index])){
+      index = ifStatementHandler(array, index, Frame);
     }
     else if(detectFunctionCalls(array[index])){
       functionCallHandler(array, index, Frame);

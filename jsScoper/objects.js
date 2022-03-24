@@ -91,14 +91,12 @@ class frame {
     addNode(newNode) {
       //lets imagine the first
       if (this.statementHead === null) {
-        //
         this.statementHead = newNode;
       } else if (this.statementTail === null) {
         this.statementTail = newNode;
         this.statementTail.previousNode = this.statementHead;
         this.statementHead.nextNode = this.statementTail;
       } else {
-        // console.log("this newNode=", newNode);
         this.statementTail.nextNode = newNode;
         newNode.previousNode = this.statementTail;
         this.statementTail = newNode;

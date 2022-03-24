@@ -94,7 +94,7 @@ function functionCallHandler(array, index, Frame){
     }
     newFrame.previousNodeFrame = originFrame;
     originFrame.addChildFrame(newFrame);
-    interpretCallStack(array, newFrame);
+    interpretCallStack(array, newFrame, newFrame.start, newFrame.end);
   }
   else{
     addConsoleLine("error: on line " + index + " function definition doesn't exist!");
@@ -111,4 +111,39 @@ function returnHandler(array, index, Frame){
   var expression = evalExpression(expression[0], Frame, index, array);
   return eval(expression);
 
+}
+function ifStatementHandler(array, index, Frame){
+  var newIfStatementChain = new Array();
+  var start = index;
+  do{
+    newIfStatement = new Array(); //format: [ifStatement(), [start, end]];
+    newIfStatement.push(array[start]); //get name
+    var newSlice = new Array();
+    newSlice.push(start);
+    var end = findMatching(array, start, "{");
+    newSlice.push(end);
+    newIfStatement.push(newSlice);
+    start = end+1;
+    newIfStatementChain.push(newIfStatement);
+  }while(array[end+1].match(/^(?:[else]+[ ]*)/gm));
+  newIfStatementChain.push(end)
+  for(var i = 0; i < newIfStatementChain.length - 1; i++){
+    var newIfStatement = newIfStatementChain[i];
+    console.log(newIfStatement);
+    var newExpression = newIfStatement[0].split(/^(?:[a-zA-Z ]+[ ]*)/m)[1];
+    if(newExpression!==""){
+      newExpression = evalExpression(newExpression, Frame, index, array);
+      console.log(eval(newExpression));
+        if(eval(newExpression) === true){
+          var frameStart = newIfStatement[1][0] + 1;
+          var frameEnd = newIfStatement[1][1];
+          interpretCallStack(array, Frame, frameStart, frameEnd);
+          return newIfStatementChain[newIfStatementChain.length-1];
+        }
+    }else if(newExpression === ""){
+      console.log(newIfStatement[1][0]);
+      return newIfStatement[1][0] + 1;
+    }
+  }
+  return newIfStatementChain[newIfStatementChain.length-1];
 }

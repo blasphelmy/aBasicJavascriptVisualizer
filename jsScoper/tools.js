@@ -72,7 +72,7 @@ function removeEmptyIndices(array) {
   }
   return newArray;
 }
-function findMatching(array, start, token) {
+function findMatching(array, start, token) { //token = "(" pr "{"
   //raw string -> breakIntoComponents() first. start is the index of the array where a function declartion is detected.
   var token_2 = null;
   if(token === "{"){
@@ -189,7 +189,7 @@ function evalExpression(string, Frame, line, array){ //in the format of 2 + 2 + 
         }
         newFrame.previousNodeFrame = originFrame;
         originFrame.addChildFrame(newFrame);
-        newArray[index] =  interpretCallStack(array, newFrame);
+        newArray[index] =  interpretCallStack(array, newFrame, newFrame.start, newFrame.end);
       }
       else{
         addConsoleLine("error: on line " + index + " function definition doesn't exist!");
@@ -234,7 +234,6 @@ function breakExpressionIntoComponents(expression, Frame, line, array){ //expres
       var start = index;
       index = findMatching(newArray, start, "(");
       var end = index;
-      var newTempArray = newArray.slice(start, end+1);
       var newExpression = newArray.slice(start+2, end).join("");
 
       var newTempArray3 = new Array();

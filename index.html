@@ -47,6 +47,23 @@
 <div id="codeEditorWrapper">
 <div class="codeEditiors">
 <textarea id="code" name="code">
+function checkIfValidTriangle(angle1, angle2, angle3){
+  var validity = 0;
+  if((angle1+angle2+angle3) === 180){
+    validity = 1; 
+  }
+  return validity;
+}
+var a1 = 60;var a2 = 60; var a3 = 40;
+
+console.log("A triangle with angles : " + a1 + " " + a2 + " " + a3 + "...");
+
+if(checkIfValidTriangle(a1, a2, a3) === 1){
+  console.log("is a valid triangle!");
+}else{
+  console.log("is not a valid triangle!");
+}
+console.log(" ");
 var radius = 4;
 var tempF = 82;
 function returnPi(){
@@ -66,11 +83,13 @@ function calculateSphereVolume(radius){
 }
 console.log("Sphere volume with a radius of " + radius + " is : " + calculateSphereVolume(radius));
 
+console.log(" ");
+
 function CalculateAverageGrades(Sub1, Sub2, Sub3, Sub4, Sub5){
   return (Sub1 + Sub2 + Sub3 + Sub4 + Sub5)/5;
 }
 var averageGrade = CalculateAverageGrades(95, 76, 85, 180/2, 89);
-console.log("Average Grade[95, 76, 85, 90, 89] : " + averageGrade);
+console.log("Average Grade[95, 76, 85, 90, 89] : " + averageGrade);  
 </textarea>
 </div>
 <div class="codeEditiors">
