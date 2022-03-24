@@ -116,7 +116,7 @@ function ifStatementHandler(array, index, Frame){
   var newIfStatementChain = new Array();
   var start = index;
   do{
-    newIfStatement = new Array(); //format: [ifStatement(), [start, end]];
+    var newIfStatement = new Array(); //format: [ifStatement(), [start, end]];
     newIfStatement.push(array[start]); //get name
     var newSlice = new Array();
     newSlice.push(start);
