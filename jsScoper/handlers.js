@@ -78,7 +78,7 @@ function variableReassignmentHandler(index, array, Frame){
 function consoleLoghandler(index, array, Frame){
   var newExpression = array[index].split(/^([ ]*)+(?:[console])+([ ]*)+([.])+([ ]*)+(?:log)/gm);
   expression = evalExpression(newExpression[5], Frame, index, array);
-  addConsoleLine(index + "> " + eval(expression));
+  addConsoleLine(index + " " + Frame.id + " " + "> " + eval(expression));
 }
 function functionCallHandler(array, index, Frame){
   var functionCallBreakdown = extractFunctionParameters(array[index]);
@@ -86,14 +86,14 @@ function functionCallHandler(array, index, Frame){
   if(originFrame.returnFunctionDefinitions(functionCallBreakdown[0])){
     var newFunctionDef = originFrame.returnFunctionDefinitions(functionCallBreakdown[0]);
     var newFrame = new frame(newFunctionDef, index, count);
+    newFrame.previousNodeFrame = originFrame;
+    originFrame.addChildFrame(newFrame);
     if(newFunctionDef.inputParamenters != ''){
       for(var i = 0; i < newFunctionDef.inputParamenters.length; i++){
         functionCallBreakdown[1][i] = eval(evalExpression(functionCallBreakdown[1][i], Frame, index));
         newFrame.variables.set(newFunctionDef.inputParamenters[i], functionCallBreakdown[1][i]);
       }
     }
-    newFrame.previousNodeFrame = originFrame;
-    originFrame.addChildFrame(newFrame);
     interpretCallStack(array, newFrame, newFrame.start, newFrame.end);
   }
   else{
@@ -110,7 +110,6 @@ function returnHandler(array, index, Frame){
   var expression = newArray[1].split(";");
   var expression = evalExpression(expression[0], Frame, index, array);
   return eval(expression);
-
 }
 function ifStatementHandler(array, index, Frame){
   var newIfStatementChain = new Array();
@@ -129,19 +128,21 @@ function ifStatementHandler(array, index, Frame){
   newIfStatementChain.push(end)
   for(var i = 0; i < newIfStatementChain.length - 1; i++){
     var newIfStatement = newIfStatementChain[i];
-    console.log(newIfStatement);
     var newExpression = newIfStatement[0].split(/^(?:[a-zA-Z ]+[ ]*)/m)[1];
     if(newExpression!==""){
       newExpression = evalExpression(newExpression, Frame, index, array);
-      console.log(eval(newExpression));
         if(eval(newExpression) === true){
           var frameStart = newIfStatement[1][0] + 1;
           var frameEnd = newIfStatement[1][1];
-          interpretCallStack(array, Frame, frameStart, frameEnd);
+          
+          var hasReturn = interpretCallStack(array, Frame, frameStart, frameEnd);
+          if(hasReturn && typeof(hasReturn)!=="object"){
+            Frame.returnValue = hasReturn;
+          }
+
           return newIfStatementChain[newIfStatementChain.length-1];
         }
     }else if(newExpression === ""){
-      console.log(newIfStatement[1][0]);
       return newIfStatement[1][0] + 1;
     }
   }

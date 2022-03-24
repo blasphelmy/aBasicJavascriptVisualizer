@@ -220,10 +220,11 @@ function evalExpression(string, Frame, line, array){ //in the format of 2 + 2 + 
     errorDetected = true;
     return;
   }
-  
+  // console.log(expression);
   return expression;
 }
 function breakExpressionIntoComponents(expression, Frame, line, array){ //expression should be a string.
+  // console.log(expression);
   const basicArithmatics =  new RegExp(/([+|\-|*|^|/|<|>|=|(|)])/gm);
   var newArray = expression.split(basicArithmatics);
   newArray = removeEmptyIndices(newArray);

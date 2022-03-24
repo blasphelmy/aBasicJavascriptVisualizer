@@ -1,6 +1,5 @@
 //**important notes: on a function call you will always need to initialize a the corrosponding frame... how?
 class frame {
-    Globalobjects;
     //a frame may contain variables, functionDEF....or...maybe a callStack...
     id; //name
     fIndex; //this tracks something...im not sure yet
@@ -9,6 +8,7 @@ class frame {
     childrenFrames;
     previousNodeFrame;
     returnToIndex;
+    returnValue;
     start;
     end;
     constructor(aFunctionDefinition, index, count) {
@@ -55,6 +55,12 @@ class frame {
     }
     get returnToIndex(){
       return parseInt(this.returnToIndex);
+    }
+    set setReturnValue(Value){
+      this.returnValue = value;
+    }
+    get getReturnValue(){
+      return this.returnValue;
     }
   }
   class functionDEF {

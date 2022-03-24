@@ -39,6 +39,18 @@
 <button id="runBtn" onclick="runButton()">Run Code</button>
 <button onclick="showHide()">Show/Hide Scope Visualiser</button>
 </div>
+<!-- <span id="asd"><p>Hello</p></span> -->
+<script>
+  // window.onload = function (){
+  //   // var elementTEST = document.getElementById("asd");
+  //   // // {
+  //   // // document.getElementById("asd").style.color = "blue";
+  //   // // }
+  //   // console.log("sdfsdfdsfsadf", elementTEST);
+  //   var F=new Function ('document.getElementById("asd").style.color = "blue";');
+  //   return(F()); //this works on both safari and chrome
+  // }
+</script>
 <br><br><br><br>
 <div id="mainFrameContainer" class="hide">
 </div>
@@ -51,8 +63,10 @@ function checkIfValidTriangle(angle1, angle2, angle3){
   var validity = 0;
   if((angle1+angle2+angle3) === 180){
     validity = 1; 
+    return validity;
+  }else{
+    return validity;
   }
-  return validity;
 }
 var a1 = 60;var a2 = 60; var a3 = 40;
 

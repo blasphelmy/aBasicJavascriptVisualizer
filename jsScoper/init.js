@@ -17,7 +17,7 @@ function initParse() {
   var CallStack = breakIntoComponents(inputString);
   outPutCallStacktoCodeEditor(CallStack);
   var newFunctionDefArray = new Array();
-  newFunctionDefArray.push("Global");
+  newFunctionDefArray.push("default");
   newFunctionDefArray.push(new Array());
   var newFunction = new functionDEF(newFunctionDefArray, 0, CallStack.length);
   var newFrame = new frame(newFunction, CallStack.length, count);
@@ -40,10 +40,14 @@ function interpretCallStack(array, Frame, startLine, endLine) {
   }
   createNewFrameElements(elementFrame, Frame);
   for (var index = startLine; index <= endLine && errorDetected === false; index++) {
-   console.log("index ", index);
+  //  console.log("index ", index);
     //DETECT FUNCTION DECLATION TOKEN 
     //nothing fancy, just regex and more regex
-    if (isFunctionDeclarion(array[index])) {
+    if(Frame.returnValue){
+      var newReturnValue = Frame.getReturnValue;
+      return eval(newReturnValue);
+    }
+    else if (isFunctionDeclarion(array[index])) {
      index = functionDeclaredHandler(index, array, Frame);
       //DETECT VARIABLE DECLATION TOKEN
     } else if (isVarDeclartion(array[index])) {
@@ -73,7 +77,7 @@ function interpretCallStack(array, Frame, startLine, endLine) {
       return;
     }
   }
-  if(Frame.id === "Global"){
+  if(typeof(Frame.previousNodeFrame) === "undefined"){
     return Frame;
   }
 }
