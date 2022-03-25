@@ -26,15 +26,20 @@ function splitIntoTokens(array) { //ONLY USE THIS AFTER INPUT STRING IS COMPLETE
   var newArray = new Array();
   for (var index = 0; index < array.length; index++) {
     //FOR FUNCTION DECLARATIONS
-    if (array[index].match(/(function[ ])/gm)) {
-      var temp = array[index].split(/(function[ ]*)/gm);
+    if (array[index].match(/(^function)+([ ]+)/gm)) {
+      var temp = array[index].split(/(^function)+([ ]+)/gm);
+      temp = removeEmptyIndices(temp);
+      temp[0] = temp[0] + " ";
+      console.log(temp);
       for (var x = 0; x < temp.length; x++) {
         newArray.push(temp[x]);
       }
     }
     //FOR VARIABLE DECLARATIONS
-    else if (array[index].match(/(var[ ])/gm)) {
-      var temp = array[index].split(/(var)[ ]*/gm);
+    else if (array[index].match(/(^var)+([ ]+)/gm)) {
+      var temp = array[index].split(/(^var)+([ ]+)/gm);
+      temp = removeEmptyIndices(temp);
+      temp[0] = temp[0] + " ";
       for (var x = 0; x < temp.length; x++) {
         newArray.push(temp[x]);
       }
@@ -173,6 +178,7 @@ function appendVariablesToVisulizer(Frame){
   }
 }
 function evalExpression(string, Frame, line, array){ //in the format of 2 + 2 + a for example..
+  console.log(string);
   var newArray = breakExpressionIntoComponents(string, Frame, line, array);
   for(var index = 0; index < newArray.length; index++){
     if(detectFunctionCalls(newArray[index])){
@@ -220,7 +226,7 @@ function evalExpression(string, Frame, line, array){ //in the format of 2 + 2 + 
     errorDetected = true;
     return;
   }
-  // console.log(expression);
+  console.log(expression);
   return expression;
 }
 function breakExpressionIntoComponents(expression, Frame, line, array){ //expression should be a string.

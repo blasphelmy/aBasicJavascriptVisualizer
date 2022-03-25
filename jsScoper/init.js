@@ -5,7 +5,6 @@ var count = 1;
 var consoleline = 1;
 const defaultDelay = 250;
 function initParse() {
-  //console.clear();
   document.getElementById("mainFrameContainer").innerHTML = "";
   document.getElementById("console").innerHTML = "";
   errorDetected = false;
@@ -77,7 +76,7 @@ function interpretCallStack(array, Frame, startLine, endLine) {
       return;
     }
   }
-  if(typeof(Frame.previousNodeFrame) === "undefined"){
+  if(typeof(Frame.previousNodeFrame) === "undefined" && endLine === Frame.end){ 
     return Frame;
   }
 }

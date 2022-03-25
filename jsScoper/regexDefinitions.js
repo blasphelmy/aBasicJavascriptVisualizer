@@ -1,5 +1,5 @@
 function detectFunctionCalls(string){
-    const detectFunctCalls = new RegExp(/(^[a-z,A-Z,0-9]+)+([ ]*)+([(])+([a-z,A-Z,0-9,\s,.,+,-,*,/,=,"]*)+([)])/gm);
+    const detectFunctCalls = new RegExp(/(^[a-zA-Z0-9]+)+([ ]*)+([(])+([a-z,A-Z,0-9,\s,.,+,-,*,/,=,"]*)+([)])/gm);
     //make improvements here https://regex101.com/r/MqSsCA/1
     if(detectFunctCalls.test(string)){
       return true;
@@ -19,7 +19,7 @@ function detectFunctionCalls(string){
     return detectVarReassignStatement.test(string);
   }
   function isVarDeclartion(string){
-    var isVar = new RegExp(/var/gim);
+    var isVar = new RegExp(/(var)+([ ]+)/gm);
     //make improvements to this regexp here : https://regex101.com/r/9IiFmz/1
     return isVar.test(string);
   }

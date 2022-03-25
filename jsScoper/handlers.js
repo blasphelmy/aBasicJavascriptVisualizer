@@ -114,6 +114,7 @@ function returnHandler(array, index, Frame){
 function ifStatementHandler(array, index, Frame){
   var newIfStatementChain = new Array();
   var start = index;
+  // console.log(array[index]);
   do{
     var newIfStatement = new Array(); //format: [ifStatement(), [start, end]];
     newIfStatement.push(array[start]); //get name
@@ -126,8 +127,10 @@ function ifStatementHandler(array, index, Frame){
     newIfStatementChain.push(newIfStatement);
   }while(array[end+1].match(/^(?:[else]+[ ]*)/gm));
   newIfStatementChain.push(end)
+  // console.log(newIfStatementChain);
   for(var i = 0; i < newIfStatementChain.length - 1; i++){
     var newIfStatement = newIfStatementChain[i];
+    
     var newExpression = newIfStatement[0].split(/^(?:[a-zA-Z ]+[ ]*)/m)[1];
     if(newExpression!==""){
       newExpression = evalExpression(newExpression, Frame, index, array);
@@ -136,8 +139,9 @@ function ifStatementHandler(array, index, Frame){
           var frameEnd = newIfStatement[1][1];
           
           var hasReturn = interpretCallStack(array, Frame, frameStart, frameEnd);
-          if(hasReturn && typeof(hasReturn)!=="object"){
+          if(hasReturn && typeof(hasReturn) !== "object"){
             Frame.returnValue = hasReturn;
+            return newIfStatementChain[newIfStatementChain.length-1];
           }
 
           return newIfStatementChain[newIfStatementChain.length-1];
